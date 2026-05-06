@@ -102,7 +102,7 @@ export default function Footer() {
         fontSize: "13px",
         color: "#666"
       }}>
-        © {new Date().getFullYear()} CineVerse. All rights reserved.
+        © {new Date().getFullYear()} Prime Clone. All rights reserved.
       </p>
 
       {/* ✨ ANIMATIONS */}

@@ -8,11 +8,7 @@ require("dotenv").config();
 
 const app = express();
 
-app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json());
 
 /* ✅ STATIC FILES */
@@ -56,7 +52,8 @@ const MyList = mongoose.model("MyList", {
 });
 
 /* 🔐 SECRET */
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = "mysecretkey";
+
 /* 🔐 AUTH */
 const auth = (req, res, next) => {
   try {
@@ -218,8 +215,6 @@ app.delete("/mylist/:id", auth, async (req, res) => {
 /* START */
 /* ================= */
 
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT} 🚀`);
+app.listen(5000, () => {
+  console.log("Server running on port 5000 🚀");
 });
