@@ -24,6 +24,7 @@ const [username, setUsername] = useState("");
 const [password, setPassword] = useState("");
 
 const myListRef = useRef(null);
+const API = "https://primeclone-2e4b.onrender.com";
 
 /* ================== LOAD ================== */
 useEffect(() => {
@@ -35,7 +36,7 @@ if (savedUser) setUser(savedUser);
 setMovies(allMovies);
 
 if (token) {
-  fetch("http://localhost:5000/mylist", {
+  fetch(`${API}/mylist`, {
     headers: { Authorization: token }
   })
     .then(res => res.json())
@@ -63,7 +64,7 @@ if (myList.find(m => m.video === movie.video)) return;
 setMyList(prev => [movie, ...prev]);
 
 if (token) {
-  await fetch("http://localhost:5000/mylist", {
+  await fetch(`${API}/mylist`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -87,7 +88,7 @@ const movie = myList.find(m => m.video === video);
 setMyList(prev => prev.filter(m => m.video !== video));
 
 if (token && movie) {
-  await fetch(`http://localhost:5000/mylist/${movie.movieId}`, {
+  await fetch(`${API}/mylist/${movie.movieId}`, {
     method: "DELETE",
     headers: { Authorization: token }
   });
@@ -101,7 +102,7 @@ if (!username || !password) {
   return;
 }
 
-const res = await fetch("http://localhost:5000/register", {
+const res = await fetch(`${API}/register`, {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
@@ -119,7 +120,7 @@ if (res.ok) {
 };
 
 const handleLogin = async () => {
-const res = await fetch("http://localhost:5000/login", {
+const res = await fetch(`${API}/login`, {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
