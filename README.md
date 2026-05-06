@@ -2,8 +2,7 @@
 
 CineVerse is a professional-grade, full-stack cinematic streaming platform designed to provide a premium user experience. Built with a modern tech stack, it features a sleek Netflix-style UI, real-time database integration, and a cinematic video background login.
 
-![Project Preview](https://via.placeholder.com/800x400?text=CineVerse+Project+Preview) 
-*Note: Replace this with a screenshot of your CineVerse homepage.*
+![CineVerse Preview](./frontend/frontend/public/images/CineVerse-Preview.png)
 
 ## 🚀 Features
 
