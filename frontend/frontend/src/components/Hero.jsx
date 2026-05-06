@@ -43,6 +43,11 @@ export default function Hero({ onSelect }) {
       desc: "Crime • Thriller • Investigation",
       preview: 2800
     },
+    "Silsila": {
+      full: "Silsila",
+      desc: "Love • Drama • Romance",
+      preview: 2190
+    },
     "The Notebook": {
       full: "The Notebook",
       desc: "Love • Drama • Romance",

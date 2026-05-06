@@ -200,12 +200,19 @@ app.get("/mylist", auth, async (req, res) => {
 /* ❌ REMOVE */
 app.delete("/mylist/:id", auth, async (req, res) => {
   try {
-    await MyList.findOneAndDelete({
+    const id = decodeURIComponent(req.params.id);
+
+    const result = await MyList.findOneAndDelete({
       username: req.user.username,
-      movieId: req.params.id
+      movieId: id
     });
 
+    if (!result) {
+      return res.status(404).json({ error: "Item not found" });
+    }
+
     res.json({ message: "Removed" });
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

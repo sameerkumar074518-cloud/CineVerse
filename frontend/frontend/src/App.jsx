@@ -16,6 +16,7 @@ const [isSouthPlayer, setIsSouthPlayer] = useState(false); // ✅ ADDED
 
 const [user, setUser] = useState("");
 const [search, setSearch] = useState("");
+const myListRef = useRef(null);
 const [movies, setMovies] = useState([]);
 const [myList, setMyList] = useState([]);
 const [showIntro, setShowIntro] = useState(true);
@@ -23,7 +24,7 @@ const [showEmptyMsg, setShowEmptyMsg] = useState(false);
 const [username, setUsername] = useState("");
 const [password, setPassword] = useState("");
 
-const myListRef = useRef(null);
+const API = "https://primeclone-2e4b.onrender.com";
 
 /* ================== LOAD ================== */
 useEffect(() => {
@@ -35,7 +36,7 @@ if (savedUser) setUser(savedUser);
 setMovies(allMovies);
 
 if (token) {
-  fetch("http://localhost:5000/mylist", {
+  fetch(`${API}/mylist`, {
     headers: { Authorization: token }
   })
     .then(res => res.json())
@@ -63,14 +64,14 @@ if (myList.find(m => m.video === movie.video)) return;
 setMyList(prev => [movie, ...prev]);
 
 if (token) {
-  await fetch("http://localhost:5000/mylist", {
+  await fetch(`${API}/mylist`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: token
     },
     body: JSON.stringify({
-      movieId: movie._id,
+      movieId: movie.video,
       title: movie.title,
       image: movie.image,
       video: movie.video
@@ -80,18 +81,20 @@ if (token) {
 };
 
 const handleRemoveFromMyList = async (video) => {
-const token = localStorage.getItem("token");
+  console.log("Removing:", video); // 👈 ADD HERE
 
-const movie = myList.find(m => m.video === video);
+  const token = localStorage.getItem("token");
 
-setMyList(prev => prev.filter(m => m.video !== video));
+  const movie = myList.find(m => m.video === video);
 
-if (token && movie) {
-  await fetch(`http://localhost:5000/mylist/${movie.movieId}`, {
-    method: "DELETE",
-    headers: { Authorization: token }
-  });
-}
+  setMyList(prev => prev.filter(m => m.video !== video));
+
+  if (token && movie) {
+    await fetch(`${API}/mylist/${encodeURIComponent(video)}`, {
+      method: "DELETE",
+      headers: { Authorization: token }
+    });
+  }
 };
 
 /* ================== AUTH ================== */
@@ -101,7 +104,7 @@ if (!username || !password) {
   return;
 }
 
-const res = await fetch("http://localhost:5000/register", {
+const res = await fetch(`${API}/register`, {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
@@ -110,6 +113,7 @@ const res = await fetch("http://localhost:5000/register", {
 });
 
 const data = await res.json();
+console.log("LOGIN RESPONSE:", data);
 
 if (res.ok) {
   alert("Registered successfully!");
@@ -119,7 +123,7 @@ if (res.ok) {
 };
 
 const handleLogin = async () => {
-const res = await fetch("http://localhost:5000/login", {
+const res = await fetch(`${API}/login`, {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
@@ -177,30 +181,61 @@ if (showIntro) {
 }
 
 /* ================== LOGIN ================== */
+/* ================== LOGIN ================== */
+/* ================== LOGIN ================== */
+/* ================== LOGIN ================== */
 if (!user) {
-return (
-  <div style={loginStyle}>
-    <h1>Login</h1>
+  return (
+    <div className="login-wrapper" style={loginWrapperStyle}>
+      <video autoPlay muted loop playsInline style={videoBackgroundStyle}>
+        <source src="/movies/intro.mp4" type="video/mp4" />
+      </video>
 
-    <input
-      value={username}
-      onChange={(e) => setUsername(e.target.value)}
-      placeholder="Username"
-      style={inputStyle}
-    />
+      <div style={overlayStyle}></div>
+      
+      <div style={logoContainerStyle}>
+        <h1 style={{ color: '#E50914', fontSize: '45px', fontWeight: '900', margin: 0, fontFamily: 'Helvetica, Arial, sans-serif' }}>CINEVERSE</h1>
+      </div>
 
-    <input
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      type="password"
-      placeholder="Password"
-      style={inputStyle}
-    />
+      <div className="login-card" style={loginCardStyle}>
+        <h1 style={{ alignSelf: 'flex-start', marginBottom: '28px', fontSize: '32px', fontFamily: 'Helvetica, Arial, sans-serif' }}>Sign In</h1>
 
-    <button onClick={handleLogin} style={btn}>Login</button>
-    <button onClick={handleRegister} style={btnSecondary}>Register</button>
-  </div>
-);
+        <input
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Email or username"
+          style={newInputStyle}
+        />
+
+        <input
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          type="password"
+          placeholder="Password"
+          style={newInputStyle}
+        />
+
+        <button onClick={handleLogin} style={loginBtnStyle}>Sign In</button>
+        
+        <div style={helpRowStyle}>
+          {/* Remember me removed as requested */}
+          <span 
+            onClick={() => alert("Sign In is for existing users. Sign Up is for new users.")} 
+            style={{ fontSize: '13px', color: '#b3b3b3', cursor: 'pointer', marginLeft: 'auto' }}
+          >
+            Need help?
+          </span>
+        </div>
+
+        <div style={footerSignupStyle}>
+          <span style={{ color: '#737373' }}>New to CineVerse? </span>
+          <span onClick={handleRegister} style={{ color: 'white', cursor: 'pointer', fontWeight: '500' }}>
+             Sign up now
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 /* ================== UPDATED FILTER (Title + Genre) ================== */
@@ -416,34 +451,96 @@ const brandQuote = {
   letterSpacing: '1px'
 };
 
-const loginStyle = {
-height: "100vh",
-display: "flex",
-justifyContent: "center",
-alignItems: "center",
-background: "black",
-color: "white",
-flexDirection: "column",
-gap: "15px"
+const loginWrapperStyle = {
+  height: "100vh",
+  width: "100%",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  position: "relative",
+  color: "white",
+  overflow: "hidden" // Keeps video from creating scrollbars
 };
 
-const inputStyle = {
-padding: "10px",
-width: "220px"
+const videoBackgroundStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+  transform: "translate(-50%, -50%)",
+  zIndex: 0
 };
 
-const btn = {
-padding: "10px 20px",
-background: "#0f79af",
-border: "none",
-color: "white",
-cursor: "pointer",
-borderRadius: "5px"
+const overlayStyle = {
+  position: "absolute",
+  inset: 0,
+  background: "rgba(0, 0, 0, 0.6)", // Slightly darker for better contrast with video
+  zIndex: 1
 };
 
-const btnSecondary = {
-...btn,
-background: "gray"
+// ... keep logoContainerStyle, loginCardStyle, newInputStyle, etc. exactly the same as before ...
+
+const logoContainerStyle = {
+  position: "absolute",
+  top: "20px",
+  left: "50px",
+  zIndex: 10
+};
+
+const loginCardStyle = {
+  position: "relative",
+  zIndex: 10,
+  background: "rgba(0, 0, 0, 0.75)",
+  padding: "30px 40px", // Lowered top/bottom padding
+  borderRadius: "4px",
+  width: "100%",
+  maxWidth: "360px", // Narrowed the card further
+  display: "flex",
+  flexDirection: "column",
+  boxSizing: "border-box"
+};
+
+const newInputStyle = {
+  width: "100%",
+  height: "42px", // Slimmer inputs
+  background: "#333",
+  border: "none",
+  borderRadius: "4px",
+  color: "white",
+  padding: "0 15px",
+  marginBottom: "12px",
+  fontSize: "14px",
+  outline: "none",
+  boxSizing: "border-box"
+};
+
+const loginBtnStyle = {
+  width: "100%",
+  padding: "10px", // Thinner button
+  background: "#E50914",
+  color: "white",
+  border: "none",
+  borderRadius: "4px",
+  fontSize: "15px",
+  fontWeight: "bold",
+  cursor: "pointer",
+  marginTop: "20px",
+  boxSizing: "border-box"
+};
+
+const helpRowStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  marginTop: "10px",
+  width: "100%"
+};
+
+const footerSignupStyle = {
+  marginTop: "40px",
+  fontSize: "16px",
+  fontFamily: 'Helvetica, Arial, sans-serif'
 };
 
 export default App;
