@@ -474,7 +474,7 @@ return (
       ...prev,
       video: seasonObj.video,
       currentSeason: seasonObj.season,
-      title: `${prev.title.split(" - ")[0]} - Season ${seasonObj.season}`
+      title: `${prev.title.split(" - Season")[0]} - Season ${seasonObj.season}`
     }));
   }}
 

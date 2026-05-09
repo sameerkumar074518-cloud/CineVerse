@@ -324,7 +324,8 @@ export default function NetflixPremiumPlayer({
 
           <div style={centerTitle}>
   {title
-    ?.toLowerCase()
+    ?.replace(/ - Season \d+/i, "")
+    .toLowerCase()
     .split(" ")
     .map(word =>
       word.charAt(0).toUpperCase() + word.slice(1)
