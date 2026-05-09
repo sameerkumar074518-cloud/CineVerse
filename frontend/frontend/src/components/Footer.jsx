@@ -101,7 +101,7 @@ export default function Footer() {
         </div>
 
         <div style={bottomSectionStyle}>
-          <p style={madeByStyle}>Executive Producer: <span style={{color: '#fff', fontWeight: 'bold'}}>Sameer</span></p>
+          <p style={madeByStyle}>OWNER / DEVELOPER: <span style={{color: '#fff', fontWeight: 'bold'}}>Sameer</span></p>
           <p style={copyrightStyle}>© {new Date().getFullYear()} CineVerse Global, Inc. All rights reserved.</p>
           <div style={serviceCodeStyle}>Service Code: 887-211</div>
         </div>
