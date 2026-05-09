@@ -1,10 +1,12 @@
 import { allMovies } from "./components/MovieRow";
 import { popularSouthMovies } from "./components/SouthMovies";
+import { allSeries } from "./components/SeriesRow";
 import { useState, useEffect, useRef } from "react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Top10Row from "./components/Top10Row";
 import MovieRow from "./components/MovieRow";
+import SeriesRow from "./components/SeriesRow";
 import ContinueWatching from "./components/ContinueWatching";
 import VideoPlayer from "./components/VideoPlayer";
 import Footer from "./components/Footer";
@@ -17,6 +19,7 @@ const [isSouthPlayer, setIsSouthPlayer] = useState(false); // ✅ ADDED
 const [user, setUser] = useState("");
 const [search, setSearch] = useState("");
 const myListRef = useRef(null);
+const seriesRef = useRef(null);
 const [movies, setMovies] = useState([]);
 const [myList, setMyList] = useState([]);
 const [showIntro, setShowIntro] = useState(true);
@@ -57,40 +60,46 @@ return () => clearTimeout(timer);
 
 /* ================== MY LIST ================== */
 const handleAddToMyList = async (movie) => {
-const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-if (myList.find(m => m.video === movie.video)) return;
+  const listItem = {
+    ...movie,
+    movieId: movie.movieId || movie.video || movie.seasons?.[0]?.video,
+    video: movie.video || movie.seasons?.[0]?.video
+  };
 
-setMyList(prev => [movie, ...prev]);
+  if (myList.find(m => m.movieId === listItem.movieId)) return;
 
-if (token) {
-  await fetch(`${API}/mylist`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token
-    },
-    body: JSON.stringify({
-      movieId: movie.video,
-      title: movie.title,
-      image: movie.image,
-      video: movie.video
-    })
-  });
-}
+  setMyList(prev => [listItem, ...prev]);
+
+  if (token) {
+    await fetch(`${API}/mylist`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token
+      },
+      body: JSON.stringify(listItem)
+    });
+  }
 };
 
-const handleRemoveFromMyList = async (video) => {
-  console.log("Removing:", video); // 👈 ADD HERE
+const handleRemoveFromMyList = async (id) => {
+  console.log("Removing:", id);
 
   const token = localStorage.getItem("token");
 
-  const movie = myList.find(m => m.video === video);
+  setMyList(prev =>
+    prev.filter(
+      m =>
+        m.video !== id &&
+        m._id !== id &&
+        m.movieId !== id
+    )
+  );
 
-  setMyList(prev => prev.filter(m => m.video !== video));
-
-  if (token && movie) {
-    await fetch(`${API}/mylist/${encodeURIComponent(video)}`, {
+  if (token) {
+    await fetch(`${API}/mylist/${encodeURIComponent(id)}`, {
       method: "DELETE",
       headers: { Authorization: token }
     });
@@ -239,13 +248,15 @@ if (!user) {
 }
 
 /* ================== UPDATED FILTER (Title + Genre) ================== */
-const filteredMovies = movies.filter(m => {
-  const searchTerm = search.toLowerCase();
-  
-  const matchesTitle = m.title.toLowerCase().includes(searchTerm);
-  
-  // Checks if the movie has a genre AND if that genre matches the search
-  const matchesGenre = m.genre && m.genre.toLowerCase().includes(searchTerm);
+const searchTerm = search.toLowerCase();
+
+/* ✅ COMBINED MOVIES + SERIES */
+const filteredMovies = [...movies, ...allSeries].filter((m) => {
+  const matchesTitle =
+    m.title?.toLowerCase().includes(searchTerm);
+
+  const matchesGenre =
+    m.genre?.toLowerCase().includes(searchTerm);
 
   return matchesTitle || matchesGenre;
 });
@@ -261,13 +272,19 @@ return (
     onLogout={handleLogout}
     search={search}
     setSearch={setSearch}
-    movies={movies}
+    movies={[...movies, ...allSeries]}
     onSelect={(v) => { setSelectedVideo(v); setIsSouthPlayer(false); }}
     onMoviesClick={() => {
       document.getElementById("movies-section")?.scrollIntoView({
         behavior: "smooth"
       });
     }}
+
+    onSeriesClick={() =>
+    seriesRef.current?.scrollIntoView({
+      behavior: "smooth"
+    })
+  }
     onMyListClick={() => {
       if (myList.length === 0) {
         setShowEmptyMsg(true);
@@ -285,30 +302,44 @@ return (
 
     {/* 🔥 CONDITIONAL RENDERING: SEARCH MODE VS HOME MODE */}
     {search.length > 0 ? (
-      <div className="search-mode-grid">
-        {/* Only the Search Result title remains here */}
-        <h2 style={{ color: "white", padding: "20px 4%" }}>Search results for "{search}"</h2>
-        
-        <MovieRow
-          movies={filteredMovies}
-          onSelect={(v) => { 
-            setSelectedVideo(v); 
-            setIsSouthPlayer(false); 
-          }}
-          onAdd={handleAddToMyList}
-          title=""
-          showAdd={true}
-        />
+  <div className="search-mode-grid">
+    <h2 style={{ color: "white", padding: "20px 4%" }}>
+      Search results for "{search}"
+    </h2>
+
+    <MovieRow
+      movies={filteredMovies}
+      onSelect={(v) => {
+        setSelectedVideo(v);
+        setIsSouthPlayer(false);
+      }}
+      onAdd={handleAddToMyList}
+      title=""
+      showAdd={true}
+    />
+
+        <div
+  ref={seriesRef}
+  id="series-section"
+  style={{
+    scrollMarginTop: "120px",
+    paddingTop: "10px"
+  }}
+>
+</div>
       </div>
     ) : (
       <>
         <Hero onSelect={(v) => { setSelectedVideo(v); setIsSouthPlayer(false); }} />
 
         <ContinueWatching
-          movies={movies}
-          user={user}
-          onSelect={(v) => { setSelectedVideo(v); setIsSouthPlayer(false); }}
-        />
+  movies={[...movies, ...allSeries]}
+  user={user}
+  onSelect={(v) => {
+    setSelectedVideo(v);
+    setIsSouthPlayer(false);
+  }}
+/>
 
         {/* ✅ SOUTH MOVIES */}
         <MovieRow
@@ -331,16 +362,32 @@ return (
           />
         </div>
 
+        <div
+  ref={seriesRef}
+  id="series-section"
+  style={{ scrollMarginTop: "90px" }}
+>
+  <SeriesRow
+    series={allSeries}
+    onSelect={(videoData) => {
+      setSelectedVideo(videoData);
+      setIsSouthPlayer(false);
+    }}
+    onAdd={handleAddToMyList}
+    title="Series"
+  />
+</div>
+
         {myList.length > 0 && (
           <div ref={myListRef} style={{ scrollMarginTop: "80px" }}>
             <MovieRow
-              movies={myList}
-              onSelect={(v) => { setSelectedVideo(v); setIsSouthPlayer(false); }}
-              title="⭐️ My List"
-              showAdd={false}
-              isMyList={true}
-              onRemove={handleRemoveFromMyList}
-            />
+  movies={myList}
+  onSelect={(v) => { setSelectedVideo(v); setIsSouthPlayer(false); }}
+  title="⭐️ My List"
+  showAdd={false}
+  isMyList={true}
+  onRemove={handleRemoveFromMyList}
+/>
           </div>
         )}
 
@@ -392,10 +439,47 @@ return (
       </div>
     ) : (
       <VideoPlayer
-        video={selectedVideo}
-        title={movies.find(m => m.video === selectedVideo)?.title}
-        onClose={() => setSelectedVideo(null)}
-      />
+  video={
+    typeof selectedVideo === "object"
+      ? selectedVideo.video
+      : selectedVideo
+  }
+
+  title={
+    typeof selectedVideo === "object"
+      ? selectedVideo.title
+      : movies.find(m => m.video === selectedVideo)?.title
+  }
+
+  seasons={
+    typeof selectedVideo === "object"
+      ? selectedVideo.seasons
+      : null
+  }
+
+  currentSeason={
+    typeof selectedVideo === "object"
+      ? selectedVideo.currentSeason
+      : null
+  }
+
+  isSeries={
+    typeof selectedVideo === "object"
+      ? selectedVideo.isSeries
+      : false
+  }
+
+  onSeasonChange={(seasonObj) => {
+    setSelectedVideo(prev => ({
+      ...prev,
+      video: seasonObj.video,
+      currentSeason: seasonObj.season,
+      title: `${prev.title.split(" - ")[0]} - Season ${seasonObj.season}`
+    }));
+  }}
+
+  onClose={() => setSelectedVideo(null)}
+/>
     )
   )}
 

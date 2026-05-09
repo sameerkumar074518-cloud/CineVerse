@@ -1,6 +1,14 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 
-export default function NetflixPremiumPlayer({ video, title, onClose }) {
+export default function NetflixPremiumPlayer({
+  video,
+  title,
+  onClose,
+  seasons,
+  currentSeason,
+  onSeasonChange,
+  isSeries
+}) {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   const progressBarRef = useRef(null);
@@ -156,8 +164,9 @@ export default function NetflixPremiumPlayer({ video, title, onClose }) {
       )}
 
       <video
-        ref={videoRef}
-        src={video}
+  key={video}
+  ref={videoRef}
+  src={video}
         playsInline
         style={mainVideo}
         onWaiting={() => setIsBuffering(true)}
@@ -165,20 +174,64 @@ export default function NetflixPremiumPlayer({ video, title, onClose }) {
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onTimeUpdate={() => {
-          const v = videoRef.current;
-          setCurrentTime(v.currentTime);
-          setProgress((v.currentTime / v.duration) * 100);
-          const user = localStorage.getItem("user");
-          if (!user) return;
-          const key = `progress_${user}_${video}`;
-          localStorage.setItem(key, JSON.stringify({ currentTime: v.currentTime, duration: v.duration }));
-        }}
+  const v = videoRef.current;
+
+  setCurrentTime(v.currentTime);
+  setProgress((v.currentTime / v.duration) * 100);
+
+  const user = localStorage.getItem("user");
+  if (!user) return;
+
+  const saveId = isSeries
+    ? `${title.split(" - ")[0]}_season_${currentSeason}`
+    : video;
+
+  const key = `progress_${user}_${saveId}`;
+
+  // ✅ PER SEASON SAVE
+  localStorage.setItem(
+    key,
+    JSON.stringify({
+      currentTime: v.currentTime,
+      duration: v.duration,
+
+      isSeries,
+      seasons,
+      currentSeason,
+      title,
+
+      currentVideo: video,
+
+      lastUpdated: Date.now()
+    })
+  );
+
+  // ✅ MASTER CONTINUE WATCHING KEY
+  if (isSeries) {
+    const seriesKey = `continue_${user}_${title.split(" - ")[0]}`;
+
+    localStorage.setItem(
+      seriesKey,
+      JSON.stringify({
+        title: title.split(" - ")[0],
+        currentSeason,
+        currentVideo: video,
+        currentTime: v.currentTime,
+        duration: v.duration,
+        lastUpdated: Date.now(),
+        isSeries: true
+      })
+    );
+  }
+}}
         onLoadedMetadata={() => {
           const v = videoRef.current;
           setDuration(v.duration);
           const user = localStorage.getItem("user");
           if (!user) return;
-          const key = `progress_${user}_${video}`;
+          const key = isSeries
+  ? `progress_${user}_${title.split(" - ")[0]}_season_${currentSeason}`
+  : `progress_${user}_${video}`;
           const saved = localStorage.getItem(key);
           if (saved) {
             try {
@@ -194,8 +247,40 @@ export default function NetflixPremiumPlayer({ video, title, onClose }) {
         <div style={backAction} onClick={onClose}>←</div>
         <div style={reportIcon}>🏳</div>
       </div>
-
+      <div style={progressArea}></div>
       <div style={{ ...bottomUI, opacity: showControls ? 1 : 0 }}>
+        {/* ✅ SEASON SWITCHER */}
+{isSeries && seasons && (
+  <div
+    style={{
+      display: "flex",
+      gap: "10px",
+      marginBottom: "15px",
+      flexWrap: "wrap"
+    }}
+  >
+    {seasons.map((seasonObj) => (
+      <button
+        key={seasonObj.season}
+        onClick={() => onSeasonChange(seasonObj)}
+        style={{
+          padding: "8px 16px",
+          borderRadius: "6px",
+          border: "none",
+          cursor: "pointer",
+          fontWeight: "bold",
+          background:
+            currentSeason === seasonObj.season
+              ? "#E50914"
+              : "rgba(255,255,255,0.2)",
+          color: "white"
+        }}
+      >
+        Season {seasonObj.season}
+      </button>
+    ))}
+  </div>
+)}
         <div style={progressArea}>
           <div 
             ref={progressBarRef}
@@ -237,7 +322,19 @@ export default function NetflixPremiumPlayer({ video, title, onClose }) {
             </div>
           </div>
 
-          <div style={centerTitle}>{title}</div>
+          <div style={centerTitle}>
+  {title
+    ?.toLowerCase()
+    .split(" ")
+    .map(word =>
+      word.charAt(0).toUpperCase() + word.slice(1)
+    )
+    .join(" ")}
+
+  {isSeries && currentSeason
+    ? ` - Season ${currentSeason}`
+    : ""}
+</div>
 
           <div style={flexGroup}>
             <button style={largeBtn} onClick={handleDownload}>

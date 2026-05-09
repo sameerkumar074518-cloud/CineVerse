@@ -1,114 +1,53 @@
 import { useRef, useState } from "react";
-import { allSeries } from "./SeriesRow";
 
 /* ✅ DATA WITH GENRES AND CAST */
-export const allMovies = [
+export const allSeries = [
   {
-    _id: "1",
-    title: "Dhurandhar",
-    image: "/images/thumb4.png",
-    video: "https://cineverse.b-cdn.net/Dhurandhar.mp4",
-    genre: "Action, Spy, Thriller",
-    duration: "2h 15m",
-    cast: "Ranveer Singh, Akshaye Khanna, R Madhavan",
-    description: "A fearless spy embarks on a dangerous mission to uncover a global conspiracy."
-  },
-  {
-    _id: "2",
-    title: "Ajab Prem Ki Ghazab Kahani",
-    image: "/images/thumb9.png",
-    video: "https://cineverse.b-cdn.net/Ajab Prem Ki Ghazab Kahani.mp4",
-    genre: "Comedy, Drama, Love, Romance",
-    duration: "2h 30m",
-    cast: "Ranbir Kapoor, Katrina Kaif, Upen Patel",
-    description: "A happy-go-lucky young man falls in love with a girl who is already in love with someone else."
-  },
-  {
-    _id: "3",
-    title: "The Notebook",
-    image: "/images/thumb10.png",
-    video: "https://cineverse.b-cdn.net/The Notebook.mp4",
-    genre: "Romance, Sci-Fi, Love",
-    duration: "2h 4m",
-    cast: "Ryan Gosling, Rachel McAdams, James Garner",
-    description: "An epic love story told through the pages of a notebook found in a nursing home."
-  },
-  {
-    _id: "4",
-    title: "Blink",
-    image: "/images/thumb7.png",
-    video: "https://cineverse.b-cdn.net/Blink.mp4",
-    genre: "Sci-fi, Suspense, Thriller",
-    duration: "1h 55m",
-    cast: "Dheekshith Shetty, Chaithra J.Achar, Mandara Battalahalli",
-    description: "In a world where sight is a luxury, one man discovers a terrifying secret about his past."
-  },
-  {
-    _id: "5",
-    title: "Passengers",
-    image: "/images/thumb8.png",
-    video: "https://cineverse.b-cdn.net/Passengers.mp4",
-    genre: "Sci-Fi, Love, Romance",
-    duration: "1h 56m",
-    cast: "Jennifer Lawrence, Chris Pratt, Michael Sheen",
-    description: "Two passengers on a spacecraft traveling to a distant planet are woken up 90 years early."
-  },
-  {
-    _id: "6",
-    title: "Sambhavam Adhyayam Onnu",
-    image: "/images/thumb1.png",
-    video: "https://cineverse.b-cdn.net/Sambhavam Adhyayam Onnu.mp4",
-    genre: "Sci-Fi, Thriller, Time Travel",
-    duration: "2h 10m",
-    cast: "Askar Ali, Vineeth Kumar",
-    description: "A mysterious event leads to a series of thrilling investigations."
-  },
-  {
-    _id: "7",
-    title: "The Conjuring Last Rites",
-    image: "/images/thumb2.png",
-    video: "https://cineverse.b-cdn.net/The Conjuring Last Rites.mp4",
-    genre: "Horror, Supernatural, Thriller",
-    duration: "1h 48m",
-    cast: "Patrick Wilson, Vera Farmiga",
-    description: "Paranormal investigators take on their most terrifying case yet."
-  },
-  {
-    _id: "8",
-    title: "Youth",
-    image: "/images/thumb3.png",
-    video: "https://cineverse.b-cdn.net/Youth.mp4",
-    genre: "Drama, School, Love",
-    duration: "2h 5m",
-    cast: "Ken Karunas, Suraj Venjaramoodu",
-    description: "A group of friends navigates the complexities of school life and first love."
-  },
-  {
-    _id: "9",
-    title: "Officer on Duty",
-    image: "/images/thumb5.png",
-    video: "https://cineverse.b-cdn.net/Officer on Duty.mp4",
-    genre: "Action, Thriller, Investigation",
-    duration: "2h 20m",
-    cast: "Kunchacko Boban, Priyamani",
-    description: "A dedicated officer risks everything to solve a high-stakes crime."
-  },
-  {
-    _id: "10",
-    title: "Silsila",
-    image: "/images/thumb6.png",
-    video: "https://cineverse.b-cdn.net/Silsila.mp4",
-    genre: "Romance, Drama, Love, Comedy",
-    duration: "2h 12m",
-    cast: "Amitabh Bachchan, Rekha, Jaya Bachchan",
-    description: "A classic tale of love, heartbreak, and difficult choices."
-  }
+  _id: "11",
+
+  title: "From",
+
+  image: "/images/From.png",
+
+  genre: "Horror, Mystery, Thriller, Survival",
+
+  duration: "3 Seasons",
+
+  cast: "Harold Perrineau, Catalina Sandino Moreno, Eion Bailey",
+
+  description:
+    "A mysterious town traps everyone who enters. As terrifying creatures emerge at night, the residents struggle to survive and uncover the truth behind the town.",
+
+  seasons: [
+    {
+      season: 1,
+      video:
+        "https://cineverse.b-cdn.net/From%20Season1.mp4",
+        image: "/images/From.png",
+        
+    },
+
+    {
+      season: 2,
+      video:
+        "https://cineverse.b-cdn.net/From%20Season2.mp4",
+        image: "/images/From.png",
+    },
+
+    {
+      season: 3,
+      video:
+        "https://cineverse.b-cdn.net/From%20Season3.mp4",
+        image: "/images/From.png",
+    }
+  ]
+},
 ];
 
-export const movies = allMovies;
+export const series = allSeries;
 
-export default function MovieRow({
-  movies = [],
+export default function SeriesRow({
+  series = [],
   onSelect,
   onAdd,
   onRemove,
@@ -117,8 +56,8 @@ export default function MovieRow({
   isMyList = false
 }) {
   const scrollRef = useRef(null);
+  const [selectedSeason, setSelectedSeason] = useState(null);
   const [selectedMovie, setSelectedMovie] = useState(null);
-const [selectedSeason, setSelectedSeason] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef(null);
 
@@ -150,12 +89,12 @@ const [selectedSeason, setSelectedSeason] = useState(null);
           scrollBehavior: "smooth"
         }}
       >
-        {movies.length === 0 ? (
+        {series.length === 0 ? (
           <p style={{ color: "#888" }}>No movies found</p>
         ) : (
-          movies.map((movie, index) => (
+          series.map((movie, index) => (
             <div 
-              key={movie.video || index} 
+              key={movie._id || index}
               style={{ position: "relative", minWidth: "200px" }}
             >
               <div style={{ width: "200px", height: "120px", borderRadius: "6px", overflow: "hidden" }}>
@@ -165,46 +104,14 @@ const [selectedSeason, setSelectedSeason] = useState(null);
   style={{ width: "100%", height: "100%", objectFit: "cover", cursor: "pointer" }}
   onClick={() => {
   if (isSouthMovies) {
-    onSelect && onSelect(movie.video);
+    onSelect && onSelect(movie.video); // ✅ direct play (YouTube)
   } else {
     setSelectedMovie(movie);
 
-    if (movie.seasons) {
-      setSelectedSeason(movie.seasons[0]);
-    }
+setSelectedSeason(movie.seasons?.[0]);
   }
 }}
-/>onClick={() => {
-  if (isSouthMovies) {
-    onSelect && onSelect(movie.video);
-  }
-
-  // ✅ SEARCH MODE: series should directly open VideoPlayer
-  else if (title === "" && movie.seasons) {
-    onSelect &&
-      onSelect({
-        video: movie.seasons[0].video,
-        title: `${movie.title} - Season 1`,
-        seasons: movie.seasons,
-        currentSeason: 1,
-        isSeries: true
-      });
-  }
-
-  // ✅ SEARCH MODE: movies direct play
-  else if (title === "") {
-    onSelect && onSelect(movie.video);
-  }
-
-  // ✅ NORMAL ROW: open preview modal
-  else {
-    setSelectedMovie(movie);
-
-    if (movie.seasons) {
-      setSelectedSeason(movie.seasons[0]);
-    }
-  }
-}}
+/>
               </div>
               <p style={titleStyle}>{movie.title}</p>
             </div>
@@ -214,10 +121,7 @@ const [selectedSeason, setSelectedSeason] = useState(null);
 
       {/* 🔥 THE CENTER MODAL (Fixed: Close on click outside & Lookup full data) */}
       {selectedMovie && (() => {
-        const fullMovieData =
-  allMovies.find(m => m.video === selectedMovie.video) ||
-  allSeries.find(s => s.title === selectedMovie.title) ||
-  selectedMovie;
+      const fullMovieData = selectedMovie;
 
         return (
           <div 
@@ -230,11 +134,7 @@ const [selectedSeason, setSelectedSeason] = useState(null);
 
               <div style={{ position: "relative", height: "400px", width: "100%", backgroundColor: "#000" }}>
                 <video
-  key={
-    fullMovieData.seasons
-      ? selectedSeason?.video
-      : fullMovieData.video
-  }
+  key={selectedSeason.video}
   ref={videoRef}
   autoPlay
   muted={isMuted}
@@ -253,14 +153,7 @@ const [selectedSeason, setSelectedSeason] = useState(null);
     borderRadius: "12px 12px 0 0" 
   }}
 >
-  <source
-  src={
-    fullMovieData.seasons
-      ? selectedSeason?.video
-      : fullMovieData.video
-  }
-  type="video/mp4"
-/>
+  <source src={selectedSeason.video} type="video/mp4" />
 </video>
                 <button 
                   onClick={(e) => { e.stopPropagation(); setIsMuted(!isMuted); }}
@@ -271,93 +164,115 @@ const [selectedSeason, setSelectedSeason] = useState(null);
               </div>
 
               <div style={{ padding: "35px", backgroundColor: "#181818", borderRadius: "0 0 12px 12px" }}>
-                <div style={{ display: "flex", gap: "12px", marginBottom: "20px" }}>
-                  {fullMovieData.seasons && (
-  <div
-    style={{
-      display: "flex",
-      gap: "10px",
-      flexWrap: "wrap"
-    }}
-  >
-    {fullMovieData.seasons.map((seasonObj) => (
-      <button
-        key={seasonObj.season}
-        onClick={() => setSelectedSeason(seasonObj)}
-        style={{
-          padding: "8px 16px",
-          border: "none",
-          borderRadius: "6px",
-          cursor: "pointer",
-          background:
-            selectedSeason?.season === seasonObj.season
-              ? "white"
-              : "#333",
-          color:
-            selectedSeason?.season === seasonObj.season
-              ? "black"
-              : "white",
-          fontWeight: "bold"
-        }}
-      >
-        Season {seasonObj.season}
-      </button>
-    ))}
-  </div>
-)}
+                <div
+  style={{
+    display: "flex",
+    gap: "12px",
+    marginBottom: "20px",
+    position: "relative",
+    zIndex: 9999
+  }}
+>
+                  <div
+  style={{
+    display: "flex",
+    gap: "10px",
+    marginBottom: "20px",
+    flexWrap: "wrap",
+    position: "relative",
+    zIndex: 1
+  }}
+>
+  {fullMovieData.seasons.map((seasonObj) => (
+    <button
+      key={seasonObj.season}
+      onClick={() => setSelectedSeason(seasonObj)}
+      style={{
+        padding: "8px 18px",
+        background:
+          selectedSeason.season === seasonObj.season
+            ? "white"
+            : "#333",
+        color:
+          selectedSeason.season === seasonObj.season
+            ? "black"
+            : "white",
+        border: "none",
+        borderRadius: "6px",
+        cursor: "pointer",
+        fontWeight: "bold"
+      }}
+    >
+      Season {seasonObj.season}
+    </button>
+  ))}
+</div>
                   <button 
   style={smallPlayButtonStyle}
   onClick={(e) => {
   e.stopPropagation();
 
-  setSelectedMovie(null); // ✅ closes preview modal
+  setSelectedMovie(null); // ✅ closes modal completely
 
   onSelect &&
-  onSelect(
-    fullMovieData.seasons
-      ? {
-          video: selectedSeason.video,
-          title: `${fullMovieData.title} - Season ${selectedSeason.season}`,
-          seasons: fullMovieData.seasons,
-          currentSeason: selectedSeason.season,
-          isSeries: true
-        }
-      : fullMovieData.video
-  );
+    onSelect({
+      video: selectedSeason.video,
+      title: `${fullMovieData.title} - Season ${selectedSeason.season}`,
+      seasons: fullMovieData.seasons,
+      currentSeason: selectedSeason.season,
+      isSeries: true
+    });
 }}
 >
   ▶
 </button>
                   {isMyList ? (
-                    <button
-  style={circleButtonStyle}
-  onClick={() =>
-    onRemove &&
-    onRemove(
-      fullMovieData.movieId ||
-      (fullMovieData.seasons ? fullMovieData._id : fullMovieData.video)
-    )
+ <button
+  type="button"
+  style={{
+    ...circleButtonStyle,
+    position: "relative",
+    zIndex: 999999,
+    pointerEvents: "auto"
+  }}
+  onClick={(e) => {
+  e.stopPropagation();
+
+  const id = fullMovieData.movieId || fullMovieData._id;
+
+  console.log("DELETE ID USED:", id);
+
+  if (!id) {
+    alert("No ID found for this series");
+    return;
   }
+
+  onRemove && onRemove(id);
+}}
   title="Remove from My List"
 >
   ✕
 </button>
-                  ) : (
+) : (
                     showAdd && (
   <button
     style={circleButtonStyle}
     onClick={() =>
       onAdd &&
-      onAdd(
-  fullMovieData.seasons
-    ? {
-        ...fullMovieData,
-        movieId: fullMovieData._id,
-        video: fullMovieData.seasons[0].video,
-        isSeries: true
-      }
-    : fullMovieData
-)
+      onAdd({
+  movieId: fullMovieData._id, // series delete id
+  title: fullMovieData.title,
+  image: fullMovieData.image,
+  video: fullMovieData.seasons?.[0]?.video,
+
+  genre: fullMovieData.genre,
+  cast: fullMovieData.cast,
+  description: fullMovieData.description,
+  duration: fullMovieData.duration,
+
+  isSeries: true,
+  seasons: fullMovieData.seasons
+})
     }
     title="Add to My List"
   >
@@ -545,14 +460,22 @@ const playButtonStyle = {
 };
 
 const circleButtonStyle = {
-  background: "rgba(42,42,42,1)", 
-  border: "2px solid #808080", 
-  color: "white", 
-  borderRadius: "50%", 
-  width: "40px", 
+  background: "rgba(42,42,42,1)",
+  border: "2px solid #808080",
+  color: "white",
+  borderRadius: "50%",
+  width: "40px",
   height: "40px",
   cursor: "pointer",
-  fontSize: "20px"
+  fontSize: "20px",
+
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+
+  position: "relative",
+  zIndex: 99999,
+  pointerEvents: "auto"
 };
 
 const titleStyle = {

@@ -8,7 +8,8 @@ export default function Navbar({
   movies = [], 
   onSelect,
   onMoviesClick,
-  onMyListClick
+onSeriesClick,
+onMyListClick
 }) {
 
   const [showSearch, setShowSearch] = useState(false);
@@ -95,7 +96,9 @@ export default function Navbar({
             Movies
           </p>
 
-          <p style={{ cursor: "pointer" }}>Series</p>
+          <p onClick={onSeriesClick} style={{ cursor: "pointer" }}>
+  Series
+</p>
 
           {/* ✅ MY LIST (MOVED AFTER SERIES) */}
           <p onClick={onMyListClick} style={{ cursor: "pointer" }}>

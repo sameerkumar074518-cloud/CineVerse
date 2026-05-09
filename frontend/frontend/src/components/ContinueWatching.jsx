@@ -9,8 +9,18 @@ export default function ContinueWatching({ movies = [], onSelect, user }) {
 
   const filtered = (movies || [])
     .map((movie) => {
-      const key = `progress_${user}_${movie.video}`;
-      const saved = localStorage.getItem(key);
+
+  const saveId =
+    movie.seasons
+      ? movie.title
+      : movie.video;
+
+  // ✅ SERIES USES LATEST CONTINUE KEY
+  const key = movie.seasons
+    ? `continue_${user}_${movie.title}`
+    : `progress_${user}_${saveId}`;
+
+  const saved = localStorage.getItem(key);
 
       if (!saved) return null;
 
@@ -25,10 +35,18 @@ export default function ContinueWatching({ movies = [], onSelect, user }) {
         if (percent > 95) return null;
 
         return {
-          ...movie,
-          progress: percent,
-          lastUpdated: data.lastUpdated || 0 // 🔥 NEW
-        };
+  ...movie,
+  progress: percent,
+  lastUpdated: data.lastUpdated || 0,
+
+  isSeries: data.isSeries || false,
+  seasons: data.seasons || null,
+  currentSeason: data.currentSeason || null,
+  fullTitle: data.title || movie.title,
+
+  // ✅ latest watched season
+  savedVideo: data.currentVideo || movie.video
+};
       } catch {
         return null;
       }
@@ -40,8 +58,13 @@ export default function ContinueWatching({ movies = [], onSelect, user }) {
 
     // 🔥 REMOVE DUPLICATES
     .filter((movie, index, self) =>
-      index === self.findIndex(m => m.video === movie.video)
-    );
+  index ===
+  self.findIndex(
+    m =>
+      (m.savedVideo || m.video) ===
+      (movie.savedVideo || movie.video)
+  )
+);
 
   setWatched(filtered);
 }, [movies, user]);
@@ -91,16 +114,45 @@ export default function ContinueWatching({ movies = [], onSelect, user }) {
               }}
             >
               <img
-                src={movie.image}
-                alt={movie.title}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  cursor: "pointer"
-                }}
-                onClick={() => onSelect && onSelect(movie.video)}
-              />
+  src={movie.image}
+  alt={movie.title}
+  style={{
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    cursor: "pointer"
+  }}
+  onClick={() => {
+
+  if (movie.isSeries) {
+
+    // ✅ find original full series object
+    const originalSeries = movies.find(
+  (m) =>
+    m.title?.toLowerCase().trim() ===
+    movie.title?.toLowerCase().trim()
+);
+
+    if (!originalSeries) return;
+
+    onSelect({
+      ...originalSeries,
+
+      // ✅ open saved season video
+      video: movie.savedVideo || movie.video,
+
+      currentSeason: movie.currentSeason,
+
+      // ✅ IMPORTANT
+      isSeries: true,
+      seasons: originalSeries.seasons
+    });
+
+  } else {
+    onSelect(movie);
+  }
+}}
+/>
 
               <div
                 style={{

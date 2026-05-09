@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { movies } from "./MovieRow";
+import { series } from "./SeriesRow";
 
 export default function Hero({ onSelect }) {
 
@@ -9,23 +10,39 @@ export default function Hero({ onSelect }) {
   const [isMuted, setIsMuted] = useState(true);
 
   // ✅ CUSTOM ORDER (YOUR REQUIREMENT)
-  const orderedMovies = [
-    ...movies.filter(m => m.title === "Dhurandhar"),
-    ...movies.filter(m => m.title === "Ajab Prem Ki Ghazab Kahani"),
-    ...movies.filter(m => m.title === "The Notebook"),
-    ...movies.filter(m => m.title === "Blink"),
-    ...movies.filter(m => m.title === "Passengers"),
-    ...movies.filter(m => m.title === "Officer on Duty"),
-    ...movies.filter(m => m.title === "The Conjuring Last Rites"),
-    ...movies.filter(m => m.title === "Sambhavam Adhyayam Onnu"),
-    ...movies.filter(m => m.title === "Youth"),
-    ...movies.filter(
-      m =>
-        !["Dhurandhar","The Notebook","Ajab Prem Ki Ghazab Kahani","Blink","Passengers", "Officer on Duty", "The Conjuring Last Rites", "Sambhavam Adhyayam Onnu", "Youth"].includes(m.title)
-    )
-  ];
+  const allContent = [...movies, ...series];
+
+const orderedMovies = [
+  ...allContent.filter(m => m.title === "From"),
+  ...allContent.filter(m => m.title === "Dhurandhar"),
+  ...allContent.filter(m => m.title === "Ajab Prem Ki Ghazab Kahani"),
+  ...allContent.filter(m => m.title === "The Notebook"),
+  ...allContent.filter(m => m.title === "Blink"),
+  ...allContent.filter(m => m.title === "Passengers"),
+  ...allContent.filter(m => m.title === "Officer on Duty"),
+  ...allContent.filter(m => m.title === "The Conjuring Last Rites"),
+  ...allContent.filter(m => m.title === "Sambhavam Adhyayam Onnu"),
+  ...allContent.filter(m => m.title === "Youth"),
+
+  ...allContent.filter(
+    m =>
+      ![
+        "From",
+        "Dhurandhar",
+        "The Notebook",
+        "Ajab Prem Ki Ghazab Kahani",
+        "Blink",
+        "Passengers",
+        "Officer on Duty",
+        "The Conjuring Last Rites",
+        "Sambhavam Adhyayam Onnu",
+        "Youth"
+      ].includes(m.title)
+  )
+];
 
   const [index, setIndex] = useState(0);
+  const [selectedSeason, setSelectedSeason] = useState(null);
 
   const prev = () => {
     setIndex((i) => (i === 0 ? orderedMovies.length - 1 : i - 1));
@@ -36,8 +53,19 @@ export default function Hero({ onSelect }) {
   };
 
   const current = orderedMovies[index];
+  const activeSeason =
+  selectedSeason ||
+  (current.seasons ? current.seasons[0] : null);
+
+const activeVideo = activeSeason?.video || current.video;
+const activeImage = activeSeason?.image || current.image;
 
   const details = {
+    "From": {
+    full: "FROM",
+    desc: "Mystery • Horror • Survival",
+    preview: 2500
+  },
     "Sambhavam Adhyayam Onnu": {
       full: "Sambhavam Adhyayam Onnu",
       desc: "Crime • Thriller • Investigation",
@@ -98,6 +126,7 @@ export default function Hero({ onSelect }) {
   };
 
   useEffect(() => {
+    setSelectedSeason(null);
     setIsHover(false);
     setIsMuted(true);
 
@@ -141,7 +170,7 @@ export default function Hero({ onSelect }) {
         <video
           key={current.video}
           ref={videoRef}
-          src={current.video}
+          src={activeVideo}
           muted={isMuted}
           loop
           style={{
@@ -160,7 +189,7 @@ export default function Hero({ onSelect }) {
           style={{
             position: "absolute",
             inset: 0,
-            backgroundImage: `url(${current.image})`,
+            backgroundImage: `url(${activeImage})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             transition: "0.5s ease"
@@ -261,9 +290,57 @@ export default function Hero({ onSelect }) {
           Watch this exciting movie now on your CineVerse.
         </p>
 
+        {/* ✅ SERIES SEASON SWITCH */}
+{current.seasons && (
+  <div
+    style={{
+      display: "flex",
+      gap: "10px",
+      marginTop: "15px",
+      marginBottom: "15px",
+      flexWrap: "wrap"
+    }}
+  >
+    {current.seasons.map((season) => (
+      <button
+        key={season.season}
+        onClick={() => setSelectedSeason(season)}
+        style={{
+          padding: "8px 18px",
+          border: "none",
+          borderRadius: "6px",
+          cursor: "pointer",
+          fontWeight: "bold",
+          background:
+            activeSeason?.season === season.season
+              ? "#e50914"
+              : "rgba(255,255,255,0.2)",
+          color: "white"
+        }}
+      >
+        Season {season.season}
+      </button>
+    ))}
+  </div>
+)}
         <div style={{ marginTop: "20px" }}>
           <button
-            onClick={() => onSelect(current.video)}
+            onClick={() => {
+
+  if (current.seasons) {
+
+    onSelect({
+      ...current,
+      video: activeVideo,
+      currentSeason: activeSeason?.season,
+      isSeries: true,
+      seasons: current.seasons
+    });
+
+  } else {
+    onSelect(current.video);
+  }
+}}
             style={primaryBtn}
           >
             ▶ Play

@@ -48,7 +48,13 @@ const MyList = mongoose.model("MyList", {
   movieId: String,
   title: String,
   image: String,
-  video: String
+  video: String,
+
+  seasons: Array,
+  genre: String,
+  cast: String,
+  description: String,
+  isSeries: Boolean
 });
 
 /* 🔐 SECRET */
@@ -151,7 +157,17 @@ app.get("/movies", auth, async (req, res) => {
 /* ➕ ADD */
 app.post("/mylist", auth, async (req, res) => {
   try {
-    const { movieId, title, image, video } = req.body;
+    const {
+  movieId,
+  title,
+  image,
+  video,
+  seasons,
+  genre,
+  cast,
+  description,
+  isSeries
+} = req.body;
 
     if (!movieId) {
       return res.status(400).json({ error: "Movie ID required" });
@@ -167,12 +183,17 @@ app.post("/mylist", auth, async (req, res) => {
     }
 
     const item = new MyList({
-      username: req.user.username,
-      movieId,
-      title,
-      image,
-      video
-    });
+  username: req.user.username,
+  movieId,
+  title,
+  image,
+  video,
+  seasons,
+  genre,
+  cast,
+  description,
+  isSeries
+});
 
     await item.save();
 

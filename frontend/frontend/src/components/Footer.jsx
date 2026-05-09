@@ -34,7 +34,7 @@ export default function Footer() {
     body: (
       <div style={{ lineHeight: '1.8' }}>
         <p><b>Search Bar:</b> Use the icon in the Navbar to find movies by title or genre instantly.</p>
-        <p><b>Information:</b> Click any movie card to view a detailed synopsis and cast info.</p>
+        <p><b>Information:</b> Click any movie/series card to view a detailed synopsis and cast info.</p>
         <p><b>Downloads:</b> Use the download icon on the player to save movies for offline viewing.</p>
         <p><b>My List:</b> Click the '+' icon to save titles to your personalized collection.</p>
         <hr style={{ border: '0.5px solid #333', margin: '15px 0' }} />
