@@ -45,6 +45,7 @@ const User = mongoose.model("User", {
 /* 🔥 UPDATED MY LIST MODEL */
 const MyList = mongoose.model("MyList", {
   username: String,
+  profileId: String,
   movieId: String,
   title: String,
   image: String,
@@ -158,6 +159,7 @@ app.get("/movies", auth, async (req, res) => {
 app.post("/mylist", auth, async (req, res) => {
   try {
     const {
+  profileId,
   movieId,
   title,
   image,
@@ -169,14 +171,15 @@ app.post("/mylist", auth, async (req, res) => {
   isSeries
 } = req.body;
 
-    if (!movieId) {
-      return res.status(400).json({ error: "Movie ID required" });
-    }
+    if (!profileId || !movieId) {
+  return res.status(400).json({ error: "Profile ID and Movie ID required" });
+}
 
     const exists = await MyList.findOne({
-      username: req.user.username,
-      movieId
-    });
+  username: req.user.username,
+  profileId,
+  movieId
+});
 
     if (exists) {
       return res.json({ message: "Already added" });
@@ -184,6 +187,7 @@ app.post("/mylist", auth, async (req, res) => {
 
     const item = new MyList({
   username: req.user.username,
+  profileId,
   movieId,
   title,
   image,
@@ -207,9 +211,16 @@ app.post("/mylist", auth, async (req, res) => {
 /* 📥 GET */
 app.get("/mylist", auth, async (req, res) => {
   try {
-    const list = await MyList.find({
-      username: req.user.username
-    });
+    const profileId = req.query.profileId;
+
+if (!profileId) {
+  return res.status(400).json({ error: "Profile ID required" });
+}
+
+const list = await MyList.find({
+  username: req.user.username,
+  profileId
+});
 
     res.json(list); // ✅ direct return (NO DB lookup)
 
@@ -219,12 +230,19 @@ app.get("/mylist", auth, async (req, res) => {
 });
 
 /* ❌ REMOVE */
+/* ❌ REMOVE */
 app.delete("/mylist/:id", auth, async (req, res) => {
   try {
     const id = decodeURIComponent(req.params.id);
+    const profileId = req.query.profileId;
+
+    if (!profileId) {
+      return res.status(400).json({ error: "Profile ID required" });
+    }
 
     const result = await MyList.findOneAndDelete({
       username: req.user.username,
+      profileId,
       movieId: id
     });
 

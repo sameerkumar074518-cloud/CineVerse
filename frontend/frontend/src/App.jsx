@@ -10,6 +10,7 @@ import SeriesRow from "./components/SeriesRow";
 import ContinueWatching from "./components/ContinueWatching";
 import VideoPlayer from "./components/VideoPlayer";
 import Footer from "./components/Footer";
+import ProfileSelect from "./components/ProfileSelect";
 
 function App() {
 
@@ -17,6 +18,7 @@ const [selectedVideo, setSelectedVideo] = useState(null);
 const [isSouthPlayer, setIsSouthPlayer] = useState(false); // ✅ ADDED
 
 const [user, setUser] = useState("");
+const [profile, setProfile] = useState(null);
 const [search, setSearch] = useState("");
 const myListRef = useRef(null);
 const seriesRef = useRef(null);
@@ -27,7 +29,7 @@ const [showEmptyMsg, setShowEmptyMsg] = useState(false);
 const [username, setUsername] = useState("");
 const [password, setPassword] = useState("");
 
-const API = "https://primeclone-2e4b.onrender.com";
+const API = "http://localhost:5000";
 
 /* ================== LOAD ================== */
 useEffect(() => {
@@ -35,35 +37,50 @@ const savedUser = localStorage.getItem("user");
 const token = localStorage.getItem("token");
 
 if (savedUser) setUser(savedUser);
+const savedProfile = localStorage.getItem("profile");
+
+if (savedProfile) {
+  setProfile(JSON.parse(savedProfile));
+}
 
 setMovies(allMovies);
+setMyList([]);
 
-if (token) {
-  fetch(`${API}/mylist`, {
+if (token && profile) {
+  fetch(`${API}/mylist?profileId=${profile?.id}`, {
     headers: { Authorization: token }
   })
     .then(res => res.json())
     .then(data => {
-      if (!data.error) {
-        const unique = data.filter(
-          (item, index, self) =>
-            index === self.findIndex(m => m.movieId === item.movieId)
-        );
-        setMyList(unique);
-      }
-    });
+  if (!data.error) {
+    const unique = data.filter(
+      (item, index, self) =>
+        index === self.findIndex(m => m.movieId === item.movieId)
+    );
+    setMyList(unique);
+  }
+})
+.catch(err => {
+  console.log("My List fetch error:", err);
+});
 }
 
 const timer = setTimeout(() => setShowIntro(false), 2000);
 return () => clearTimeout(timer);
-}, []);
+}, [profile?.id]);
 
 /* ================== MY LIST ================== */
 const handleAddToMyList = async (movie) => {
   const token = localStorage.getItem("token");
 
-  const listItem = {
-    ...movie,
+  if (!profile) {
+  alert("Select profile first");
+  return;
+}
+
+const listItem = {
+  ...movie,
+  profileId: profile.id,
     movieId: movie.movieId || movie.video || movie.seasons?.[0]?.video,
     video: movie.video || movie.seasons?.[0]?.video
   };
@@ -99,7 +116,7 @@ const handleRemoveFromMyList = async (id) => {
   );
 
   if (token) {
-    await fetch(`${API}/mylist/${encodeURIComponent(id)}`, {
+    await fetch(`${API}/mylist/${encodeURIComponent(id)}?profileId=${profile?.id}`, {
       method: "DELETE",
       headers: { Authorization: token }
     });
@@ -151,12 +168,18 @@ localStorage.setItem("token", data.token);
 localStorage.setItem("user", data.username);
 
 setUser(data.username);
+setProfile(null);
+localStorage.removeItem("profile");
 };
 
 const handleLogout = () => {
-localStorage.removeItem("user");
-localStorage.removeItem("token");
-setUser("");
+  localStorage.removeItem("user");
+  localStorage.removeItem("token");
+  localStorage.removeItem("profile");
+
+  setUser("");
+  setProfile(null);
+  setMyList([]);
 };
 
 /* ================== INTRO ================== */
@@ -246,7 +269,22 @@ if (!user) {
     </div>
   );
 }
+if (user && !profile) {
+  return (
+    <ProfileSelect
+      user={user}
+      onSelectProfile={(selectedProfile) => {
+        localStorage.setItem(
+          "profile",
+          JSON.stringify(selectedProfile)
+        );
 
+        setProfile(selectedProfile);
+      }}
+      onLogout={handleLogout}
+    />
+  );
+}
 /* ================== UPDATED FILTER (Title + Genre) ================== */
 const searchTerm = search.toLowerCase();
 
@@ -335,6 +373,7 @@ return (
         <ContinueWatching
   movies={[...movies, ...allSeries]}
   user={user}
+  profile={profile}
   onSelect={(v) => {
     setSelectedVideo(v);
     setIsSouthPlayer(false);
@@ -468,6 +507,8 @@ return (
       ? selectedVideo.isSeries
       : false
   }
+  user={user}
+profile={profile}
 
   onSeasonChange={(seasonObj) => {
     setSelectedVideo(prev => ({

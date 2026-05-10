@@ -7,7 +7,9 @@ export default function NetflixPremiumPlayer({
   seasons,
   currentSeason,
   onSeasonChange,
-  isSeries
+  isSeries,
+user,
+profile
 }) {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
@@ -179,14 +181,13 @@ export default function NetflixPremiumPlayer({
   setCurrentTime(v.currentTime);
   setProgress((v.currentTime / v.duration) * 100);
 
-  const user = localStorage.getItem("user");
-  if (!user) return;
+  if (!user || !profile) return;
 
   const saveId = isSeries
     ? `${title.split(" - ")[0]}_season_${currentSeason}`
     : video;
 
-  const key = `progress_${user}_${saveId}`;
+  const key = `progress_${user}_${profile.id}_${saveId}`;
 
   // ✅ PER SEASON SAVE
   localStorage.setItem(
@@ -208,7 +209,7 @@ export default function NetflixPremiumPlayer({
 
   // ✅ MASTER CONTINUE WATCHING KEY
   if (isSeries) {
-    const seriesKey = `continue_${user}_${title.split(" - ")[0]}`;
+    const seriesKey = `continue_${user}_${profile.id}_${title.split(" - ")[0]}`;
 
     localStorage.setItem(
       seriesKey,
@@ -227,11 +228,10 @@ export default function NetflixPremiumPlayer({
         onLoadedMetadata={() => {
           const v = videoRef.current;
           setDuration(v.duration);
-          const user = localStorage.getItem("user");
-          if (!user) return;
+          if (!user || !profile) return;
           const key = isSeries
-  ? `progress_${user}_${title.split(" - ")[0]}_season_${currentSeason}`
-  : `progress_${user}_${video}`;
+  ? `progress_${user}_${profile.id}_${title.split(" - ")[0]}_season_${currentSeason}`
+  : `progress_${user}_${profile.id}_${video}`;
           const saved = localStorage.getItem(key);
           if (saved) {
             try {

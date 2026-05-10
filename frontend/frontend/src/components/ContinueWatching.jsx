@@ -1,11 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 
-export default function ContinueWatching({ movies = [], onSelect, user }) {
+export default function ContinueWatching({ movies = [], onSelect, user, profile }) {
   const [watched, setWatched] = useState([]);
   const scrollRef = useRef(null); // ✅ ADD
 
   useEffect(() => {
-  if (!user) return;
+  if (!user || !profile) return;
 
   const filtered = (movies || [])
     .map((movie) => {
@@ -17,8 +17,8 @@ export default function ContinueWatching({ movies = [], onSelect, user }) {
 
   // ✅ SERIES USES LATEST CONTINUE KEY
   const key = movie.seasons
-    ? `continue_${user}_${movie.title}`
-    : `progress_${user}_${saveId}`;
+    ? `continue_${user}_${profile.id}_${movie.title}`
+    : `progress_${user}_${profile.id}_${saveId}`;
 
   const saved = localStorage.getItem(key);
 
@@ -67,7 +67,7 @@ export default function ContinueWatching({ movies = [], onSelect, user }) {
 );
 
   setWatched(filtered);
-}, [movies, user]);
+}, [movies, user, profile]);
 
   if (!watched.length) return null;
 
