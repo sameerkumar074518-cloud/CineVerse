@@ -29,8 +29,7 @@ const [showEmptyMsg, setShowEmptyMsg] = useState(false);
 const [username, setUsername] = useState("");
 const [password, setPassword] = useState("");
 
-const API = "http://localhost:5000";
-
+const API = "https://primeclone-2e4b.onrender.com";
 /* ================== LOAD ================== */
 useEffect(() => {
 const savedUser = localStorage.getItem("user");
