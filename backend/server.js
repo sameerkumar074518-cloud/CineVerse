@@ -170,6 +170,8 @@ app.post("/mylist", auth, async (req, res) => {
   description,
   isSeries
 } = req.body;
+console.log("PROFILE ID:", profileId);
+console.log("MOVIE:", title);
 
     if (!profileId || !movieId) {
   return res.status(400).json({ error: "Profile ID and Movie ID required" });

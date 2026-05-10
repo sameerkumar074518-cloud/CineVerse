@@ -27,7 +27,7 @@ export default function ProfileSelect({ user, onSelectProfile, onLogout }) {
     }
 
     const newProfile = {
-      id: Date.now(),
+      id: Date.now().toString(),
       name: newName.trim(),
       avatar: `https://api.dicebear.com/7.x/thumbs/svg?seed=${newName}`
     };
@@ -54,7 +54,8 @@ export default function ProfileSelect({ user, onSelectProfile, onLogout }) {
               style={avatarStyle}
               onClick={() => {
                 if (!manageMode) {
-                  onSelectProfile(profile);
+                  localStorage.removeItem("myList");
+onSelectProfile(profile);
                 }
               }}
             />

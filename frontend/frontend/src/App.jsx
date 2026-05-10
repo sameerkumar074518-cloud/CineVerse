@@ -29,7 +29,7 @@ const [showEmptyMsg, setShowEmptyMsg] = useState(false);
 const [username, setUsername] = useState("");
 const [password, setPassword] = useState("");
 
-const API = "http://localhost:5000";
+const API = "https://primeclone-2e4b.onrender.com";
 /* ================== LOAD ================== */
 useEffect(() => {
 const savedUser = localStorage.getItem("user");
@@ -54,7 +54,12 @@ if (token && profile) {
   if (!data.error) {
     const unique = data.filter(
       (item, index, self) =>
-        index === self.findIndex(m => m.movieId === item.movieId)
+        index ===
+self.findIndex(
+  m =>
+    m.movieId === item.movieId &&
+    m.profileId === item.profileId
+)
     );
     setMyList(unique);
   }
@@ -84,8 +89,13 @@ const listItem = {
     video: movie.video || movie.seasons?.[0]?.video
   };
 
-  if (myList.find(m => m.movieId === listItem.movieId)) return;
-
+if (
+  myList.find(
+    m =>
+      m.movieId === listItem.movieId &&
+      m.profileId === profile.id
+  )
+) return;
   setMyList(prev => [listItem, ...prev]);
 
   if (token) {
@@ -273,13 +283,15 @@ if (user && !profile) {
     <ProfileSelect
       user={user}
       onSelectProfile={(selectedProfile) => {
-        localStorage.setItem(
-          "profile",
-          JSON.stringify(selectedProfile)
-        );
+  setMyList([]);
 
-        setProfile(selectedProfile);
-      }}
+  localStorage.setItem(
+    "profile",
+    JSON.stringify(selectedProfile)
+  );
+
+  setProfile(selectedProfile);
+}}
       onLogout={handleLogout}
     />
   );
