@@ -47,7 +47,7 @@ export const popularSouthMovies = [
     video: "https://www.youtube.com/embed/Gtx1pPeKJsA"
   },
   {
-    title: "Fidda",
+    title: "Fidaa",
     image: "https://img.youtube.com/vi/I3o-UeFZFKo/hqdefault.jpg",
     video: "https://www.youtube.com/embed/I3o-UeFZFKo"
   },

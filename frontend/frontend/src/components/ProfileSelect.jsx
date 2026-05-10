@@ -9,18 +9,27 @@ export default function ProfileSelect({ user, onSelectProfile, onLogout }) {
   const [profiles, setProfiles] = useState(savedProfiles);
   const [newName, setNewName] = useState("");
   const [manageMode, setManageMode] = useState(false);
+  const [showAddPopup, setShowAddPopup] = useState(false);
 
   const saveProfiles = (updatedProfiles) => {
     setProfiles(updatedProfiles);
     localStorage.setItem(storageKey, JSON.stringify(updatedProfiles));
   };
-
   const addProfile = () => {
     if (!newName.trim()) {
       alert("Enter profile name");
       return;
     }
+    const alreadyExists = profiles.some(
+  (profile) =>
+    profile.name.toLowerCase().trim() ===
+    newName.toLowerCase().trim()
+);
 
+if (alreadyExists) {
+  alert("This profile name already exists. Enter another profile name.");
+  return;
+}
     if (profiles.length >= 5) {
       alert("Only 5 profiles allowed");
       return;
@@ -29,11 +38,12 @@ export default function ProfileSelect({ user, onSelectProfile, onLogout }) {
     const newProfile = {
       id: Date.now().toString(),
       name: newName.trim(),
-      avatar: `https://api.dicebear.com/7.x/thumbs/svg?seed=${newName}`
+      avatar: `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${newName}-${Date.now()}`
     };
 
     saveProfiles([...profiles, newProfile]);
-    setNewName("");
+setNewName("");
+setShowAddPopup(false);
   };
 
   const deleteProfile = (id) => {
@@ -43,6 +53,17 @@ export default function ProfileSelect({ user, onSelectProfile, onLogout }) {
 
   return (
     <div style={pageStyle}>
+        <style>{`
+  img:hover {
+    border: 4px solid white !important;
+    transform: scale(1.05);
+  }
+
+  button:hover {
+    color: white !important;
+    border-color: white !important;
+  }
+`}</style>
       <h1 style={headingStyle}>Who's watching?</h1>
 
       <div style={profilesWrapperStyle}>
@@ -51,7 +72,13 @@ export default function ProfileSelect({ user, onSelectProfile, onLogout }) {
             <img
               src={profile.avatar}
               alt={profile.name}
-              style={avatarStyle}
+              style={{
+  ...avatarStyle,
+  border:
+    manageMode
+      ? "4px solid #e50914"
+      : "4px solid transparent"
+}}
               onClick={() => {
                 if (!manageMode) {
                   localStorage.removeItem("myList");
@@ -74,21 +101,15 @@ onSelectProfile(profile);
         ))}
 
         {profiles.length < 5 && (
-          <div style={profileCardStyle}>
-            <div style={addIconStyle}>+</div>
-
-            <input
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              placeholder="Profile name"
-              style={inputStyle}
-            />
-
-            <button onClick={addProfile} style={addButtonStyle}>
-              Add Profile
-            </button>
-          </div>
-        )}
+  <div style={profileCardStyle}>
+    <div
+      style={addIconStyle}
+      onClick={() => setShowAddPopup(true)}
+    >
+      ＋
+    </div>
+  </div>
+)}
       </div>
 
       <button
@@ -97,10 +118,36 @@ onSelectProfile(profile);
       >
         {manageMode ? "Done" : "Manage Profiles"}
       </button>
+      {showAddPopup && (
+  <div style={popupOverlayStyle}>
+    <div style={popupBoxStyle}>
+      <h2 style={{ marginTop: 0 }}>Add Profile</h2>
 
-      <button onClick={onLogout} style={logoutButtonStyle}>
-        Logout
-      </button>
+      <input
+        value={newName}
+        onChange={(e) => setNewName(e.target.value)}
+        placeholder="Enter profile name"
+        style={popupInputStyle}
+      />
+
+      <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+        <button onClick={addProfile} style={addButtonStyle}>
+          Done
+        </button>
+
+        <button
+          onClick={() => {
+            setNewName("");
+            setShowAddPopup(false);
+          }}
+          style={cancelButtonStyle}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }
@@ -113,99 +160,155 @@ const pageStyle = {
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  fontFamily: "Arial, sans-serif"
+  fontFamily: "Helvetica, Arial, sans-serif",
+  padding: "20px"
 };
 
 const headingStyle = {
-  fontSize: "42px",
+  fontSize: "clamp(38px, 5vw, 62px)",
   fontWeight: "400",
-  marginBottom: "35px"
+  marginBottom: "55px",
+  letterSpacing: "1px"
 };
 
 const profilesWrapperStyle = {
   display: "flex",
-  gap: "30px",
+  gap: "35px",
   flexWrap: "wrap",
   justifyContent: "center",
-  marginBottom: "35px"
+  alignItems: "flex-start",
+  marginBottom: "55px",
+  maxWidth: "1200px"
 };
 
 const profileCardStyle = {
-  width: "150px",
-  textAlign: "center"
+  width: "180px",
+  textAlign: "center",
+  cursor: "pointer",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center"
 };
 
 const avatarStyle = {
-  width: "130px",
-  height: "130px",
-  borderRadius: "8px",
+  width: "170px",
+  height: "170px",
+  borderRadius: "4px",
   background: "#333",
   cursor: "pointer",
-  objectFit: "cover"
+  objectFit: "cover",
+  border: "4px solid transparent",
+  transition: "0.2s"
 };
 
 const profileNameStyle = {
-  color: "#aaa",
-  fontSize: "18px",
-  marginTop: "10px"
+  color: "#808080",
+  fontSize: "22px",
+  marginTop: "15px",
+  fontWeight: "400",
+  textAlign: "center"
 };
 
 const addIconStyle = {
-  width: "130px",
-  height: "130px",
-  borderRadius: "8px",
-  background: "#333",
-  color: "#aaa",
-  fontSize: "70px",
+  width: "170px",
+  height: "170px",
+  borderRadius: "4px",
+  background: "#2b2b2b",
+  color: "#777",
+  fontSize: "95px",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  margin: "0 auto 10px"
+  marginBottom: "16px",
+  transition: "0.2s"
 };
 
 const inputStyle = {
-  width: "130px",
-  padding: "8px",
-  background: "#333",
+  width: "155px",
+  padding: "10px",
+  background: "#2b2b2b",
   color: "white",
   border: "1px solid #555",
-  borderRadius: "4px",
-  marginBottom: "8px"
+  borderRadius: "3px",
+  marginBottom: "10px",
+  textAlign: "center",
+  outline: "none",
+  fontSize: "15px"
 };
 
 const addButtonStyle = {
-  padding: "8px 12px",
-  background: "white",
-  color: "black",
+  padding: "10px 18px",
+  background: "#fff",
+  color: "#000",
   border: "none",
-  borderRadius: "4px",
+  borderRadius: "3px",
   cursor: "pointer",
-  fontWeight: "bold"
+  fontWeight: "bold",
+  fontSize: "14px"
 };
 
 const manageButtonStyle = {
-  padding: "10px 25px",
+  padding: "14px 38px",
   background: "transparent",
-  color: "#aaa",
-  border: "1px solid #aaa",
+  color: "#808080",
+  border: "1px solid #808080",
   cursor: "pointer",
-  fontSize: "16px",
-  marginBottom: "15px"
+  fontSize: "20px",
+  letterSpacing: "2px",
+  marginBottom: "20px",
+  transition: "0.2s"
 };
 
 const deleteButtonStyle = {
-  padding: "6px 12px",
+  padding: "7px 14px",
   background: "#e50914",
   color: "white",
   border: "none",
   borderRadius: "4px",
-  cursor: "pointer"
+  cursor: "pointer",
+  marginTop: "10px",
+  fontWeight: "bold"
+};
+const popupOverlayStyle = {
+  position: "fixed",
+  inset: 0,
+  background: "rgba(0,0,0,0.75)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  zIndex: 99999
 };
 
-const logoutButtonStyle = {
-  padding: "8px 18px",
+const popupBoxStyle = {
+  background: "#181818",
+  color: "white",
+  width: "360px",
+  padding: "30px",
+  borderRadius: "6px",
+  textAlign: "center",
+  boxShadow: "0 10px 35px rgba(0,0,0,0.8)"
+};
+
+const popupInputStyle = {
+  width: "100%",
+  padding: "12px",
+  background: "#333",
+  color: "white",
+  border: "1px solid #666",
+  borderRadius: "4px",
+  marginBottom: "20px",
+  outline: "none",
+  boxSizing: "border-box",
+  fontSize: "16px"
+};
+
+const cancelButtonStyle = {
+  padding: "10px 18px",
   background: "transparent",
-  color: "#777",
-  border: "1px solid #555",
-  cursor: "pointer"
+  color: "#aaa",
+  border: "1px solid #666",
+  borderRadius: "3px",
+  cursor: "pointer",
+  fontWeight: "bold",
+  fontSize: "14px"
 };

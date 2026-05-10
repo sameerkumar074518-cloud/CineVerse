@@ -156,7 +156,8 @@ const bottomSectionStyle = {
   gap: "15px" 
 };
 
-const madeByStyle = { fontSize: "20px", color: "#bbb", margin: 0, letterSpacing: "1px" }; 
+const madeByStyle = {
+  fontSize: "15px", color: "#bbb", margin: 0, letterSpacing: "1px" }; 
 const copyrightStyle = { fontSize: "16px", color: "#777", margin: 0, fontWeight: "500" };
 const serviceCodeStyle = { border: "1px solid #444", padding: "6px 16px", fontSize: "13px", color: "#555", marginTop: "10px" };
 

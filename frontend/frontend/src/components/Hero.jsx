@@ -8,6 +8,7 @@ export default function Hero({ onSelect }) {
 
   const [isHover, setIsHover] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  const [previewEnded, setPreviewEnded] = useState(false);
 
   // ✅ CUSTOM ORDER (YOUR REQUIREMENT)
   const allContent = [...movies, ...series];
@@ -126,28 +127,32 @@ const activeImage = activeSeason?.image || current.image;
   };
 
   useEffect(() => {
-    setSelectedSeason(null);
-    setIsHover(false);
-    setIsMuted(true);
+  setSelectedSeason(null);
+  setIsHover(false);
+  setIsMuted(true);
+  setPreviewEnded(false);
 
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
-  }, [index]);
+  if (videoRef.current) {
+    videoRef.current.pause();
+    videoRef.current.currentTime = 0;
+  }
+}, [index]);
+
 
   return (
     <div
       onMouseEnter={() => {
-        setIsHover(true);
+  if (previewEnded) return;
 
-        setTimeout(() => {
-          if (videoRef.current) {
-            videoRef.current.currentTime = info.preview || 0;
-            videoRef.current.play();
-          }
-        }, 200);
-      }}
+  setIsHover(true);
+
+  setTimeout(() => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = info.preview || 0;
+      videoRef.current.play().catch(() => {});
+    }
+  }, 100);
+}}
       onMouseLeave={() => {
         setIsHover(false);
 
@@ -167,21 +172,34 @@ const activeImage = activeSeason?.image || current.image;
 
       {/* 🎬 VIDEO */}
       {isHover && (
-        <video
-          key={current.video}
-          ref={videoRef}
-          src={activeVideo}
-          muted={isMuted}
-          loop
-          style={{
-            position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover"
-          }}
-        />
-      )}
+  <video
+    key={activeVideo}
+    ref={videoRef}
+    src={activeVideo}
+    muted={isMuted}
+    preload="auto"
+    onTimeUpdate={() => {
+      if (videoRef.current) {
+        const start = info.preview || 0;
+        const played = videoRef.current.currentTime - start;
+
+        if (played >= 60) {
+          videoRef.current.pause();
+          videoRef.current.currentTime = 0;
+          setIsHover(false);
+          setPreviewEnded(true);
+        }
+      }
+    }}
+    style={{
+      position: "absolute",
+      inset: 0,
+      width: "100%",
+      height: "100%",
+      objectFit: "cover"
+    }}
+  />
+)}
 
       {/* 🖼 IMAGE */}
       {!isHover && (
@@ -304,7 +322,16 @@ const activeImage = activeSeason?.image || current.image;
     {current.seasons.map((season) => (
       <button
         key={season.season}
-        onClick={() => setSelectedSeason(season)}
+        onClick={() => {
+  setSelectedSeason(season);
+  setIsHover(false);
+  setPreviewEnded(false);
+
+  if (videoRef.current) {
+    videoRef.current.pause();
+    videoRef.current.currentTime = 0;
+  }
+}}
         style={{
           padding: "8px 18px",
           border: "none",

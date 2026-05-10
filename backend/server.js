@@ -213,21 +213,25 @@ console.log("MOVIE:", title);
 /* 📥 GET */
 app.get("/mylist", auth, async (req, res) => {
   try {
-    const profileId = req.query.profileId;
+    const profileId = String(req.query.profileId);
 
-if (!profileId) {
-  return res.status(400).json({ error: "Profile ID required" });
-}
+    if (!profileId) {
+      return res.status(400).json({
+        error: "Profile ID required"
+      });
+    }
 
-const list = await MyList.find({
-  username: req.user.username,
-  profileId
-});
+    const list = await MyList.find({
+      username: req.user.username,
+      profileId: profileId
+    });
 
-    res.json(list); // ✅ direct return (NO DB lookup)
+    res.json(list);
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      error: err.message
+    });
   }
 });
 

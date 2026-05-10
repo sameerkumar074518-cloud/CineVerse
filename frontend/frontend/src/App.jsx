@@ -317,35 +317,72 @@ return (
 <div style={{ background: "black", minHeight: "100vh" }}>
 
   <Navbar
-    user={user}
-    onLogout={handleLogout}
-    search={search}
-    setSearch={setSearch}
-    movies={[...movies, ...allSeries]}
-    onSelect={(v) => { setSelectedVideo(v); setIsSouthPlayer(false); }}
-    onMoviesClick={() => {
-      document.getElementById("movies-section")?.scrollIntoView({
-        behavior: "smooth"
-      });
-    }}
+  user={user}
+  onLogout={handleLogout}
+  search={search}
+  setSearch={setSearch}
+  movies={[...movies, ...allSeries]}
 
-    onSeriesClick={() =>
+  onSelect={(v) => {
+    setSelectedVideo(v);
+    setIsSouthPlayer(false);
+  }}
+
+  profile={profile}
+
+  profiles={
+    JSON.parse(
+      localStorage.getItem(`profiles_${user}`)
+    ) || []
+  }
+
+  onSwitchProfile={(selectedProfile) => {
+    setMyList([]);
+
+    localStorage.setItem(
+      "profile",
+      JSON.stringify(selectedProfile)
+    );
+
+    setProfile(selectedProfile);
+  }}
+
+  onManageProfiles={() => {
+  localStorage.removeItem("profile");
+  setSelectedVideo(null);
+  setSearch("");
+  setMyList([]);
+  setProfile(null);
+}}
+
+  onMoviesClick={() => {
+    document.getElementById("movies-section")?.scrollIntoView({
+      behavior: "smooth"
+    });
+  }}
+
+  onSeriesClick={() =>
     seriesRef.current?.scrollIntoView({
       behavior: "smooth"
     })
   }
-    onMyListClick={() => {
-      if (myList.length === 0) {
-        setShowEmptyMsg(true);
-        setTimeout(() => setShowEmptyMsg(false), 2000);
-        return;
-      }
 
-      myListRef.current?.scrollIntoView({
-        behavior: "smooth"
-      });
-    }}
-  />
+  onMyListClick={() => {
+    if (myList.length === 0) {
+      setShowEmptyMsg(true);
+
+      setTimeout(() => {
+        setShowEmptyMsg(false);
+      }, 2000);
+
+      return;
+    }
+
+    myListRef.current?.scrollIntoView({
+      behavior: "smooth"
+    });
+  }}
+/>
 
   <div style={{ paddingTop: "70px" }}>
 
@@ -391,6 +428,26 @@ return (
   }}
 />
 
+<div id="movies-section" style={{ scrollMarginTop: "90px" }}>
+          <MovieRow
+            movies={movies.filter((m) => {
+  const searchTerm = search.toLowerCase();
+
+  const matchesTitle =
+    m.title?.toLowerCase().includes(searchTerm);
+
+  const matchesGenre =
+    m.genre?.toLowerCase().includes(searchTerm);
+
+  return matchesTitle || matchesGenre;
+})}
+            onSelect={(v) => { setSelectedVideo(v); setIsSouthPlayer(false); }}
+            onAdd={handleAddToMyList}
+            title="Movies"
+            showAdd={true}
+          />
+        </div>
+
         {/* ✅ SOUTH MOVIES */}
         <MovieRow
           movies={popularSouthMovies}
@@ -401,16 +458,6 @@ return (
           title="🔥 Popular South Movies"
           showAdd={false}
         />
-
-        <div id="movies-section" style={{ scrollMarginTop: "90px" }}>
-          <MovieRow
-            movies={filteredMovies}
-            onSelect={(v) => { setSelectedVideo(v); setIsSouthPlayer(false); }}
-            onAdd={handleAddToMyList}
-            title="Movies"
-            showAdd={true}
-          />
-        </div>
 
         <div
   ref={seriesRef}
@@ -441,7 +488,14 @@ return (
           </div>
         )}
 
-        <Top10Row movies={movies} onSelect={(v) => { setSelectedVideo(v); setIsSouthPlayer(false); }} />
+        <Top10Row
+  movies={movies}
+  onSelect={(v) => {
+    setSelectedVideo(v);
+    setIsSouthPlayer(false);
+  }}
+  onAdd={handleAddToMyList}
+/>
       </>
     )}
 
