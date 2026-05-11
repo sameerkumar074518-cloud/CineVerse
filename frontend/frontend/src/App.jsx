@@ -1,3 +1,8 @@
+import {
+  auth,
+  signInWithPhoneNumber,
+  RecaptchaVerifier
+} from "./firebase";
 import { allMovies } from "./components/MovieRow";
 import { popularSouthMovies } from "./components/SouthMovies";
 import { allSeries } from "./components/SeriesRow";
@@ -28,8 +33,16 @@ const [showIntro, setShowIntro] = useState(true);
 const [showEmptyMsg, setShowEmptyMsg] = useState(false);
 const [username, setUsername] = useState("");
 const [password, setPassword] = useState("");
+const [phone, setPhone] = useState("");
+const [otp, setOtp] = useState("");
+const [confirmationResult, setConfirmationResult] = useState(null);
+const [showPhoneNotice, setShowPhoneNotice] = useState(true);
+const [showForgot, setShowForgot] = useState(false);
+const [resetLogin, setResetLogin] = useState("");
+const [resetCode, setResetCode] = useState("");
+const [newPassword, setNewPassword] = useState("");
 
-const API = "https://primeclone-2e4b.onrender.com";
+const API = "http://localhost:5000";
 /* ================== LOAD ================== */
 useEffect(() => {
 const savedUser = localStorage.getItem("user");
@@ -134,8 +147,8 @@ const handleRemoveFromMyList = async (id) => {
 
 /* ================== AUTH ================== */
 const handleRegister = async () => {
-if (!username || !password) {
-  alert("Enter email/username & password");
+if (!username.includes("@") || !password) {
+  alert("Enter valid email & password");
   return;
 }
 
@@ -145,8 +158,7 @@ const res = await fetch(`${API}/register`, {
     "Content-Type": "application/json"
   },
   body: JSON.stringify({
-  username,
-  email: username.includes("@") ? username : "",
+  email: username,
   password
 })
 });
@@ -183,6 +195,102 @@ localStorage.setItem("user", data.username);
 setUser(data.username);
 setProfile(null);
 localStorage.removeItem("profile");
+};
+
+const handleForgotPassword = async () => {
+  const res = await fetch(`${API}/forgot-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ login: resetLogin })
+  });
+
+  const data = await res.json();
+
+  if (res.ok) {
+    alert("Reset code sent to your email");
+  } else {
+    alert(data.error || "Error sending reset code");
+  }
+};
+
+const handleResetPassword = async () => {
+  const res = await fetch(`${API}/reset-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      login: resetLogin,
+      code: resetCode,
+      newPassword
+    })
+  });
+
+  const data = await res.json();
+
+  if (res.ok) {
+    alert("Password reset successfully!");
+    setShowForgot(false);
+    setResetLogin("");
+    setResetCode("");
+    setNewPassword("");
+  } else {
+    alert(data.error || "Error resetting password");
+  }
+};
+
+const sendOTP = async () => {
+  try {
+    if (!phone) {
+      alert("Enter phone number");
+      return;
+    }
+
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        { size: "invisible" }
+      );
+    }
+
+    const result = await signInWithPhoneNumber(
+      auth,
+      phone,
+      window.recaptchaVerifier
+    );
+
+    setConfirmationResult(result);
+    alert("OTP sent!");
+  } catch (err) {
+    console.log(err);
+    alert(err.message);
+  }
+};
+
+const verifyOTP = async () => {
+  try {
+    if (!confirmationResult) {
+      alert("Send OTP first");
+      return;
+    }
+
+    await confirmationResult.confirm(otp);
+
+    localStorage.setItem("user", phone);
+    localStorage.setItem("token", "phone-login");
+
+    setUser(phone);
+    setProfile(null);
+    localStorage.removeItem("profile");
+
+    alert("Phone login successful!");
+  } catch (err) {
+    console.log(err);
+    alert("Wrong OTP");
+  }
 };
 
 const handleLogout = () => {
@@ -242,13 +350,87 @@ if (!user) {
         <h1 style={{ color: '#E50914', fontSize: '45px', fontWeight: '900', margin: 0, fontFamily: 'Helvetica, Arial, sans-serif' }}>CINEVERSE</h1>
       </div>
 
+      {showPhoneNotice && (
+  <div style={phoneNoticeStyle}>
+    <button
+      onClick={() => setShowPhoneNotice(false)}
+      style={phoneNoticeCloseStyle}
+    >
+      ✕
+    </button>
+
+    <h3 style={{ color: "#e50914", marginTop: 0 }}>
+      Phone OTP Login Coming Soon
+    </h3>
+
+    <p style={{ color: "#ddd", fontSize: "14px", lineHeight: "1.6" }}>
+      For now, please sign in using your <b>Email and Password</b>.
+      Phone number OTP login is currently not enabled because the SMS billing
+      process is not active yet.
+    </p>
+
+    <p style={{ color: "#aaa", fontSize: "13px", lineHeight: "1.6" }}>
+      Once phone login is enabled, CineVerse will notify users by email.
+    </p>
+  </div>
+)}
+{showForgot && (
+  <div style={forgotOverlayStyle}>
+    <div style={forgotBoxStyle}>
+      <button
+        onClick={() => setShowForgot(false)}
+        style={forgotCloseStyle}
+      >
+        ✕
+      </button>
+
+      <h2 style={{ color: "#e50914", marginTop: 0 }}>
+        Reset Password
+      </h2>
+
+      <p style={{ color: "#aaa", fontSize: "14px", lineHeight: "1.5" }}>
+        Enter your email. CineVerse will send a reset code to your registered email.
+      </p>
+      <input
+        value={resetLogin}
+        onChange={(e) => setResetLogin(e.target.value)}
+        placeholder="Registered email"
+        style={newInputStyle}
+      />
+
+      <button onClick={handleForgotPassword} style={loginBtnStyle}>
+        Send Reset Code
+      </button>
+
+      <input
+        value={resetCode}
+        onChange={(e) => setResetCode(e.target.value)}
+        placeholder="Enter reset code"
+        style={{ ...newInputStyle, marginTop: "18px" }}
+      />
+
+      <input
+        value={newPassword}
+        onChange={(e) => setNewPassword(e.target.value)}
+        type="password"
+        placeholder="New password"
+        style={newInputStyle}
+      />
+
+      <button onClick={handleResetPassword} style={loginBtnStyle}>
+        Reset Password
+      </button>
+    </div>
+  </div>
+)}
+
       <div className="login-card" style={loginCardStyle}>
         <h1 style={{ alignSelf: 'flex-start', marginBottom: '28px', fontSize: '32px', fontFamily: 'Helvetica, Arial, sans-serif' }}>Sign In</h1>
 
         <input
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          placeholder="Email or username"
+          placeholder="Email address"
           style={newInputStyle}
         />
 
@@ -261,11 +443,46 @@ if (!user) {
         />
 
         <button onClick={handleLogin} style={loginBtnStyle}>Sign In</button>
+        <div style={orStyle}>OR</div>
+
+<input
+  value={phone}
+  onChange={(e) => setPhone(e.target.value)}
+  placeholder="Phone number with country code"
+  style={newInputStyle}
+/>
+
+<button
+  onClick={sendOTP}
+  style={{
+    ...loginBtnStyle,
+    background: "#E50914"
+  }}
+>
+  Send OTP
+</button>
+
+{confirmationResult && (
+  <>
+    <input
+      value={otp}
+      onChange={(e) => setOtp(e.target.value)}
+      placeholder="Enter OTP"
+      style={newInputStyle}
+    />
+
+    <button onClick={verifyOTP} style={loginBtnStyle}>
+      Verify OTP
+    </button>
+  </>
+)}
+
+<div id="recaptcha-container"></div>
         
         <div style={helpRowStyle}>
           {/* Remember me removed as requested */}
           <span 
-            onClick={() => alert("Sign In is for existing users. Sign Up is for new users.")} 
+            onClick={() => setShowForgot(true)}
             style={{ fontSize: '13px', color: '#b3b3b3', cursor: 'pointer', marginLeft: 'auto' }}
           >
             Need help?
@@ -736,5 +953,78 @@ const footerSignupStyle = {
   fontSize: "16px",
   fontFamily: 'Helvetica, Arial, sans-serif'
 };
+const orStyle = {
+  textAlign: "center",
+  color: "#aaa",
+  fontSize: "13px",
+  margin: "18px 0"
+};
 
+const phoneBtnStyle = {
+  width: "100%",
+  padding: "10px",
+  background: "#333",
+  color: "white",
+  border: "1px solid #555",
+  borderRadius: "4px",
+  fontSize: "15px",
+  fontWeight: "bold",
+  cursor: "pointer",
+  boxSizing: "border-box"
+};
+const phoneNoticeStyle = {
+  position: "absolute",
+  top: "90px",
+  right: "50px",
+  zIndex: 20,
+  width: "330px",
+  background: "rgba(0,0,0,0.88)",
+  border: "1px solid #333",
+  borderRadius: "8px",
+  padding: "22px",
+  color: "white",
+  boxShadow: "0 10px 35px rgba(0,0,0,0.8)"
+};
+
+const phoneNoticeCloseStyle = {
+  position: "absolute",
+  top: "10px",
+  right: "12px",
+  background: "transparent",
+  border: "none",
+  color: "white",
+  fontSize: "18px",
+  cursor: "pointer"
+};
+const forgotOverlayStyle = {
+  position: "fixed",
+  inset: 0,
+  background: "rgba(0,0,0,0.75)",
+  zIndex: 99999,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center"
+};
+
+const forgotBoxStyle = {
+  width: "420px",
+  maxWidth: "90vw",
+  background: "rgba(0,0,0,0.92)",
+  border: "1px solid #333",
+  borderRadius: "8px",
+  padding: "28px",
+  position: "relative",
+  boxShadow: "0 15px 50px rgba(0,0,0,0.9)"
+};
+
+const forgotCloseStyle = {
+  position: "absolute",
+  top: "12px",
+  right: "14px",
+  background: "transparent",
+  border: "none",
+  color: "white",
+  fontSize: "20px",
+  cursor: "pointer"
+};
 export default App;

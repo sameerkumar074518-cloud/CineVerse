@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from "react";
 
 export default function ContinueWatching({ movies = [], onSelect, user, profile }) {
   const [watched, setWatched] = useState([]);
+const [rowHover, setRowHover] = useState(false);
+const [hoveredIndex, setHoveredIndex] = useState(null);
   const scrollRef = useRef(null); // ✅ ADD
 
   useEffect(() => {
@@ -45,7 +47,8 @@ export default function ContinueWatching({ movies = [], onSelect, user, profile 
   fullTitle: data.title || movie.title,
 
   // ✅ latest watched season
-  savedVideo: data.currentVideo || movie.video
+  savedVideo: data.currentVideo || movie.video,
+remainingTime: data.duration - data.currentTime
 };
       } catch {
         return null;
@@ -73,42 +76,124 @@ export default function ContinueWatching({ movies = [], onSelect, user, profile 
 
   // ✅ SCROLL FUNCTIONS
   const scrollLeft = () => {
-    scrollRef.current.scrollBy({ left: -400, behavior: "smooth" });
-  };
+  const row = scrollRef.current;
+  if (!row) return;
 
-  const scrollRight = () => {
-    scrollRef.current.scrollBy({ left: 400, behavior: "smooth" });
-  };
+  row.scrollBy({
+    left: -(row.clientWidth * 0.85),
+    behavior: "smooth"
+  });
+};
+
+const scrollRight = () => {
+  const row = scrollRef.current;
+  if (!row) return;
+
+  row.scrollBy({
+    left: row.clientWidth * 0.85,
+    behavior: "smooth"
+  });
+};
 
   return (
-    <div style={{ padding: "20px", color: "white", position: "relative" }}>
-      <h2>Continue Watching</h2>
+   <div
+  onMouseEnter={() => setRowHover(true)}
+  onMouseLeave={() => setRowHover(false)}
+  style={{
+    color: "white",
+    padding: "18px 0",
+    position: "relative",
+    overflow: "hidden"
+  }}
+>
+  <h2 style={{
+    marginBottom: "12px",
+    fontSize: "1.4vw",
+    fontWeight: "700",
+    paddingLeft: "4%",
+    color: "#e5e5e5"
+  }}>
+    Continue Watching
+  </h2>
 
-      {/* ⬅ LEFT */}
-      <button onClick={scrollLeft} style={arrowStyle("left")}>◀</button>
+  <button
+    onClick={scrollLeft}
+    style={{
+      ...arrowStyle("left"),
+      opacity: rowHover ? 1 : 0,
+      pointerEvents: rowHover ? "auto" : "none"
+    }}
+  >
+    ‹
+  </button>
 
-      {/* ➡ RIGHT */}
-      <button onClick={scrollRight} style={arrowStyle("right")}>▶</button>
+  <button
+    onClick={scrollRight}
+    style={{
+      ...arrowStyle("right"),
+      opacity: rowHover ? 1 : 0,
+      pointerEvents: rowHover ? "auto" : "none"
+    }}
+  >
+    ›
+  </button>
 
       <div
         ref={scrollRef} // ✅ ADD
         className="no-scrollbar"
         style={{
           display: "flex",
-          gap: "15px",
-          overflowX: "auto",
-          paddingBottom: "10px",
+          gap: "8px",
+overflowX: "auto",
+paddingLeft: "4%",
+paddingRight: "4%",
+paddingBottom: "10px",
           scrollBehavior: "smooth"
         }}
       >
         {watched.map((movie, index) => (
-          <div key={index} style={{ width: "200px" }}>
+          <div
+  key={index}
+  style={{
+    position: "relative",
+    minWidth: "18vw",
+    width: "18vw",
+    flex: "0 0 18vw",
+    transition: "transform 0.25s ease",
+    cursor: "pointer"
+  }}
+>
 
             <div
-              style={{
-                position: "relative",
-                width: "200px",
-                height: "120px",
+  onMouseEnter={() => setHoveredIndex(index)}
+  onMouseLeave={() => setHoveredIndex(null)}
+  onClick={() => {
+    if (movie.isSeries) {
+      const originalSeries = movies.find(
+        (m) =>
+          m.title?.toLowerCase().trim() ===
+          movie.title?.toLowerCase().trim()
+      );
+
+      if (!originalSeries) return;
+
+      onSelect({
+        ...originalSeries,
+        video: movie.savedVideo || movie.video,
+        currentSeason: movie.currentSeason,
+        isSeries: true,
+        seasons: originalSeries.seasons
+      });
+
+    } else {
+      onSelect(movie.savedVideo || movie.video);
+    }
+  }}
+  style={{
+    position: "relative",
+    width: "100%",
+    height: "10vw",
+    cursor: "pointer",
                 overflow: "hidden",
                 borderRadius: "6px"
               }}
@@ -154,6 +239,25 @@ export default function ContinueWatching({ movies = [], onSelect, user, profile 
 }}
 />
 
+{hoveredIndex === index && (
+  <div style={{
+    position: "absolute",
+    inset: 0,
+    background: "rgba(0,0,0,0.55)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "white",
+    fontSize: "15px",
+    fontWeight: "bold",
+    zIndex: 5
+  }}>
+    {Math.floor(movie.remainingTime / 3600) > 0
+      ? `${Math.floor(movie.remainingTime / 3600)}h ${Math.floor((movie.remainingTime % 3600) / 60)}m left`
+      : `${Math.floor(movie.remainingTime / 60)}m left`}
+  </div>
+)}
+
               <div
                 style={{
                   position: "absolute",
@@ -167,7 +271,13 @@ export default function ContinueWatching({ movies = [], onSelect, user, profile 
             </div>
 
             {/* ✅ FULL TITLE */}
-            <p style={{ textAlign: "center", marginTop: "6px", fontWeight: "bold" }}>
+           <p style={{
+  fontSize: "13px",
+  marginTop: "6px",
+  textAlign: "center",
+  fontWeight: "600",
+  color: "#ddd"
+}}>
               {movie.fullTitle || movie.title}
             </p>
 
@@ -184,12 +294,21 @@ const arrowStyle = (side) => ({
   top: "50%",
   [side]: "0",
   transform: "translateY(-50%)",
-  zIndex: 10,
-  background: "rgba(0,0,0,0.6)",
+  zIndex: 20,
+  background: "transparent",
   border: "none",
   color: "white",
-  fontSize: "20px",
-  padding: "10px",
+  fontSize: "60px",
+  fontWeight: "900",
+  width: "5%",
+  height: "100%",
   cursor: "pointer",
-  borderRadius: "50%"
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  filter: `
+    drop-shadow(0px 0px 2px rgba(0,0,0,1)) 
+    drop-shadow(0px 0px 10px rgba(0,0,0,0.8))
+  `,
+  transition: "transform 0.1s ease-in-out"
 });

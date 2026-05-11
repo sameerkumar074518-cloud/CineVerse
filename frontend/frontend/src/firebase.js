@@ -6,12 +6,13 @@ import {
 } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyChj6AdZaelEtlvO_X_fW5rtF-WZA9rVSY",
-  authDomain: "cineverse-auth-14bdf.firebaseapp.com",
-  projectId: "cineverse-auth-14bdf",
-  storageBucket: "cineverse-auth-14bdf.firebasestorage.app",
-  messagingSenderId: "392481893138",
-  appId: "1:392481893138:web:fb4321e5e170d1808961cb"
+  apiKey: "AIzaSyBjJRAE1ajpJGRAuL03bw5AIAh2vh-mljc",
+  authDomain: "cineverse-940da.firebaseapp.com",
+  projectId: "cineverse-940da",
+  storageBucket: "cineverse-940da.firebasestorage.app",
+  messagingSenderId: "422507713057",
+  appId: "1:422507713057:web:d9c1c3f48780c1f4b8c960",
+  measurementId: "G-PS658ZT4NC"
 };
 
 const app = initializeApp(firebaseConfig);

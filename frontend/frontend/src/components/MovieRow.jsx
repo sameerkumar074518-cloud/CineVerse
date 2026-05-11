@@ -9,7 +9,7 @@ export const allMovies = [
     image: "/images/thumb4.png",
     video: "https://cineverse.b-cdn.net/Dhurandhar.mp4",
     genre: "Action, Spy, Thriller",
-    duration: "2h 15m",
+    duration: "3h 26m",
     cast: "Ranveer Singh, Akshaye Khanna, R Madhavan",
     description: "A fearless spy embarks on a dangerous mission to uncover a global conspiracy."
   },
@@ -19,7 +19,7 @@ export const allMovies = [
     image: "/images/thumb9.png",
     video: "https://cineverse.b-cdn.net/Ajab Prem Ki Ghazab Kahani.mp4",
     genre: "Comedy, Drama, Love, Romance",
-    duration: "2h 30m",
+    duration: "2h 31m",
     cast: "Ranbir Kapoor, Katrina Kaif, Upen Patel",
     description: "A happy-go-lucky young man falls in love with a girl who is already in love with someone else."
   },
@@ -39,7 +39,7 @@ export const allMovies = [
     image: "/images/thumb7.png",
     video: "https://cineverse.b-cdn.net/Blink.mp4",
     genre: "Sci-fi, Suspense, Thriller",
-    duration: "1h 55m",
+    duration: "2h 14m",
     cast: "Dheekshith Shetty, Chaithra J.Achar, Mandara Battalahalli",
     description: "In a world where sight is a luxury, one man discovers a terrifying secret about his past."
   },
@@ -69,7 +69,7 @@ export const allMovies = [
     image: "/images/thumb2.png",
     video: "https://cineverse.b-cdn.net/The Conjuring Last Rites.mp4",
     genre: "Horror, Supernatural, Thriller",
-    duration: "1h 48m",
+    duration: "2h 16m",
     cast: "Patrick Wilson, Vera Farmiga",
     description: "Paranormal investigators take on their most terrifying case yet."
   },
@@ -79,7 +79,7 @@ export const allMovies = [
     image: "/images/thumb3.png",
     video: "https://cineverse.b-cdn.net/Youth.mp4",
     genre: "Drama, School, Love",
-    duration: "2h 5m",
+    duration: "2h 20m",
     cast: "Ken Karunas, Suraj Venjaramoodu",
     description: "A group of friends navigates the complexities of school life and first love."
   },
@@ -89,7 +89,7 @@ export const allMovies = [
     image: "/images/thumb5.png",
     video: "https://cineverse.b-cdn.net/Officer on Duty.mp4",
     genre: "Action, Thriller, Investigation",
-    duration: "2h 20m",
+    duration: "2h 14m",
     cast: "Kunchacko Boban, Priyamani",
     description: "A dedicated officer risks everything to solve a high-stakes crime."
   },
@@ -99,7 +99,7 @@ export const allMovies = [
     image: "/images/thumb6.png",
     video: "https://cineverse.b-cdn.net/Silsila.mp4",
     genre: "Romance, Drama, Love, Comedy",
-    duration: "2h 12m",
+    duration: "3h 1m",
     cast: "Amitabh Bachchan, Rekha, Jaya Bachchan",
     description: "A classic tale of love, heartbreak, and difficult choices."
   }
@@ -120,32 +120,84 @@ export default function MovieRow({
   const [selectedMovie, setSelectedMovie] = useState(null);
 const [selectedSeason, setSelectedSeason] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
+  const [rowHover, setRowHover] = useState(false);
   const videoRef = useRef(null);
 
   const isSouthMovies = title.toLowerCase().includes("south");
 
   const scrollLeft = () => {
-    scrollRef.current.scrollBy({ left: -400, behavior: "smooth" });
-  };
+  const row = scrollRef.current;
+  if (!row) return;
 
-  const scrollRight = () => {
-    scrollRef.current.scrollBy({ left: 400, behavior: "smooth" });
-  };
+  row.scrollBy({
+    left: -(row.clientWidth * 0.85),
+    behavior: "smooth"
+  });
+};
+
+const scrollRight = () => {
+  const row = scrollRef.current;
+  if (!row) return;
+
+  row.scrollBy({
+    left: row.clientWidth * 0.85,
+    behavior: "smooth"
+  });
+};
 
   return (
-    <div style={{ color: "white", padding: "20px", position: "relative" }}>
-      <h2 style={{ marginBottom: "10px" }}>{title}</h2>
+    <div
+      onMouseEnter={() => setRowHover(true)}
+      onMouseLeave={() => setRowHover(false)}
+      style={{
+        color: "white",
+        padding: "18px 0", 
+        position: "relative",
+        overflow: "hidden" 
+      }}
+    >
+      <h2 style={{
+        marginBottom: "12px",
+        fontSize: "1.4vw",
+        fontWeight: "700",
+        paddingLeft: "4%",
+        color: "#e5e5e5"
+      }}>
+        {title}
+      </h2>
 
-      <button onClick={scrollLeft} style={arrowStyle("left")}>◀</button>
-      <button onClick={scrollRight} style={arrowStyle("right")}>▶</button>
+      {/* Arrows: Pure white, No shadow, Fade in only on row hover */}
+      <button 
+        onClick={scrollLeft} 
+        style={{ 
+          ...arrowStyle("left"), 
+          opacity: rowHover ? 1 : 0,
+          pointerEvents: rowHover ? "auto" : "none"
+        }}
+      >
+        ‹
+      </button>
+
+      <button 
+        onClick={scrollRight} 
+        style={{ 
+          ...arrowStyle("right"), 
+          opacity: rowHover ? 1 : 0,
+          pointerEvents: rowHover ? "auto" : "none"
+        }}
+      >
+        ›
+      </button>
 
       <div
         ref={scrollRef}
         className="no-scrollbar"
         style={{
           display: "flex",
-          gap: "15px",
+          gap: "8px",
           overflowX: "auto",
+          paddingLeft: "4%", 
+          paddingRight: "4%", 
           paddingBottom: "10px",
           scrollBehavior: "smooth"
         }}
@@ -156,9 +208,22 @@ const [selectedSeason, setSelectedSeason] = useState(null);
           movies.map((movie, index) => (
             <div 
               key={movie.video || index} 
-              style={{ position: "relative", minWidth: "200px" }}
+              style={{
+  position: "relative",
+  minWidth: "18vw",
+  width: "18vw",
+  flex: "0 0 18vw",
+  transition: "transform 0.25s ease",
+  cursor: "pointer"
+}}
             >
-              <div style={{ width: "200px", height: "120px", borderRadius: "6px", overflow: "hidden" }}>
+              <div style={{
+  width: "100%",
+  height: "10vw",
+  borderRadius: "4px",
+  overflow: "hidden",
+  background: "#111"
+}}>
                 <img
   src={movie.image || "/images/thumb1.png"}
   alt={movie.title}
@@ -369,7 +434,7 @@ const [selectedSeason, setSelectedSeason] = useState(null);
 
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
                   <div style={{ flex: "1.5", minWidth: "300px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "15px", fontSize: "18px", marginBottom: "15px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "18px", marginBottom: "15px" }}>
                       <span style={{ color: "#46d369", fontWeight: "bold" }}>{fullMovieData.title}</span>
                       <span>{fullMovieData.duration}</span>
                       <span style={{ border: "1px solid #808080", padding: "0 6px", fontSize: "12px" }}>HD</span>
@@ -398,16 +463,30 @@ const [selectedSeason, setSelectedSeason] = useState(null);
 const arrowStyle = (side) => ({
   position: "absolute",
   top: "50%",
-  [side]: "5px",
+  [side]: "0",
   transform: "translateY(-50%)",
-  zIndex: 10,
-  background: "rgba(0,0,0,0.6)",
+  zIndex: 20,
+  background: "transparent",
   border: "none",
   color: "white",
-  fontSize: "20px",
-  padding: "10px",
+  fontSize: "60px",           // Increased size
+  fontWeight: "900",          // Makes the arrow thicker/bolder
+  width: "5%",                // Slightly wider hit area
+  height: "100%",
   cursor: "pointer",
-  borderRadius: "50%"
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  // ✅ Multi-layered shadow for that "Ultra Dark" visibility
+  filter: `
+    drop-shadow(0px 0px 2px rgba(0,0,0,1)) 
+    drop-shadow(0px 0px 10px rgba(0,0,0,0.8))
+  `,
+  transition: "transform 0.1s ease-in-out",
+  // Optional: adds a slight scale effect on click
+  ":active": {
+    transform: "translateY(-50%) scale(0.9)"
+  }
 });
 
 const smallPreviewCardStyle = {
@@ -556,8 +635,9 @@ const circleButtonStyle = {
 };
 
 const titleStyle = {
-  fontSize: "16px",
-  marginTop: "8px",
+  fontSize: "13px",
+  marginTop: "6px",
   textAlign: "center",
-  fontWeight: "bold"
+  fontWeight: "600",
+  color: "#ddd"
 };

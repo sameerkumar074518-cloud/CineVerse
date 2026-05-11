@@ -6,6 +6,7 @@ export default function Top10Row({ movies = [], onSelect, onAdd }) {
 
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
+  const [rowHover, setRowHover] = useState(false);
 
   const scrollLeft = () => {
     scrollRef.current.scrollBy({ left: -500, behavior: "smooth" });
@@ -15,8 +16,16 @@ export default function Top10Row({ movies = [], onSelect, onAdd }) {
     scrollRef.current.scrollBy({ left: 500, behavior: "smooth" });
   };
 
+  const sortedMovies = [...movies].sort(
+  (a, b) => (b.watchCount || 0) - (a.watchCount || 0)
+);
+
   return (
-    <div style={{ color: "white", padding: "40px 0 20px 0", position: "relative" }}>
+    <div 
+  onMouseEnter={() => setRowHover(true)}
+  onMouseLeave={() => setRowHover(false)}
+  style={{ color: "white", padding: "40px 0 20px 0", position: "relative", overflow: "hidden" }}
+>
       <h2 style={{
         marginLeft: "4%",
         fontSize: "1.5vw",
@@ -25,10 +34,25 @@ export default function Top10Row({ movies = [], onSelect, onAdd }) {
       }}>
         Top 10 Movies in India Today
       </h2>
+<button 
+  onClick={scrollLeft} 
+  style={{ 
+    ...arrowStyle("left"), 
+    opacity: rowHover ? 1 : 0,
+    pointerEvents: rowHover ? "auto" : "none",
+    transition: "opacity 0.2s ease"
+  }}
+>❮</button>
 
-      <button onClick={scrollLeft} style={arrowStyle("left")}>❮</button>
-      <button onClick={scrollRight} style={arrowStyle("right")}>❯</button>
-
+<button 
+  onClick={scrollRight} 
+  style={{ 
+    ...arrowStyle("right"), 
+    opacity: rowHover ? 1 : 0,
+    pointerEvents: rowHover ? "auto" : "none",
+    transition: "opacity 0.2s ease"
+  }}
+>❯</button>
       <div
         ref={scrollRef}
         className="no-scrollbar"
@@ -40,7 +64,7 @@ export default function Top10Row({ movies = [], onSelect, onAdd }) {
           scrollBehavior: "smooth"
         }}
       >
-        {movies.slice(0, 10).map((movie, index) => (
+        {sortedMovies.slice(0, 10).map((movie, index) => (
           <div
             key={movie.video || index}
             style={{
@@ -246,23 +270,25 @@ export default function Top10Row({ movies = [], onSelect, onAdd }) {
 
 const arrowStyle = (side) => ({
   position: "absolute",
-  top: "55%",
-  [side]: "1%",
+  top: "58%",                // ✅ Adjusted to center against the posters
+  [side]: "0",
   transform: "translateY(-50%)",
-  zIndex: 10,
-  background: "rgba(0,0,0,0.5)",
+  zIndex: 30,
+  background: "transparent",
   border: "none",
   color: "white",
-  fontSize: "2.5vw",
-  height: "14vw",
-  width: "40px",
+  fontSize: "42px",          // ✅ Same size as your Movie/Series rows
+  fontWeight: "900",         // ✅ Makes it thick and bold
+  width: "4%",
+  height: "10vw",            // ✅ Same height as other rows
   cursor: "pointer",
-  transition: "background 0.3s",
   display: "flex",
   alignItems: "center",
-  justifyContent: "center"
+  justifyContent: "center",
+  // ✅ This adds the dark visibility you wanted
+  filter: "drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.9))",
+  transition: "opacity 0.3s ease"
 });
-
 const modalOverlayStyle = {
   position: "fixed",
   top: 0,

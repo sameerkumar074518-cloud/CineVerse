@@ -103,4 +103,103 @@ const sendWelcomeEmail = async (email) => {
   }
 };
 
-module.exports = { sendWelcomeEmail };
+const sendResetEmail = async (email, code) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    await transporter.sendMail({
+      from: `"CineVerse Security" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Reset Your CineVerse Password 🔒",
+      html: `
+        <div style="
+          background:#141414;
+          color:white;
+          padding:40px;
+          font-family:Arial,sans-serif;
+          border-radius:12px;
+        ">
+
+          <h1 style="
+            color:#e50914;
+            font-size:38px;
+            margin-bottom:10px;
+            letter-spacing:2px;
+          ">
+            CINEVERSE
+          </h1>
+
+          <h2 style="margin-top:0;">
+            Password Reset Request
+          </h2>
+
+          <p style="
+            color:#d2d2d2;
+            font-size:16px;
+            line-height:1.7;
+          ">
+            We received a request to reset your CineVerse password.
+          </p>
+
+          <div style="
+            background:#1f1f1f;
+            padding:25px;
+            border-radius:10px;
+            margin:30px 0;
+            text-align:center;
+            border:1px solid #333;
+          ">
+            <p style="
+              color:#aaa;
+              margin-bottom:10px;
+            ">
+              Your reset code
+            </p>
+
+            <h1 style="
+              color:#e50914;
+              font-size:42px;
+              letter-spacing:8px;
+              margin:0;
+            ">
+              ${code}
+            </h1>
+          </div>
+
+          <p style="
+            color:#aaa;
+            font-size:14px;
+            line-height:1.6;
+          ">
+            This code will expire in 10 minutes.
+          </p>
+
+          <p style="
+            color:#666;
+            font-size:13px;
+            margin-top:35px;
+          ">
+            If you did not request this, you can safely ignore this email.
+          </p>
+
+        </div>
+      `
+    });
+
+    console.log("✅ Reset email sent to:", email);
+
+  } catch (err) {
+    console.log("❌ Reset email error:", err.message);
+  }
+};
+
+module.exports = {
+  sendWelcomeEmail,
+  sendResetEmail
+};

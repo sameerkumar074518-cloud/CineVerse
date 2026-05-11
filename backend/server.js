@@ -5,7 +5,7 @@ const cors = require("cors");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { sendWelcomeEmail } = require("./utils/sendEmail");
+const { sendWelcomeEmail, sendResetEmail } = require("./utils/sendEmail");
 require("dotenv").config();
 
 const app = express();
@@ -43,6 +43,8 @@ const User = mongoose.model("User", {
   username: String,
   email: String,
   password: String,
+  resetCode: String,
+  resetCodeExpiry: Date
 });
 
 /* 🔥 UPDATED MY LIST MODEL */
@@ -88,11 +90,9 @@ const auth = (req, res, next) => {
 
 app.post("/register", async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { email, password } = req.body;
 
-    const exists = await User.findOne({
-      $or: [{ username }, { email }]
-    });
+    const exists = await User.findOne({ email });
 
     if (exists) {
       return res.status(400).json({ error: "User already exists" });
@@ -101,10 +101,10 @@ app.post("/register", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
-      username,
-      email,
-      password: hashedPassword
-    });
+  username: email,
+  email,
+  password: hashedPassword
+});
 
     await user.save();
 
@@ -120,13 +120,80 @@ app.post("/register", async (req, res) => {
   }
 });
 
+app.post("/forgot-password", async (req, res) => {
+  try {
+    const { login } = req.body;
+
+    const user = await User.findOne({ email: login });
+
+    if (!user || !user.email) {
+      return res.status(400).json({
+        error: "No email found for this account"
+      });
+    }
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+    user.resetCode = code;
+    user.resetCodeExpiry = Date.now() + 10 * 60 * 1000;
+
+    await user.save();
+
+    await sendResetEmail(user.email, code);
+
+    res.json({
+      message: "Reset code sent to your email"
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/reset-password", async (req, res) => {
+  try {
+    const { login, code, newPassword } = req.body;
+
+    const user = await User.findOne({
+      $or: [{ username: login }, { email: login }]
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
+
+    if (
+      user.resetCode !== code ||
+      !user.resetCodeExpiry ||
+      user.resetCodeExpiry < Date.now()
+    ) {
+      return res.status(400).json({
+        error: "Invalid or expired reset code"
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+    user.resetCode = "";
+    user.resetCodeExpiry = null;
+
+    await user.save();
+
+    res.json({
+      message: "Password reset successfully"
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const user = await User.findOne({
-  $or: [{ username }, { email: username }]
-});
+    const user = await User.findOne({ email: username });
 
     if (!user) {
       return res.status(400).json({ error: "Invalid credentials" });
