@@ -42,7 +42,7 @@ const [resetLogin, setResetLogin] = useState("");
 const [resetCode, setResetCode] = useState("");
 const [newPassword, setNewPassword] = useState("");
 
-const API = "http://localhost:5000";
+const API = "https://primeclone-2e4b.onrender.com";
 /* ================== LOAD ================== */
 useEffect(() => {
 const savedUser = localStorage.getItem("user");
