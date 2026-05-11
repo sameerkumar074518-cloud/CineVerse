@@ -1,9 +1,11 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { sendWelcomeEmail } = require("./utils/sendEmail");
 require("dotenv").config();
 
 const app = express();
@@ -39,6 +41,7 @@ const Movie = mongoose.model("Movie", {
 
 const User = mongoose.model("User", {
   username: String,
+  email: String,
   password: String,
 });
 
@@ -85,9 +88,12 @@ const auth = (req, res, next) => {
 
 app.post("/register", async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
 
-    const exists = await User.findOne({ username });
+    const exists = await User.findOne({
+      $or: [{ username }, { email }]
+    });
+
     if (exists) {
       return res.status(400).json({ error: "User already exists" });
     }
@@ -96,13 +102,20 @@ app.post("/register", async (req, res) => {
 
     const user = new User({
       username,
+      email,
       password: hashedPassword
     });
 
     await user.save();
 
+    if (email) {
+      await sendWelcomeEmail(email);
+    }
+
     res.json({ message: "Registered successfully" });
+
   } catch (err) {
+    console.log("REGISTER ERROR:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
@@ -111,7 +124,9 @@ app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({
+  $or: [{ username }, { email: username }]
+});
 
     if (!user) {
       return res.status(400).json({ error: "Invalid credentials" });

@@ -82,7 +82,7 @@ export default function Footer() {
 
           <div style={columnStyle}>
             <p style={columnTitleStyle}>Connect</p>
-            <a href="mailto:your-email@gmail.com" className="f-link" style={footerLinkStyle}>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=cineverse2922@gmail.com" className="f-link" style={footerLinkStyle}>
               <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" style={miniIcon} alt="" /> Email
             </a>
             <a href="https://github.com/sameerkumar074518-cloud" target="_blank" rel="noreferrer" className="f-link" style={footerLinkStyle}>

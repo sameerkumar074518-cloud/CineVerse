@@ -135,8 +135,8 @@ const handleRemoveFromMyList = async (id) => {
 /* ================== AUTH ================== */
 const handleRegister = async () => {
 if (!username || !password) {
-  alert("Enter username & password");
-  return;
+  alert("Enter email/username & password");
+  return;
 }
 
 const res = await fetch(`${API}/register`, {
@@ -144,7 +144,11 @@ const res = await fetch(`${API}/register`, {
   headers: {
     "Content-Type": "application/json"
   },
-  body: JSON.stringify({ username, password })
+  body: JSON.stringify({
+  username,
+  email: username.includes("@") ? username : "",
+  password
+})
 });
 
 const data = await res.json();
