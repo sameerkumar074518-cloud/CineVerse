@@ -1,9 +1,11 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { sendWelcomeEmail, sendResetEmail } = require("./utils/sendEmail");
 require("dotenv").config();
 
 const app = express();
@@ -39,16 +41,26 @@ const Movie = mongoose.model("Movie", {
 
 const User = mongoose.model("User", {
   username: String,
+  email: String,
   password: String,
+  resetCode: String,
+  resetCodeExpiry: Date
 });
 
 /* 🔥 UPDATED MY LIST MODEL */
 const MyList = mongoose.model("MyList", {
   username: String,
+  profileId: String,
   movieId: String,
   title: String,
   image: String,
-  video: String
+  video: String,
+
+  seasons: Array,
+  genre: String,
+  cast: String,
+  description: String,
+  isSeries: Boolean
 });
 
 /* 🔐 SECRET */
@@ -78,9 +90,10 @@ const auth = (req, res, next) => {
 
 app.post("/register", async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    const exists = await User.findOne({ username });
+    const exists = await User.findOne({ email });
+
     if (exists) {
       return res.status(400).json({ error: "User already exists" });
     }
@@ -88,13 +101,89 @@ app.post("/register", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
-      username,
-      password: hashedPassword
-    });
+  username: email,
+  email,
+  password: hashedPassword
+});
 
     await user.save();
 
+    if (email) {
+      await sendWelcomeEmail(email);
+    }
+
     res.json({ message: "Registered successfully" });
+
+  } catch (err) {
+    console.log("REGISTER ERROR:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/forgot-password", async (req, res) => {
+  try {
+    const { login } = req.body;
+
+    const user = await User.findOne({ email: login });
+
+    if (!user || !user.email) {
+      return res.status(400).json({
+        error: "No email found for this account"
+      });
+    }
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+    user.resetCode = code;
+    user.resetCodeExpiry = Date.now() + 10 * 60 * 1000;
+
+    await user.save();
+
+    await sendResetEmail(user.email, code);
+
+    res.json({
+      message: "Reset code sent to your email"
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/reset-password", async (req, res) => {
+  try {
+    const { login, code, newPassword } = req.body;
+
+    const user = await User.findOne({
+      $or: [{ username: login }, { email: login }]
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
+
+    if (
+      user.resetCode !== code ||
+      !user.resetCodeExpiry ||
+      user.resetCodeExpiry < Date.now()
+    ) {
+      return res.status(400).json({
+        error: "Invalid or expired reset code"
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+    user.resetCode = "";
+    user.resetCodeExpiry = null;
+
+    await user.save();
+
+    res.json({
+      message: "Password reset successfully"
+    });
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -104,7 +193,7 @@ app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email: username });
 
     if (!user) {
       return res.status(400).json({ error: "Invalid credentials" });
@@ -151,28 +240,48 @@ app.get("/movies", auth, async (req, res) => {
 /* ➕ ADD */
 app.post("/mylist", auth, async (req, res) => {
   try {
-    const { movieId, title, image, video } = req.body;
+    const {
+  profileId,
+  movieId,
+  title,
+  image,
+  video,
+  seasons,
+  genre,
+  cast,
+  description,
+  isSeries
+} = req.body;
+console.log("PROFILE ID:", profileId);
+console.log("MOVIE:", title);
 
-    if (!movieId) {
-      return res.status(400).json({ error: "Movie ID required" });
-    }
+    if (!profileId || !movieId) {
+  return res.status(400).json({ error: "Profile ID and Movie ID required" });
+}
 
     const exists = await MyList.findOne({
-      username: req.user.username,
-      movieId
-    });
+  username: req.user.username,
+  profileId,
+  movieId
+});
 
     if (exists) {
       return res.json({ message: "Already added" });
     }
 
     const item = new MyList({
-      username: req.user.username,
-      movieId,
-      title,
-      image,
-      video
-    });
+  username: req.user.username,
+  profileId,
+  movieId,
+  title,
+  image,
+  video,
+  seasons,
+  genre,
+  cast,
+  description,
+  isSeries
+});
 
     await item.save();
 
@@ -186,24 +295,42 @@ app.post("/mylist", auth, async (req, res) => {
 /* 📥 GET */
 app.get("/mylist", auth, async (req, res) => {
   try {
+    const profileId = String(req.query.profileId);
+
+    if (!profileId) {
+      return res.status(400).json({
+        error: "Profile ID required"
+      });
+    }
+
     const list = await MyList.find({
-      username: req.user.username
+      username: req.user.username,
+      profileId: profileId
     });
 
-    res.json(list); // ✅ direct return (NO DB lookup)
+    res.json(list);
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      error: err.message
+    });
   }
 });
 
 /* ❌ REMOVE */
+/* ❌ REMOVE */
 app.delete("/mylist/:id", auth, async (req, res) => {
   try {
     const id = decodeURIComponent(req.params.id);
+    const profileId = req.query.profileId;
+
+    if (!profileId) {
+      return res.status(400).json({ error: "Profile ID required" });
+    }
 
     const result = await MyList.findOneAndDelete({
       username: req.user.username,
+      profileId,
       movieId: id
     });
 
