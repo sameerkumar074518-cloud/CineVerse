@@ -119,6 +119,9 @@ app.post("/register", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+app.get("/forgot-password", (req, res) => {
+  res.send("Forgot password route exists. Use POST request.");
+});
 
 app.post("/forgot-password", async (req, res) => {
   try {
