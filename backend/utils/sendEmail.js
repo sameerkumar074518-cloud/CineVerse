@@ -6,14 +6,15 @@ const sendWelcomeEmail = async (email) => {
   try {
     const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  connectionTimeout: 30000,
-  greetingTimeout: 30000,
-  socketTimeout: 30000,
+  port: 587,
+  secure: false,
+  family: 4,
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_PASS
+  },
+  tls: {
+    rejectUnauthorized: false
   }
 });
 
@@ -115,14 +116,15 @@ const sendResetEmail = async (email, code) => {
   try {
     const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  connectionTimeout: 30000,
-  greetingTimeout: 30000,
-  socketTimeout: 30000,
+  port: 587,
+  secure: false,
+  family: 4,
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_PASS
+  },
+  tls: {
+    rejectUnauthorized: false
   }
 });
 
