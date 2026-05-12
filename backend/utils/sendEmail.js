@@ -5,7 +5,12 @@ dns.setDefaultResultOrder("ipv4first");
 const sendWelcomeEmail = async (email) => {
   try {
     const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  connectionTimeout: 30000,
+  greetingTimeout: 30000,
+  socketTimeout: 30000,
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_PASS
@@ -109,7 +114,12 @@ const sendWelcomeEmail = async (email) => {
 const sendResetEmail = async (email, code) => {
   try {
     const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  connectionTimeout: 30000,
+  greetingTimeout: 30000,
+  socketTimeout: 30000,
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_PASS
