@@ -5,7 +5,11 @@ const cors = require("cors");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { sendWelcomeEmail, sendResetEmail } = require("./utils/sendEmail");
+const {
+  sendWelcomeEmail,
+  sendResetEmail,
+  sendPasswordChangedEmail
+} = require("./utils/sendEmail");
 require("dotenv").config();
 
 const app = express();
@@ -181,9 +185,11 @@ app.post("/reset-password", async (req, res) => {
 
     await user.save();
 
-    res.json({
-      message: "Password reset successfully"
-    });
+await sendPasswordChangedEmail(user.email);
+
+res.json({
+  message: "Password reset successfully"
+});
 
   } catch (err) {
     res.status(500).json({ error: err.message });
