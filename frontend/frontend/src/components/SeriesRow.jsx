@@ -22,24 +22,24 @@ export const allSeries = [
     {
       season: 1,
       video:
-        "https://cineverse.b-cdn.net/From%20Season1.mp4",
+        "https://vz-be4ef2dc-3b3.b-cdn.net/b5a6bad4-ef01-44e6-926d-4a9c59d0177e/playlist.m3u8",
         image: "/images/From.png",
         
     },
 
-    {
-      season: 2,
-      video:
-        "https://cineverse.b-cdn.net/From%20Season2.mp4",
-        image: "/images/From.png",
-    },
+    // {
+    //   season: 2,
+    //   video:
+    //     "https://vz-be4ef2dc-3b3.b-cdn.net/8589235e-fe24-4ba2-ad7b-eb88967d609a/playlist.m3u8",
+    //     image: "/images/From.png",
+    // },
 
-    {
-      season: 3,
-      video:
-        "https://cineverse.b-cdn.net/From%20Season3.mp4",
-        image: "/images/From.png",
-    }
+    // {
+    //   season: 3,
+    //   video:
+    //     "https://vz-be4ef2dc-3b3.b-cdn.net/98974d26-a2c7-49c9-a879-873380db84b2/playlist.m3u8",
+    //     image: "/images/From.png",
+    // }
   ]
 },
 ];

@@ -7,7 +7,7 @@ export const allMovies = [
     _id: "1",
     title: "Dhurandhar",
     image: "/images/thumb4.png",
-    video: "https://cineverse.b-cdn.net/Dhurandhar.mp4",
+    video: "https://vz-be4ef2dc-3b3.b-cdn.net/c8f17e7e-257f-4650-9fc9-74bc12d7b265/playlist.m3u8",
     genre: "Action, Spy, Thriller",
     duration: "3h 26m",
     cast: "Ranveer Singh, Akshaye Khanna, R Madhavan",
@@ -17,7 +17,7 @@ export const allMovies = [
     _id: "2",
     title: "Ajab Prem Ki Ghazab Kahani",
     image: "/images/thumb9.png",
-    video: "https://cineverse.b-cdn.net/Ajab Prem Ki Ghazab Kahani.mp4",
+    video: "https://vz-be4ef2dc-3b3.b-cdn.net/afca21b1-d8b5-4dc1-b2d9-7e13f1285ca5/playlist.m3u8",
     genre: "Comedy, Drama, Love, Romance",
     duration: "2h 31m",
     cast: "Ranbir Kapoor, Katrina Kaif, Upen Patel",
@@ -27,7 +27,7 @@ export const allMovies = [
     _id: "3",
     title: "The Notebook",
     image: "/images/thumb10.png",
-    video: "https://cineverse.b-cdn.net/The Notebook.mp4",
+    video: "https://vz-be4ef2dc-3b3.b-cdn.net/fb36b514-1f38-4435-b3c6-ab85f477cc39/playlist.m3u8",
     genre: "Romance, Sci-Fi, Love",
     duration: "2h 4m",
     cast: "Ryan Gosling, Rachel McAdams, James Garner",
@@ -37,7 +37,7 @@ export const allMovies = [
     _id: "4",
     title: "Blink",
     image: "/images/thumb7.png",
-    video: "https://cineverse.b-cdn.net/Blink.mp4",
+    video: "https://vz-be4ef2dc-3b3.b-cdn.net/9ed57709-7b2a-4b16-ab25-de1f6376cb8c/playlist.m3u8",
     genre: "Sci-fi, Suspense, Thriller",
     duration: "2h 14m",
     cast: "Dheekshith Shetty, Chaithra J.Achar, Mandara Battalahalli",
@@ -47,7 +47,7 @@ export const allMovies = [
     _id: "5",
     title: "Passengers",
     image: "/images/thumb8.png",
-    video: "https://cineverse.b-cdn.net/Passengers.mp4",
+    video: "https://vz-be4ef2dc-3b3.b-cdn.net/e9739d86-26c9-4ccd-bdff-0acbb1afdd52/playlist.m3u8",
     genre: "Sci-Fi, Love, Romance",
     duration: "1h 56m",
     cast: "Jennifer Lawrence, Chris Pratt, Michael Sheen",
@@ -57,7 +57,7 @@ export const allMovies = [
     _id: "6",
     title: "Sambhavam Adhyayam Onnu",
     image: "/images/thumb1.png",
-    video: "https://cineverse.b-cdn.net/Sambhavam Adhyayam Onnu.mp4",
+    video: "https://vz-be4ef2dc-3b3.b-cdn.net/65288ea7-6b4c-4f5a-88da-d6b9bb4704e4/playlist.m3u8",
     genre: "Sci-Fi, Thriller, Time Travel",
     duration: "2h 10m",
     cast: "Askar Ali, Vineeth Kumar",
@@ -67,7 +67,7 @@ export const allMovies = [
     _id: "7",
     title: "The Conjuring Last Rites",
     image: "/images/thumb2.png",
-    video: "https://cineverse.b-cdn.net/The Conjuring Last Rites.mp4",
+    video: "https://vz-be4ef2dc-3b3.b-cdn.net/3c04f393-4040-40a0-a9d3-7169c73ccb56/playlist.m3u8",
     genre: "Horror, Supernatural, Thriller",
     duration: "2h 16m",
     cast: "Patrick Wilson, Vera Farmiga",
@@ -77,7 +77,7 @@ export const allMovies = [
     _id: "8",
     title: "Youth",
     image: "/images/thumb3.png",
-    video: "https://cineverse.b-cdn.net/Youth.mp4",
+    video: "https://vz-be4ef2dc-3b3.b-cdn.net/9c61c8a0-8c23-47e2-b22b-ec4a3cbdf034/playlist.m3u8",
     genre: "Drama, School, Love",
     duration: "2h 20m",
     cast: "Ken Karunas, Suraj Venjaramoodu",
@@ -87,7 +87,7 @@ export const allMovies = [
     _id: "9",
     title: "Officer on Duty",
     image: "/images/thumb5.png",
-    video: "https://cineverse.b-cdn.net/Officer on Duty.mp4",
+    video: "https://vz-be4ef2dc-3b3.b-cdn.net/3f8544e8-ad02-4bb5-a376-d9ce20dad64b/playlist.m3u8",
     genre: "Action, Thriller, Investigation",
     duration: "2h 14m",
     cast: "Kunchacko Boban, Priyamani",
@@ -97,7 +97,7 @@ export const allMovies = [
     _id: "10",
     title: "Silsila",
     image: "/images/thumb6.png",
-    video: "https://cineverse.b-cdn.net/Silsila.mp4",
+    video: "https://vz-be4ef2dc-3b3.b-cdn.net/6ba70595-32dd-4663-ad60-0f870a65df04/playlist.m3u8",
     genre: "Romance, Drama, Love, Comedy",
     duration: "3h 1m",
     cast: "Amitabh Bachchan, Rekha, Jaya Bachchan",
@@ -324,7 +324,7 @@ const scrollRight = () => {
       ? selectedSeason?.video
       : fullMovieData.video
   }
-  type="video/mp4"
+  type="application/x-mpegURL"
 />
 </video>
                 <button 
@@ -447,7 +447,9 @@ const scrollRight = () => {
                   <div style={{ flex: "1", fontSize: "14px", borderLeft: "1px solid #333", paddingLeft: "20px" }}>
                     <p style={{ margin: "0 0 10px 0" }}><span style={{ color: "#777" }}>Cast:</span> {fullMovieData.cast}</p>
                     <p style={{ margin: "0 0 10px 0" }}><span style={{ color: "#777" }}>Genres:</span> {fullMovieData.genre}</p>
-                    <p style={{ margin: "0" }}><span style={{ color: "#777" }}>Audio:</span> Hindi</p>
+                    <p style={{ margin: "0" }}>
+  <span style={{ color: "#777" }}>Audio:</span> Multiple Languages Available — switch audio anytime from the player controls
+</p>
                   </div>
                 </div>
               </div>

@@ -12,6 +12,7 @@
   "dependencies": {
     "firebase": "^12.13.0",
     "hls.js": "^1.6.16",
+    "plyr": "^3.8.4",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "socket.io-client": "^4.8.3"

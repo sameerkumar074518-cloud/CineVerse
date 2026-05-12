@@ -13,7 +13,7 @@ import Top10Row from "./components/Top10Row";
 import MovieRow from "./components/MovieRow";
 import SeriesRow from "./components/SeriesRow";
 import ContinueWatching from "./components/ContinueWatching";
-import VideoPlayer from "./components/VideoPlayer";
+import NetflixPremiumPlayer from "./components/VideoPlayer";
 import Footer from "./components/Footer";
 import ProfileSelect from "./components/ProfileSelect";
 
@@ -777,7 +777,7 @@ return (
         </div>
       </div>
     ) : (
-      <VideoPlayer
+      <NetflixPremiumPlayer
   video={
     typeof selectedVideo === "object"
       ? selectedVideo.video
