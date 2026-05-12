@@ -5,18 +5,17 @@ dns.setDefaultResultOrder("ipv4first");
 const sendWelcomeEmail = async (email) => {
   try {
     const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-port: 587,
-secure: false,
-requireTLS: true,
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: false,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
   }
 });
 
     await transporter.sendMail({
-      from: `"CineVerse" <${process.env.EMAIL_USER}>`,
+      from: `"CineVerse" <${process.env.EMAIL_FROM}>`,
       to: email,
       subject: "Welcome to CineVerse 🎬",
       html: `
@@ -111,18 +110,17 @@ requireTLS: true,
 const sendResetEmail = async (email, code) => {
   try {
     const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-port: 587,
-secure: false,
-requireTLS: true,
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: false,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
   }
 });
 
     await transporter.sendMail({
-      from: `"CineVerse Security" <${process.env.EMAIL_USER}>`,
+      from: `"CineVerse" <${process.env.EMAIL_FROM}>`,
       to: email,
       subject: "Reset Your CineVerse Password 🔒",
       html: `
