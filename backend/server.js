@@ -146,8 +146,9 @@ app.post("/forgot-password", async (req, res) => {
     });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  console.log("FORGOT PASSWORD ERROR:", err.message);
+  res.status(500).json({ error: err.message });
+}
 });
 
 app.post("/reset-password", async (req, res) => {

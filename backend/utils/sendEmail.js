@@ -6,7 +6,7 @@ const sendWelcomeEmail = async (email) => {
   try {
     const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
+  port: Number(process.env.SMTP_PORT),
   secure: false,
   auth: {
     user: process.env.SMTP_USER,
@@ -15,7 +15,7 @@ const sendWelcomeEmail = async (email) => {
 });
 
     await transporter.sendMail({
-     from: `"CineVerse" <${process.env.EMAIL_FROM}>`,
+     from: `"CineVerse" <${process.env.SMTP_USER}>`,
       to: email,
       subject: "Welcome to CineVerse 🎬",
       html: `
@@ -103,15 +103,16 @@ const sendWelcomeEmail = async (email) => {
 
     console.log("✅ Welcome email sent to:", email);
   } catch (err) {
-    console.log("❌ Email sending error:", err.message);
-  }
+  console.log("❌ Email sending error:", err.message);
+  throw err;
+}
 };
 
 const sendResetEmail = async (email, code) => {
   try {
     const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
+  port: Number(process.env.SMTP_PORT),
   secure: false,
   auth: {
     user: process.env.SMTP_USER,
@@ -120,7 +121,7 @@ const sendResetEmail = async (email, code) => {
 });
 
     await transporter.sendMail({
-      from: `"CineVerse Security" <${process.env.EMAIL_FROM}>`,
+      from: `"CineVerse Security" <${process.env.SMTP_USER}>`,
       to: email,
       subject: "Reset Your CineVerse Password 🔒",
       html: `
@@ -201,8 +202,9 @@ const sendResetEmail = async (email, code) => {
     console.log("✅ Reset email sent to:", email);
 
   } catch (err) {
-    console.log("❌ Reset email error:", err.message);
-  }
+  console.log("❌ Reset email error:", err.message);
+  throw err;
+}
 };
 
 module.exports = {
