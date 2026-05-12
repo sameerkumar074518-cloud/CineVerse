@@ -198,20 +198,34 @@ localStorage.removeItem("profile");
 };
 
 const handleForgotPassword = async () => {
-  const res = await fetch(`${API}/forgot-password`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ login: resetLogin })
-  });
+  try {
+    if (!resetLogin) {
+      alert("Enter registered email");
+      return;
+    }
 
-  const data = await res.json();
+    console.log("Sending reset request to:", `${API}/forgot-password`);
+    console.log("Email:", resetLogin);
 
-  if (res.ok) {
-    alert("Reset code sent to your email");
-  } else {
-    alert(data.error || "Error sending reset code");
+    const res = await fetch(`${API}/forgot-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ login: resetLogin })
+    });
+
+    const data = await res.json();
+    console.log("Forgot password response:", data);
+
+    if (res.ok) {
+      alert("Reset code sent to your email");
+    } else {
+      alert(data.error || "Error sending reset code");
+    }
+  } catch (err) {
+    console.log("Forgot password frontend error:", err);
+    alert("Something went wrong. Check console.");
   }
 };
 
