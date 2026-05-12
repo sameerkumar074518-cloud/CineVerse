@@ -5,24 +5,15 @@ dns.setDefaultResultOrder("ipv4first");
 const sendWelcomeEmail = async (email) => {
   try {
     const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
-  secure: false,
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
+  service: "gmail",
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS
   }
 });
 
-console.log("Trying to send reset email to:", email);
-console.log("SMTP HOST:", process.env.SMTP_HOST);
-console.log("SMTP USER:", process.env.SMTP_USER);
-
     await transporter.sendMail({
-     from: `"CineVerse" <${process.env.SMTP_USER}>`,
+     from: `"CineVerse" <${process.env.GMAIL_USER}>`,
       to: email,
       subject: "Welcome to CineVerse 🎬",
       html: `
@@ -118,20 +109,15 @@ console.log("SMTP USER:", process.env.SMTP_USER);
 const sendResetEmail = async (email, code) => {
   try {
     const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
-  secure: false,
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
+  service: "gmail",
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS
   }
 });
 
     await transporter.sendMail({
-      from: `"CineVerse Security" <${process.env.SMTP_USER}>`,
+      from: `"CineVerse Security" <${process.env.GMAIL_USER}>`,
       to: email,
       subject: "Reset Your CineVerse Password 🔒",
       html: `
