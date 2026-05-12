@@ -8,11 +8,18 @@ const sendWelcomeEmail = async (email) => {
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT),
   secure: false,
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS
   }
 });
+
+console.log("Trying to send reset email to:", email);
+console.log("SMTP HOST:", process.env.SMTP_HOST);
+console.log("SMTP USER:", process.env.SMTP_USER);
 
     await transporter.sendMail({
      from: `"CineVerse" <${process.env.SMTP_USER}>`,
@@ -114,6 +121,9 @@ const sendResetEmail = async (email, code) => {
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT),
   secure: false,
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS
