@@ -15,7 +15,7 @@ const sendWelcomeEmail = async (email) => {
 });
 
     await transporter.sendMail({
-      from: `"CineVerse" <${process.env.EMAIL_FROM}>`,
+     from: `"CineVerse" <${process.env.EMAIL_FROM}>`,
       to: email,
       subject: "Welcome to CineVerse 🎬",
       html: `
@@ -120,7 +120,7 @@ const sendResetEmail = async (email, code) => {
 });
 
     await transporter.sendMail({
-      from: `"CineVerse" <${process.env.EMAIL_FROM}>`,
+      from: `"CineVerse Security" <${process.env.EMAIL_FROM}>`,
       to: email,
       subject: "Reset Your CineVerse Password 🔒",
       html: `
