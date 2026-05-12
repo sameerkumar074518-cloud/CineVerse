@@ -1,40 +1,53 @@
-const SibApiV3Sdk = require("@getbrevo/brevo");
+const BREVO_URL = "https://api.brevo.com/v3/smtp/email";
 
-const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+const sendBrevoEmail = async ({ to, subject, htmlContent, senderName }) => {
+  const response = await fetch(BREVO_URL, {
+    method: "POST",
+    headers: {
+      "accept": "application/json",
+      "api-key": process.env.BREVO_API_KEY,
+      "content-type": "application/json"
+    },
+    body: JSON.stringify({
+      sender: {
+        name: senderName,
+        email: process.env.EMAIL_FROM
+      },
+      to: [{ email: to }],
+      subject,
+      htmlContent
+    })
+  });
 
-apiInstance.setApiKey(
-  SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey,
-  process.env.BREVO_API_KEY
-);
+  const data = await response.json();
 
-const sender = {
-  name: "CineVerse",
-  email: process.env.EMAIL_FROM
+  if (!response.ok) {
+    console.log("❌ Brevo API Error:", data);
+    throw new Error(data.message || "Brevo email failed");
+  }
+
+  return data;
 };
 
 const sendWelcomeEmail = async (email) => {
-  const sendSmtpEmail = {
-    sender,
-    to: [{ email }],
+  await sendBrevoEmail({
+    to: email,
+    senderName: "CineVerse",
     subject: "Welcome to CineVerse 🎬",
     htmlContent: `
       <h1 style="color:#e50914;">CINEVERSE</h1>
       <h2>Welcome to CineVerse 🎬</h2>
       <p>Your CineVerse account has been successfully created.</p>
     `
-  };
+  });
 
-  await apiInstance.sendTransacEmail(sendSmtpEmail);
   console.log("✅ Welcome email sent to:", email);
 };
 
 const sendResetEmail = async (email, code) => {
-  const sendSmtpEmail = {
-    sender: {
-      name: "CineVerse Security",
-      email: process.env.EMAIL_FROM
-    },
-    to: [{ email }],
+  await sendBrevoEmail({
+    to: email,
+    senderName: "CineVerse Security",
     subject: "Reset Your CineVerse Password 🔒",
     htmlContent: `
       <h1 style="color:#e50914;">CINEVERSE</h1>
@@ -43,9 +56,8 @@ const sendResetEmail = async (email, code) => {
       <h1 style="letter-spacing:8px;color:#e50914;">${code}</h1>
       <p>This code will expire in 10 minutes.</p>
     `
-  };
+  });
 
-  await apiInstance.sendTransacEmail(sendSmtpEmail);
   console.log("✅ Reset email sent to:", email);
 };
 
