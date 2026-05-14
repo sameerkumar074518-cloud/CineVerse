@@ -121,24 +121,25 @@ const handleAddToMyList = async (movie) => {
   const token = localStorage.getItem("token");
 
   if (!profile) {
-  alert("Select profile first");
-  return;
-}
+    alert("Select profile first");
+    return;
+  }
 
-const listItem = {
-  ...movie,
-  profileId: profile.id,
+  const listItem = {
+    ...movie,
+    profileId: profile.id,
     movieId: movie.movieId || movie.video || movie.seasons?.[0]?.video,
     video: movie.video || movie.seasons?.[0]?.video
   };
 
-if (
-  myList.find(
-    m =>
-      m.movieId === listItem.movieId &&
-      m.profileId === profile.id
-  )
-) return;
+  if (
+    myList.find(
+      m =>
+        m.movieId === listItem.movieId &&
+        m.profileId === profile.id
+    )
+  ) return;
+
   setMyList(prev => [listItem, ...prev]);
 
   if (token) {
