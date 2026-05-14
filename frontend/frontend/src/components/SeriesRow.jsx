@@ -167,22 +167,32 @@ const scrollRight = () => {
         ) : (
           series.map((movie, index) => (
             <div 
-              key={movie._id || index}
-              style={{
-  position: "relative",
-  minWidth: "18vw",
-  width: "18vw",
-  flex: "0 0 18vw",
-  transition: "transform 0.25s ease",
-  cursor: "pointer"
-}}
-            >
+  key={movie.video || index}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.transform = "scale(1.08)";
+    e.currentTarget.style.zIndex = 50;
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.transform = "scale(1)";
+    e.currentTarget.style.zIndex = 1;
+  }}
+  style={{
+    position: "relative",
+    minWidth: "18vw",
+    width: "18vw",
+    flex: "0 0 18vw",
+    transition: "transform 0.25s ease, box-shadow 0.25s ease",
+    cursor: "pointer",
+    zIndex: 1
+  }}
+>
               <div style={{
   width: "100%",
   height: "10vw",
-  borderRadius: "4px",
+  borderRadius: "6px",
   overflow: "hidden",
-  background: "#111"
+  background: "#111",
+  boxShadow: "0 8px 25px rgba(0,0,0,0.6)"
 }}>
                 <img
   src={movie.image || "/images/thumb1.png"}

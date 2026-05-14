@@ -31,6 +31,7 @@ const [movies, setMovies] = useState([]);
 const [topMovies, setTopMovies] = useState([]);
 const [myList, setMyList] = useState([]);
 const [recommended, setRecommended] = useState([]);
+const [selectedGenre, setSelectedGenre] = useState("All");
 const [showIntro, setShowIntro] = useState(true);
 const [showEmptyMsg, setShowEmptyMsg] = useState(false);
 const [username, setUsername] = useState("");
@@ -378,7 +379,7 @@ useEffect(() => {
     .filter(item => !history.some(h => h.video === item.video));
 
   setRecommended(recommendedContent.slice(0, 12));
-}, [user, profile, movies]);
+}, [user, profile, movies, selectedVideo]);
 
 /* ================== INTRO ================== */
 /* ================== INTRO ================== */
@@ -594,8 +595,27 @@ if (user && !profile) {
     />
   );
 }
+
 /* ================== UPDATED FILTER (Title + Genre) ================== */
 const searchTerm = search.toLowerCase();
+
+const genreFilteredMovies =
+  selectedGenre === "All"
+    ? movies
+    : movies.filter(movie =>
+        movie.genre
+          ?.toLowerCase()
+          .includes(selectedGenre.toLowerCase())
+      );
+
+const genreFilteredSeries =
+  selectedGenre === "All"
+    ? allSeries
+    : allSeries.filter(series =>
+        series.genre
+          ?.toLowerCase()
+          .includes(selectedGenre.toLowerCase())
+      );
 
 /* ✅ COMBINED MOVIES + SERIES */
 const filteredMovies = [...movies, ...allSeries].filter((m) => {
@@ -722,6 +742,48 @@ return (
   onAdd={handleAddToMyList}
 />
 
+<div
+  style={{
+    display: "flex",
+    gap: "12px",
+    padding: "18px 4%",
+    overflowX: "auto"
+  }}
+>
+  {[
+    "All",
+    "Action",
+    "Romance",
+    "Thriller",
+    "Horror",
+    "Sci-Fi",
+    "Comedy",
+    "Drama"
+  ].map((genre) => (
+    <button
+      key={genre}
+      onClick={() => setSelectedGenre(genre)}
+      style={{
+        padding: "10px 18px",
+        borderRadius: "30px",
+        border: "none",
+        cursor: "pointer",
+        whiteSpace: "nowrap",
+        background:
+          selectedGenre === genre
+            ? "#e50914"
+            : "rgba(255,255,255,0.1)",
+        color: "white",
+        fontWeight: "600",
+        fontSize: "14px",
+        transition: "0.25s ease"
+      }}
+    >
+      {genre}
+    </button>
+  ))}
+</div>
+
         <ContinueWatching
   movies={[...movies, ...allSeries]}
   user={user}
@@ -747,7 +809,7 @@ return (
 
 <div id="movies-section" style={{ scrollMarginTop: "90px" }}>
           <MovieRow
-            movies={movies.filter((m) => {
+            movies={genreFilteredMovies.filter((m) => {
   const searchTerm = search.toLowerCase();
 
   const matchesTitle =
@@ -765,6 +827,22 @@ return (
           />
         </div>
 
+        <div
+  ref={seriesRef}
+  id="series-section"
+  style={{ scrollMarginTop: "90px" }}
+>
+  <SeriesRow
+    series={genreFilteredSeries}
+    onSelect={(videoData) => {
+      setSelectedVideo(videoData);
+      setIsSouthPlayer(false);
+    }}
+    onAdd={handleAddToMyList}
+    title="Series"
+  />
+</div>
+
         {/* ✅ SOUTH MOVIES */}
         <MovieRow
           movies={popularSouthMovies}
@@ -775,22 +853,6 @@ return (
           title="🔥 Popular South Movies"
           showAdd={false}
         />
-
-        <div
-  ref={seriesRef}
-  id="series-section"
-  style={{ scrollMarginTop: "90px" }}
->
-  <SeriesRow
-    series={allSeries}
-    onSelect={(videoData) => {
-      setSelectedVideo(videoData);
-      setIsSouthPlayer(false);
-    }}
-    onAdd={handleAddToMyList}
-    title="Series"
-  />
-</div>
 
         {myList.length > 0 && (
           <div ref={myListRef} style={{ scrollMarginTop: "80px" }}>
@@ -925,17 +987,7 @@ genre={
     }));
   }}
 
-  onClose={() => {
-  setSelectedVideo(null);
-
-  const recKey = `recommend_${user}_${profile?.id}`;
-  const history =
-    JSON.parse(localStorage.getItem(recKey)) || [];
-
-  if (history.length > 0) {
-    window.location.reload();
-  }
-}}
+  onClose={() => setSelectedVideo(null)}
 />
     )
   )}
