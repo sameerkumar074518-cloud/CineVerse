@@ -162,35 +162,24 @@ const handleRemoveFromMyList = async (id) => {
   const itemToRemove = myList.find(
     m =>
       m.movieId === id ||
-      m._id === id ||
-      m.video === id
+      m.video === id ||
+      m._id === id
   );
 
-  if (!itemToRemove) return;
-
-  const deleteId =
-    itemToRemove.movieId ||
-    itemToRemove.video ||
-    itemToRemove._id ||
-    id;
+  if (!itemToRemove) {
+    console.log("Item not found in state");
+    return;
+  }
 
   setMyList(prev =>
-    prev.filter(
-      m =>
-        m.movieId !== deleteId &&
-        m.video !== deleteId &&
-        m._id !== deleteId
-    )
+    prev.filter(m => m._id !== itemToRemove._id)
   );
 
   if (token) {
-    await fetch(
-  `${API}/mylist/${encodeURIComponent(deleteId)}?profileId=${profile?.id}&title=${encodeURIComponent(itemToRemove.title)}`,
-  {
-    method: "DELETE",
-    headers: { Authorization: token }
-  }
-);
+    await fetch(`${API}/mylist/${itemToRemove._id}`, {
+      method: "DELETE",
+      headers: { Authorization: token }
+    });
   }
 };
 

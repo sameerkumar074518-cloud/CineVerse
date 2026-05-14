@@ -329,31 +329,12 @@ app.get("/mylist", auth, async (req, res) => {
 /* ❌ REMOVE */
 app.delete("/mylist/:id", auth, async (req, res) => {
   try {
-    const id = decodeURIComponent(req.params.id);
-    const profileId = req.query.profileId;
-    const title = req.query.title;
+    const id = req.params.id;
 
-    if (!profileId) {
-      return res.status(400).json({ error: "Profile ID required" });
-    }
-
-    let result = await MyList.findOneAndDelete({
-      username: req.user.username,
-      profileId,
-      $or: [
-        { movieId: id },
-        { video: id },
-        { _id: id }
-      ]
+    const result = await MyList.findOneAndDelete({
+      _id: id,
+      username: req.user.username
     });
-
-    if (!result && title) {
-      result = await MyList.findOneAndDelete({
-        username: req.user.username,
-        profileId,
-        title
-      });
-    }
 
     if (!result) {
       return res.status(404).json({ error: "Item not found" });
