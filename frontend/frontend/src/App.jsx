@@ -78,12 +78,16 @@ fetch(`${API}/top10`)
           : null;
       })
       .filter(Boolean);
+      const uniqueTopMovies = merged.filter(
+  (movie, index, self) =>
+    index === self.findIndex(m => m.video === movie.video)
+);
 
     setTopMovies(
-      merged.length > 0
-        ? merged
-        : allMovies
-    );
+  uniqueTopMovies.length > 0
+    ? uniqueTopMovies
+    : allMovies
+);
   })
   .catch(() => {
     setTopMovies(allMovies);
