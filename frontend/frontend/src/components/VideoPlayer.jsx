@@ -9,7 +9,8 @@ export default function NetflixPremiumPlayer({
   onSeasonChange,
   isSeries,
 user,
-profile
+profile,
+genre
 }) {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
@@ -186,6 +187,7 @@ useEffect(() => {
     setCurrentTime(v.currentTime);
     setProgress((v.currentTime / v.duration) * 100);
     if (!viewCounted && v.currentTime >= 30) {
+
   setViewCounted(true);
 
   fetch("https://primeclone-2e4b.onrender.com/watch-count", {
@@ -201,6 +203,25 @@ useEffect(() => {
   }).catch(err => {
     console.log("Watch count error:", err);
   });
+
+  if (user && profile && genre) {
+  const recKey = `recommend_${user}_${profile.id}`;
+
+  const oldData =
+    JSON.parse(localStorage.getItem(recKey)) || [];
+
+  const newItem = {
+    title,
+    video,
+    genre,
+    watchedAt: Date.now()
+  };
+
+  localStorage.setItem(
+    recKey,
+    JSON.stringify([newItem, ...oldData].slice(0, 30))
+  );
+}
 }
 
     if (!user || !profile) return;

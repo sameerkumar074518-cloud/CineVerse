@@ -30,6 +30,7 @@ const seriesRef = useRef(null);
 const [movies, setMovies] = useState([]);
 const [topMovies, setTopMovies] = useState([]);
 const [myList, setMyList] = useState([]);
+const [recommended, setRecommended] = useState([]);
 const [showIntro, setShowIntro] = useState(true);
 const [showEmptyMsg, setShowEmptyMsg] = useState(false);
 const [username, setUsername] = useState("");
@@ -354,6 +355,30 @@ const handleLogout = () => {
   setProfile(null);
   setMyList([]);
 };
+
+useEffect(() => {
+  if (!user || !profile) return;
+
+  const recKey = `recommend_${user}_${profile.id}`;
+  const history = JSON.parse(localStorage.getItem(recKey)) || [];
+
+  const genres = history
+    .flatMap(item => item.genre?.split(",") || [])
+    .map(g => g.trim().toLowerCase())
+    .filter(Boolean);
+
+  const recommendedContent = [...movies, ...allSeries]
+    .filter(item => {
+      const itemGenres = item.genre
+        ?.split(",")
+        .map(g => g.trim().toLowerCase()) || [];
+
+      return itemGenres.some(g => genres.includes(g));
+    })
+    .filter(item => !history.some(h => h.video === item.video));
+
+  setRecommended(recommendedContent.slice(0, 12));
+}, [user, profile, movies]);
 
 /* ================== INTRO ================== */
 /* ================== INTRO ================== */
@@ -707,6 +732,19 @@ return (
   }}
 />
 
+{recommended.length > 0 && (
+  <MovieRow
+    movies={recommended}
+    onSelect={(v) => {
+      setSelectedVideo(v);
+      setIsSouthPlayer(false);
+    }}
+    onAdd={handleAddToMyList}
+    title="Recommended For You"
+    showAdd={true}
+  />
+)}
+
 <div id="movies-section" style={{ scrollMarginTop: "90px" }}>
           <MovieRow
             movies={movies.filter((m) => {
@@ -872,6 +910,11 @@ return (
   }
   user={user}
 profile={profile}
+genre={
+  typeof selectedVideo === "object"
+    ? selectedVideo.genre
+    : [...movies, ...allSeries].find(m => m.video === selectedVideo)?.genre
+}
 
   onSeasonChange={(seasonObj) => {
     setSelectedVideo(prev => ({
@@ -882,7 +925,17 @@ profile={profile}
     }));
   }}
 
-  onClose={() => setSelectedVideo(null)}
+  onClose={() => {
+  setSelectedVideo(null);
+
+  const recKey = `recommend_${user}_${profile?.id}`;
+  const history =
+    JSON.parse(localStorage.getItem(recKey)) || [];
+
+  if (history.length > 0) {
+    window.location.reload();
+  }
+}}
 />
     )
   )}
