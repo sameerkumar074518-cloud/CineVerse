@@ -7,6 +7,7 @@ export default function Top10Row({ movies = [], onSelect, onAdd }) {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
   const [rowHover, setRowHover] = useState(false);
+  const [previewEnded, setPreviewEnded] = useState(false);
 
   const scrollLeft = () => {
     scrollRef.current.scrollBy({ left: -500, behavior: "smooth" });
@@ -78,7 +79,10 @@ export default function Top10Row({ movies = [], onSelect, onAdd }) {
             }}
             onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
             onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-            onClick={() => setSelectedMovie(movie)}
+            onClick={() => {
+  setPreviewEnded(false);
+  setSelectedMovie(movie);
+}}
           >
             <div style={{
               fontSize: "15vw",
@@ -149,28 +153,79 @@ export default function Top10Row({ movies = [], onSelect, onAdd }) {
             </button>
 
             <div style={{ position: "relative", height: "400px", width: "100%", backgroundColor: "#000" }}>
-              <video
-                key={selectedMovie.video}
-                ref={videoRef}
-                autoPlay
-                muted={isMuted}
-                loop
-                preload="metadata"
-                crossOrigin="anonymous"
-                onLoadedMetadata={() => {
-                  if (videoRef.current) {
-                    videoRef.current.currentTime = videoRef.current.duration * 0.3;
-                  }
-                }}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  borderRadius: "12px 12px 0 0"
-                }}
-              >
-                <source src={selectedMovie.video} type="video/mp4" />
-              </video>
+              {previewEnded ? (
+  <img
+    src={selectedMovie.image}
+    alt={selectedMovie.title}
+    onClick={() => {
+      setPreviewEnded(false);
+    }}
+    style={{
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      borderRadius: "12px 12px 0 0",
+      cursor: "pointer"
+    }}
+  />
+) : (
+  <video
+    key={selectedMovie.video}
+    ref={videoRef}
+    muted={isMuted}
+    playsInline
+    preload="auto"
+    poster={selectedMovie.image}
+    src={selectedMovie.video}
+    onLoadedData={() => {
+      const v = videoRef.current;
+      if (!v) return;
+
+      const startTime = v.duration * 0.35;
+
+      const handleSeeked = () => {
+        v.play().catch(() => {});
+        v.removeEventListener("seeked", handleSeeked);
+      };
+
+      v.addEventListener("seeked", handleSeeked);
+      v.currentTime = startTime;
+    }}
+    onClick={() => {
+      const v = videoRef.current;
+      if (!v) return;
+
+      const startTime = v.duration * 0.35;
+
+      const handleSeeked = () => {
+        v.play().catch(() => {});
+        v.removeEventListener("seeked", handleSeeked);
+      };
+
+      v.addEventListener("seeked", handleSeeked);
+      v.currentTime = startTime;
+    }}
+    onTimeUpdate={() => {
+      const v = videoRef.current;
+      if (!v) return;
+
+      const startTime = v.duration * 0.35;
+      const stopTime = startTime + 45;
+
+      if (v.currentTime >= stopTime) {
+        v.pause();
+        setPreviewEnded(true);
+      }
+    }}
+    style={{
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      borderRadius: "12px 12px 0 0",
+      cursor: "pointer"
+    }}
+  />
+)}
 
               <button
                 onClick={(e) => {
@@ -256,7 +311,7 @@ export default function Top10Row({ movies = [], onSelect, onAdd }) {
                     <span style={{ color: "#777" }}>Genres:</span> {selectedMovie.genre}
                   </p>
                   <p style={{ margin: "0" }}>
-                    <span style={{ color: "#777" }}>Audio:</span> Hindi
+                    <span style={{ color: "#777" }}>Audio:</span> Currently available in Hindi — multi-language support coming soon.
                   </p>
                 </div>
               </div>

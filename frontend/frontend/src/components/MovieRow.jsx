@@ -7,7 +7,7 @@ export const allMovies = [
     _id: "1",
     title: "Dhurandhar",
     image: "/images/thumb4.png",
-    video: "https://vz-be4ef2dc-3b3.b-cdn.net/c8f17e7e-257f-4650-9fc9-74bc12d7b265/playlist.m3u8",
+    video: "https://archive.org/download/por-thozhil-2023-uncut-1080p-hdrip-x-264-esubs-dual-audio-hindi-org/Dhurandhar.mp4",
     genre: "Action, Spy, Thriller",
     duration: "3h 26m",
     cast: "Ranveer Singh, Akshaye Khanna, R Madhavan",
@@ -17,7 +17,7 @@ export const allMovies = [
     _id: "2",
     title: "Ajab Prem Ki Ghazab Kahani",
     image: "/images/thumb9.png",
-    video: "https://vz-be4ef2dc-3b3.b-cdn.net/afca21b1-d8b5-4dc1-b2d9-7e13f1285ca5/playlist.m3u8",
+    video: "https://archive.org/download/the-conjuring-last-rites_202605/Ajab%20Prem%20Ki%20Ghazab%20Kahani.mp4",
     genre: "Comedy, Drama, Love, Romance",
     duration: "2h 31m",
     cast: "Ranbir Kapoor, Katrina Kaif, Upen Patel",
@@ -27,7 +27,7 @@ export const allMovies = [
     _id: "3",
     title: "The Notebook",
     image: "/images/thumb10.png",
-    video: "https://vz-be4ef2dc-3b3.b-cdn.net/fb36b514-1f38-4435-b3c6-ab85f477cc39/playlist.m3u8",
+    video: "https://archive.org/download/the-notebook-2004-1080p-blu-ray-dual-audio-hindi-or-english-x-265/_The_Notebook_2004_1080p_BluRay_Dual_Audio_Hindi_or_English_%C3%97265.mkv",
     genre: "Romance, Sci-Fi, Love",
     duration: "2h 4m",
     cast: "Ryan Gosling, Rachel McAdams, James Garner",
@@ -35,19 +35,19 @@ export const allMovies = [
   },
   {
     _id: "4",
-    title: "Blink",
+    title: "Lucky Baskhar",
     image: "/images/thumb7.png",
-    video: "https://vz-be4ef2dc-3b3.b-cdn.net/9ed57709-7b2a-4b16-ab25-de1f6376cb8c/playlist.m3u8",
-    genre: "Sci-fi, Suspense, Thriller",
-    duration: "2h 14m",
-    cast: "Dheekshith Shetty, Chaithra J.Achar, Mandara Battalahalli",
-    description: "In a world where sight is a luxury, one man discovers a terrifying secret about his past."
+    video: "https://archive.org/download/lucky-bhaskar-2024-1080p-10bit-nf-webrip-hindi-ddp-5-1-x-265-hevc/Lucky_Bhaskar_2024_1080p_10bit_NF_WEBRip_Hindi_DDP5_1_x265_HEVC.mkv",
+    genre: "Crime, Thriller, Drama",
+    duration: "2h 28m",
+    cast: "Dulquer Salmaan, Meenakshi Chaudhary, Tinnu Anand",
+    description: "A cash-strapped cashier working at a bank embarks on a risky investment scheme and soon gets drawn into the murky world of money laundering."
   },
   {
     _id: "5",
     title: "Passengers",
     image: "/images/thumb8.png",
-    video: "https://vz-be4ef2dc-3b3.b-cdn.net/e9739d86-26c9-4ccd-bdff-0acbb1afdd52/playlist.m3u8",
+    video: "https://archive.org/download/mm-passengers-2016-1080p-10bit-bluray-x-265-hevc-org-hindi-dd/MM_Passengers_2016_1080p_10bit_Bluray_x265_HEVC_Org_Hindi_DD.mkv",
     genre: "Sci-Fi, Love, Romance",
     duration: "1h 56m",
     cast: "Jennifer Lawrence, Chris Pratt, Michael Sheen",
@@ -57,7 +57,7 @@ export const allMovies = [
     _id: "6",
     title: "Sambhavam Adhyayam Onnu",
     image: "/images/thumb1.png",
-    video: "https://vz-be4ef2dc-3b3.b-cdn.net/65288ea7-6b4c-4f5a-88da-d6b9bb4704e4/playlist.m3u8",
+    video: "https://archive.org/download/the-conjuring-last-rites_202605/Sambhavam%20Adhyayam%20Onnu.mp4",
     genre: "Sci-Fi, Thriller, Time Travel",
     duration: "2h 10m",
     cast: "Askar Ali, Vineeth Kumar",
@@ -67,7 +67,7 @@ export const allMovies = [
     _id: "7",
     title: "The Conjuring Last Rites",
     image: "/images/thumb2.png",
-    video: "https://vz-be4ef2dc-3b3.b-cdn.net/3c04f393-4040-40a0-a9d3-7169c73ccb56/playlist.m3u8",
+    video: "https://archive.org/download/the-conjuring-last-rites_202605/The%20Conjuring%20Last%20Rites.mp4",
     genre: "Horror, Supernatural, Thriller",
     duration: "2h 16m",
     cast: "Patrick Wilson, Vera Farmiga",
@@ -75,33 +75,63 @@ export const allMovies = [
   },
   {
     _id: "8",
-    title: "Youth",
+    title: "Happy Raj",
     image: "/images/thumb3.png",
-    video: "https://vz-be4ef2dc-3b3.b-cdn.net/9c61c8a0-8c23-47e2-b22b-ec4a3cbdf034/playlist.m3u8",
-    genre: "Drama, School, Love",
-    duration: "2h 20m",
-    cast: "Ken Karunas, Suraj Venjaramoodu",
-    description: "A group of friends navigates the complexities of school life and first love."
-  },
-  {
-    _id: "9",
-    title: "Officer on Duty",
-    image: "/images/thumb5.png",
-    video: "https://vz-be4ef2dc-3b3.b-cdn.net/3f8544e8-ad02-4bb5-a376-d9ce20dad64b/playlist.m3u8",
-    genre: "Action, Thriller, Investigation",
-    duration: "2h 14m",
-    cast: "Kunchacko Boban, Priyamani",
-    description: "A dedicated officer risks everything to solve a high-stakes crime."
+    video: "https://archive.org/download/happy-raj/Happy%20Raj.mp4",
+    genre: "Drama, Comedy, Love",
+    duration: "2h 39m",
+    cast: "Sri Gouri Priya, G.V. Prakash Kumar, Abbas",
+    description: "A romantically unlucky man meets a woman who reciprocates his feelings, but when she insists their families meet, his eccentric father clashes with hers."
   },
   {
     _id: "10",
     title: "Silsila",
     image: "/images/thumb6.png",
-    video: "https://vz-be4ef2dc-3b3.b-cdn.net/6ba70595-32dd-4663-ad60-0f870a65df04/playlist.m3u8",
+    video: "https://archive.org/download/silsila-1981-blu-ray-720p-hindi-aac-5-1-x-264-esub-mkv-cinemas-telly/Silsila_1981_BluRay_720p_Hindi_AAC_5_1_x264_ESub_mkvCinemas_Telly.mkv",
     genre: "Romance, Drama, Love, Comedy",
     duration: "3h 1m",
     cast: "Amitabh Bachchan, Rekha, Jaya Bachchan",
     description: "A classic tale of love, heartbreak, and difficult choices."
+  },
+  {
+    _id: "11",
+    title: "Interstellar",
+    image: "/images/thumb12.png",
+    video: "https://archive.org/download/interstellar-2014-dual-audio-hindi-english-full-movie/Interstellar%20%282014%29%20Dual%20Audio%20%5BHindi%20%2B%20English%5D%20Full%20Movie%20.mkv",
+    genre: "Sci-Fic, Adventure, Love",
+    duration: "2h 50m",
+    cast: "	Matthew McConaughey, Anne Hathaway, Jessica Chastain",
+    description: "In the near future, humanity faces extinction due to dust storms and widespread crop blights. Cooper, a widowed former NASA test pilot, works as a farmer and raises his children, Murph and Tom, alongside his father-in-law Donald."
+  },
+  {
+    _id: "12",
+    title: "Wake Up Sid",
+    image: "/images/thumb13.png",
+    video: "https://archive.org/download/wake-up-sid-2009-hindi-1080p-blu-ray-x-264-aac-5.1/Wake%20Up%20Sid%20%282009%29%20Hindi%201080p%20BluRay%20x264%20AAC%205.1.mkv",
+    genre: "Love, Romance, Drama",
+    duration: "3h 26m",
+    cast: "Ranbir Kapoor, Konkona Sen, Anupam Kher",
+    description: "Wake Up Sid (2009) is a coming-of-age comedy-drama set in Mumbai, following a wealthy but aimless college student whose life changes after befriending an ambitious writer. As their worlds collide, he begins a journey of self-discovery."
+  },
+  {
+    _id: "13",
+    title: "Por Thozil",
+    image: "/images/thumb15.png",
+    video: "https://archive.org/download/por-thozhil-2023-uncut-1080p-hdrip-x-264-esubs-dual-audio-hindi-org/Por_Thozhil_2023_UNCUT_1080p_HDRip_x264_ESubs_Dual_Audio_Hindi_ORG.mkv",
+    genre: "Crime, Pyscho, Thriller",
+    duration: "2h 27m",
+    cast: "R Sarathkumar, Lisha Chinnu, Ashok Selvan",
+    description: "A bright but faint-hearted rookie cop has to overcome his fears in order to succeed in his first case which sees him partnered with a reclusive senior officer to catch a serial killer on the loose."
+  },
+  {
+    _id: "14",
+    title: "Hereditary",
+    image: "/images/thumb16.png",
+    video: "https://archive.org/download/hereditary-2018-1080p-ds-4-k-10bit-bluray-hindi-dd-2-0-english-ddp-5/Hereditary_2018_1080p_DS4K_10bit_Bluray_Hindi_DD2_0_%2B_English_DDP5.mkv",
+    genre: "Psychological Horror, Supernatural",
+    duration: "2h 7m",
+    cast: "Toni Collete, Milly Shapiro, Gabriel Byrne",
+    description: "A grieving family is haunted by tragic and disturbing occurrences."
   }
 ];
 
@@ -121,6 +151,7 @@ export default function MovieRow({
 const [selectedSeason, setSelectedSeason] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
   const [rowHover, setRowHover] = useState(false);
+  const [previewEnded, setPreviewEnded] = useState(false);
   const videoRef = useRef(null);
 
   const isSouthMovies = title.toLowerCase().includes("south");
@@ -229,47 +260,18 @@ const scrollRight = () => {
   alt={movie.title}
   style={{ width: "100%", height: "100%", objectFit: "cover", cursor: "pointer" }}
   onClick={() => {
-  if (isSouthMovies) {
-    onSelect && onSelect(movie.video);
-  } else {
-    setSelectedMovie(movie);
+    if (isSouthMovies) {
+      onSelect && onSelect(movie.video);
+    } else {
+      setPreviewEnded(false);
+      setSelectedMovie(movie);
 
-    if (movie.seasons) {
-      setSelectedSeason(movie.seasons[0]);
+      if (movie.seasons) {
+        setSelectedSeason(movie.seasons[0]);
+      }
     }
-  }
-}}
-/>onClick={() => {
-  if (isSouthMovies) {
-    onSelect && onSelect(movie.video);
-  }
-
-  // ✅ SEARCH MODE: series should directly open VideoPlayer
-  else if (title === "" && movie.seasons) {
-    onSelect &&
-      onSelect({
-        video: movie.seasons[0].video,
-        title: `${movie.title} - Season 1`,
-        seasons: movie.seasons,
-        currentSeason: 1,
-        isSeries: true
-      });
-  }
-
-  // ✅ SEARCH MODE: movies direct play
-  else if (title === "") {
-    onSelect && onSelect(movie.video);
-  }
-
-  // ✅ NORMAL ROW: open preview modal
-  else {
-    setSelectedMovie(movie);
-
-    if (movie.seasons) {
-      setSelectedSeason(movie.seasons[0]);
-    }
-  }
-}}
+  }}
+/>
               </div>
               <p style={titleStyle}>{movie.title}</p>
             </div>
@@ -280,10 +282,11 @@ const scrollRight = () => {
       {/* 🔥 THE CENTER MODAL (Fixed: Close on click outside & Lookup full data) */}
       {selectedMovie && (() => {
         const fullMovieData =
-  allMovies.find(m => m.video === selectedMovie.video) ||
-  allSeries.find(s => s.title === selectedMovie.title) ||
-  selectedMovie;
-
+  isMyList
+    ? selectedMovie
+    : allMovies.find(m => m.video === selectedMovie.video) ||
+      allSeries.find(s => s.title === selectedMovie.title) ||
+      selectedMovie;
         return (
           <div 
             style={modalOverlayStyle} 
@@ -294,39 +297,95 @@ const scrollRight = () => {
               <button style={closeButtonStyle} onClick={() => setSelectedMovie(null)}>✕</button>
 
               <div style={{ position: "relative", height: "400px", width: "100%", backgroundColor: "#000" }}>
-                <video
-  key={
-    fullMovieData.seasons
-      ? selectedSeason?.video
-      : fullMovieData.video
-  }
-  ref={videoRef}
-  autoPlay
-  muted={isMuted}
-  loop
-  preload="metadata"
-  crossOrigin="anonymous"
-  onLoadedMetadata={() => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = videoRef.current.duration * 0.3;
+                {previewEnded ? (
+  <img
+    src={fullMovieData.image}
+    alt={fullMovieData.title}
+   onClick={() => {
+  setPreviewEnded(false);
+
+  setTimeout(() => {
+    const v = videoRef.current;
+    if (!v) return;
+
+    const startTime = v.duration * 0.35;
+
+    const handleSeeked = () => {
+      v.play().catch(() => {});
+      v.removeEventListener("seeked", handleSeeked);
+    };
+
+    v.addEventListener("seeked", handleSeeked);
+    v.currentTime = startTime;
+  }, 300);
+}}
+    style={{
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      borderRadius: "12px 12px 0 0",
+      cursor: "pointer"
+    }}
+  />
+) : (
+  <video
+    key={
+      fullMovieData.seasons
+        ? selectedSeason?.video
+        : fullMovieData.video
     }
-  }}
-  style={{ 
-    width: "100%", 
-    height: "100%", 
-    objectFit: "cover", 
-    borderRadius: "12px 12px 0 0" 
-  }}
->
-  <source
-  src={
-    fullMovieData.seasons
-      ? selectedSeason?.video
-      : fullMovieData.video
-  }
-  type="application/x-mpegURL"
-/>
-</video>
+    ref={videoRef}
+    muted={isMuted}
+    playsInline
+    preload="auto"
+    poster={fullMovieData.image}
+    src={
+      fullMovieData.seasons
+        ? selectedSeason?.video
+        : fullMovieData.video
+    }
+    onLoadedData={() => {
+  const v = videoRef.current;
+  if (!v) return;
+
+  const startTime = v.duration * 0.35;
+
+  const handleSeeked = () => {
+    v.play().catch(() => {});
+    v.removeEventListener("seeked", handleSeeked);
+  };
+
+  v.addEventListener("seeked", handleSeeked);
+  v.currentTime = startTime;
+}}
+    onClick={() => {
+      const v = videoRef.current;
+      if (!v) return;
+
+      v.currentTime = v.duration * 0.35;
+      v.play().catch(() => {});
+    }}
+    onTimeUpdate={() => {
+      const v = videoRef.current;
+      if (!v) return;
+
+      const startTime = v.duration * 0.35;
+      const stopTime = startTime + 45;
+
+      if (v.currentTime >= stopTime) {
+        v.pause();
+        setPreviewEnded(true);
+      }
+    }}
+    style={{
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      borderRadius: "12px 12px 0 0",
+      cursor: "pointer"
+    }}
+  />
+)}
                 <button 
                   onClick={(e) => { e.stopPropagation(); setIsMuted(!isMuted); }}
                   style={muteButtonStyle}
@@ -379,12 +438,12 @@ const scrollRight = () => {
 
   onSelect &&
   onSelect(
-    fullMovieData.seasons
-      ? {
-          video: selectedSeason.video,
+  fullMovieData.seasons
+    ? {
+        video: selectedSeason?.video,
           title: `${fullMovieData.title} - Season ${selectedSeason.season}`,
           seasons: fullMovieData.seasons,
-          currentSeason: selectedSeason.season,
+          currentSeason: selectedSeason?.season,
           isSeries: true
         }
       : fullMovieData.video
@@ -400,7 +459,9 @@ const scrollRight = () => {
     onRemove &&
     onRemove(
       fullMovieData.movieId ||
-      (fullMovieData.seasons ? fullMovieData._id : fullMovieData.video)
+fullMovieData.video ||
+fullMovieData.seasons?.[0]?.video ||
+fullMovieData._id
     )
   }
   title="Remove from My List"
@@ -417,7 +478,9 @@ const scrollRight = () => {
   fullMovieData.seasons
     ? {
         ...fullMovieData,
-        movieId: fullMovieData._id,
+        movieId:
+  fullMovieData._id ||
+  fullMovieData.title,
         video: fullMovieData.seasons[0].video,
         isSeries: true
       }
@@ -448,7 +511,7 @@ const scrollRight = () => {
                     <p style={{ margin: "0 0 10px 0" }}><span style={{ color: "#777" }}>Cast:</span> {fullMovieData.cast}</p>
                     <p style={{ margin: "0 0 10px 0" }}><span style={{ color: "#777" }}>Genres:</span> {fullMovieData.genre}</p>
                     <p style={{ margin: "0" }}>
-  <span style={{ color: "#777" }}>Audio:</span> Multiple Languages Available — switch audio anytime from the player controls
+  <span style={{ color: "#777" }}>Audio:</span> Currently available in Hindi — multi-language support coming soon.
 </p>
                   </div>
                 </div>

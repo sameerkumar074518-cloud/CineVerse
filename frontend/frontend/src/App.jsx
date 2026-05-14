@@ -28,6 +28,7 @@ const [search, setSearch] = useState("");
 const myListRef = useRef(null);
 const seriesRef = useRef(null);
 const [movies, setMovies] = useState([]);
+const [topMovies, setTopMovies] = useState([]);
 const [myList, setMyList] = useState([]);
 const [showIntro, setShowIntro] = useState(true);
 const [showEmptyMsg, setShowEmptyMsg] = useState(false);
@@ -56,6 +57,35 @@ if (savedProfile) {
 }
 
 setMovies(allMovies);
+fetch(`${API}/top10`)
+  .then(res => res.json())
+  .then(data => {
+    const merged = data
+      .map(item => {
+        const fullMovie = allMovies.find(
+          m =>
+            m.video === item.video ||
+            m._id === item.movieId
+        );
+
+        return fullMovie
+          ? {
+              ...fullMovie,
+              watchCount: item.watchCount
+            }
+          : null;
+      })
+      .filter(Boolean);
+
+    setTopMovies(
+      merged.length > 0
+        ? merged
+        : allMovies
+    );
+  })
+  .catch(() => {
+    setTopMovies(allMovies);
+  });
 setMyList([]);
 
 if (token && profile) {
@@ -128,20 +158,38 @@ const handleRemoveFromMyList = async (id) => {
 
   const token = localStorage.getItem("token");
 
+  const itemToRemove = myList.find(
+    m =>
+      m.movieId === id ||
+      m._id === id ||
+      m.video === id
+  );
+
+  if (!itemToRemove) return;
+
+  const deleteId =
+    itemToRemove.movieId ||
+    itemToRemove.video ||
+    itemToRemove._id ||
+    id;
+
   setMyList(prev =>
     prev.filter(
       m =>
-        m.video !== id &&
-        m._id !== id &&
-        m.movieId !== id
+        m.movieId !== deleteId &&
+        m.video !== deleteId &&
+        m._id !== deleteId
     )
   );
 
   if (token) {
-    await fetch(`${API}/mylist/${encodeURIComponent(id)}?profileId=${profile?.id}`, {
-      method: "DELETE",
-      headers: { Authorization: token }
-    });
+    await fetch(
+  `${API}/mylist/${encodeURIComponent(deleteId)}?profileId=${profile?.id}&title=${encodeURIComponent(itemToRemove.title)}`,
+  {
+    method: "DELETE",
+    headers: { Authorization: token }
+  }
+);
   }
 };
 
@@ -651,7 +699,13 @@ return (
       </div>
     ) : (
       <>
-        <Hero onSelect={(v) => { setSelectedVideo(v); setIsSouthPlayer(false); }} />
+        <Hero
+  onSelect={(v) => {
+    setSelectedVideo(v);
+    setIsSouthPlayer(false);
+  }}
+  onAdd={handleAddToMyList}
+/>
 
         <ContinueWatching
   movies={[...movies, ...allSeries]}
@@ -724,11 +778,30 @@ return (
         )}
 
         <Top10Row
-  movies={movies}
+  movies={topMovies.length > 0 ? topMovies : movies}
   onSelect={(v) => {
-    setSelectedVideo(v);
-    setIsSouthPlayer(false);
-  }}
+  setSelectedVideo(v);
+  setIsSouthPlayer(false);
+
+  const movieObj =
+    typeof v === "object"
+      ? v
+      : movies.find(m => m.video === v);
+
+  if (movieObj) {
+    fetch(`${API}/watch-count`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        movieId: movieObj._id,
+        title: movieObj.title,
+        video: movieObj.video
+      })
+    });
+  }
+}}
   onAdd={handleAddToMyList}
 />
       </>

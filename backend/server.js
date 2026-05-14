@@ -13,6 +13,7 @@ const {
 require("dotenv").config();
 
 const app = express();
+const watchCounts = {};
 
 app.use(cors());
 app.use(express.json());
@@ -330,16 +331,29 @@ app.delete("/mylist/:id", auth, async (req, res) => {
   try {
     const id = decodeURIComponent(req.params.id);
     const profileId = req.query.profileId;
+    const title = req.query.title;
 
     if (!profileId) {
       return res.status(400).json({ error: "Profile ID required" });
     }
 
-    const result = await MyList.findOneAndDelete({
+    let result = await MyList.findOneAndDelete({
       username: req.user.username,
       profileId,
-      movieId: id
+      $or: [
+        { movieId: id },
+        { video: id },
+        { _id: id }
+      ]
     });
+
+    if (!result && title) {
+      result = await MyList.findOneAndDelete({
+        username: req.user.username,
+        profileId,
+        title
+      });
+    }
 
     if (!result) {
       return res.status(404).json({ error: "Item not found" });
@@ -355,6 +369,35 @@ app.delete("/mylist/:id", auth, async (req, res) => {
 /* ================= */
 /* START */
 /* ================= */
+app.post("/watch-count", (req, res) => {
+  const { movieId, title, video } = req.body;
+  const id = movieId || video;
+
+  if (!id) {
+    return res.status(400).json({ error: "movieId required" });
+  }
+
+  if (!watchCounts[id]) {
+    watchCounts[id] = {
+      movieId: id,
+      title,
+      video,
+      watchCount: 0
+    };
+  }
+
+  watchCounts[id].watchCount += 1;
+
+  res.json(watchCounts[id]);
+});
+
+app.get("/top10", (req, res) => {
+  const top10 = Object.values(watchCounts)
+    .sort((a, b) => b.watchCount - a.watchCount)
+    .slice(0, 10);
+
+  res.json(top10);
+});
 
 app.listen(5000, () => {
   console.log("Server running on port 5000 🚀");

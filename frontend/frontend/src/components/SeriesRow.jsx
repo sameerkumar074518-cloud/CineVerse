@@ -1,47 +1,65 @@
 import { useRef, useState } from "react";
-
 /* ✅ DATA WITH GENRES AND CAST */
 export const allSeries = [
   {
-  _id: "11",
+  _id: "15",
 
-  title: "From",
+  title: "Farzi",
 
-  image: "/images/From.png",
+  image: "/images/thumb14.png",
 
-  genre: "Horror, Mystery, Thriller, Survival",
+  genre: "Crime, Suspense, Thriller, Drama",
 
-  duration: "3 Seasons",
+  duration: "1 Season",
 
-  cast: "Harold Perrineau, Catalina Sandino Moreno, Eion Bailey",
+  cast: "Shahid Kapoor, Kay Kay Menon, Vijay Sethupathi",
 
   description:
-    "A mysterious town traps everyone who enters. As terrifying creatures emerge at night, the residents struggle to survive and uncover the truth behind the town.",
+    "Farzi follows Sunny, a gifted but struggling artist who, disillusioned by income inequality, creates the perfect counterfeit currency with his best friend, drawing the attention of both a powerful crime lord and a relentless task force officer.",
 
   seasons: [
     {
       season: 1,
       video:
-        "https://vz-be4ef2dc-3b3.b-cdn.net/b5a6bad4-ef01-44e6-926d-4a9c59d0177e/playlist.m3u8",
-        image: "/images/From.png",
+        "https://archive.org/download/farzi-2023-s-01-complete-720p-amzn-web-dl-multi-aac-2/Farzi_2023_S01_Complete_720p_AMZN_WEB_DL_Multi_AAC2.mkv",
+        image: "/images/thumb14.png",
         
     },
-
-    // {
-    //   season: 2,
-    //   video:
-    //     "https://vz-be4ef2dc-3b3.b-cdn.net/8589235e-fe24-4ba2-ad7b-eb88967d609a/playlist.m3u8",
-    //     image: "/images/From.png",
-    // },
-
-    // {
-    //   season: 3,
-    //   video:
-    //     "https://vz-be4ef2dc-3b3.b-cdn.net/98974d26-a2c7-49c9-a879-873380db84b2/playlist.m3u8",
-    //     image: "/images/From.png",
-    // }
   ]
 },
+{
+  _id: "17",
+
+  title: "Paatal Lok",
+
+  image: "/images/thumb17.png",
+
+  genre: "Action, Crime, Thriller",
+
+  duration: "2 Seasons",
+
+  cast: "Jaideep Ahlawat, Ishwak Singh, Gul Panag",
+
+  description:
+    "Inspector Hathi Ram Chaudhary, the haggard, unlikely hero, investigates a high-profile murder case that leads him to remote corners of North-East India, where he battles powerful forces and personal tragedies in his pursuit of truth.",
+
+  seasons: [
+    {
+      season: 1,
+      video:
+        "https://archive.org/download/paatal-lok-2020-s-01-720p-10bit-ds-4-k-amzn-web-rip-x-265-h/Paatal%20Lok%20%282020%29%20S01%20720p%2010bit%20DS4K%20AMZN%20WebRip%20x265%20H.mkv",
+        image: "/images/thumb17.png",
+        
+    },
+    {
+      season: 2,
+      video:
+        "https://archive.org/download/paatal-lok-2020-s-01-720p-10bit-ds-4-k-amzn-web-rip-x-265-h/Paatal_Lok_S02_COMBiNED_WebRip_720p_Hindi_AAC_5_1_x264_MSubs_mkvCinemas.mkv",
+        image: "/images/thumb17.png",
+        
+    }
+  ]
+}
 ];
 
 export const series = allSeries;
@@ -60,6 +78,7 @@ export default function SeriesRow({
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
   const [rowHover, setRowHover] = useState(false);
+  const [previewEnded, setPreviewEnded] = useState(false);
   const videoRef = useRef(null);
 
   const isSouthMovies = title.toLowerCase().includes("south");
@@ -171,11 +190,12 @@ const scrollRight = () => {
   style={{ width: "100%", height: "100%", objectFit: "cover", cursor: "pointer" }}
   onClick={() => {
   if (isSouthMovies) {
-    onSelect && onSelect(movie.video); // ✅ direct play (YouTube)
+    onSelect && onSelect(movie.video);
   } else {
-    setSelectedMovie(movie);
+    setPreviewEnded(false);
 
-setSelectedSeason(movie.seasons?.[0]);
+    setSelectedMovie(movie);
+    setSelectedSeason(movie.seasons?.[0]);
   }
 }}
 />
@@ -200,28 +220,87 @@ setSelectedSeason(movie.seasons?.[0]);
               <button style={closeButtonStyle} onClick={() => setSelectedMovie(null)}>✕</button>
 
               <div style={{ position: "relative", height: "400px", width: "100%", backgroundColor: "#000" }}>
-                <video
-  key={selectedSeason.video}
-  ref={videoRef}
-  autoPlay
-  muted={isMuted}
-  loop
-  preload="metadata"
-  crossOrigin="anonymous"
-  onLoadedMetadata={() => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = videoRef.current.duration * 0.3;
-    }
-  }}
-  style={{ 
-    width: "100%", 
-    height: "100%", 
-    objectFit: "cover", 
-    borderRadius: "12px 12px 0 0" 
-  }}
->
-  <source src={selectedSeason.video} type="video/mp4" />
-</video>
+                {previewEnded ? (
+  <img
+    src={selectedSeason?.image || fullMovieData.image}
+    alt={fullMovieData.title}
+    onClick={() => {
+      setPreviewEnded(false);
+
+      setTimeout(() => {
+        const v = videoRef.current;
+        if (!v) return;
+
+        const startTime = v.duration * 0.35;
+
+        const handleSeeked = () => {
+          v.play().catch(() => {});
+          v.removeEventListener("seeked", handleSeeked);
+        };
+
+        v.addEventListener("seeked", handleSeeked);
+        v.currentTime = startTime;
+      }, 300);
+    }}
+    style={{
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      borderRadius: "12px 12px 0 0",
+      cursor: "pointer"
+    }}
+  />
+) : (
+  <video
+    key={selectedSeason?.video}
+    ref={videoRef}
+    muted={isMuted}
+    playsInline
+    preload="auto"
+    poster={selectedSeason?.image || fullMovieData.image}
+    src={selectedSeason?.video}
+    onLoadedData={() => {
+      const v = videoRef.current;
+      if (!v) return;
+
+      const startTime = v.duration * 0.35;
+
+      const handleSeeked = () => {
+        v.play().catch(() => {});
+        v.removeEventListener("seeked", handleSeeked);
+      };
+
+      v.addEventListener("seeked", handleSeeked);
+      v.currentTime = startTime;
+    }}
+    onClick={() => {
+      const v = videoRef.current;
+      if (!v) return;
+
+      v.currentTime = v.duration * 0.35;
+      v.play().catch(() => {});
+    }}
+    onTimeUpdate={() => {
+      const v = videoRef.current;
+      if (!v) return;
+
+      const startTime = v.duration * 0.35;
+      const stopTime = startTime + 45;
+
+      if (v.currentTime >= stopTime) {
+        v.pause();
+        setPreviewEnded(true);
+      }
+    }}
+    style={{
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      borderRadius: "12px 12px 0 0",
+      cursor: "pointer"
+    }}
+  />
+)}
                 <button 
                   onClick={(e) => { e.stopPropagation(); setIsMuted(!isMuted); }}
                   style={muteButtonStyle}
@@ -327,7 +406,7 @@ setSelectedSeason(movie.seasons?.[0]);
     onClick={() =>
       onAdd &&
       onAdd({
-  movieId: fullMovieData._id, // series delete id
+  movieId: fullMovieData.seasons?.[0]?.video, // series delete id
   title: fullMovieData.title,
   image: fullMovieData.image,
   video: fullMovieData.seasons?.[0]?.video,
@@ -364,7 +443,7 @@ setSelectedSeason(movie.seasons?.[0]);
                   <div style={{ flex: "1", fontSize: "14px", borderLeft: "1px solid #333", paddingLeft: "20px" }}>
                     <p style={{ margin: "0 0 10px 0" }}><span style={{ color: "#777" }}>Cast:</span> {fullMovieData.cast}</p>
                     <p style={{ margin: "0 0 10px 0" }}><span style={{ color: "#777" }}>Genres:</span> {fullMovieData.genre}</p>
-                    <p style={{ margin: "0" }}><span style={{ color: "#777" }}>Audio:</span> Hindi</p>
+                    <p style={{ margin: "0" }}><span style={{ color: "#777" }}>Audio:</span> Currently available in Hindi — multi-language support coming soon.</p>
                   </div>
                 </div>
               </div>

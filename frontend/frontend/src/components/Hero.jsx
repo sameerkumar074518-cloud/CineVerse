@@ -2,45 +2,55 @@ import { useState, useRef, useEffect } from "react";
 import { movies } from "./MovieRow";
 import { series } from "./SeriesRow";
 
-export default function Hero({ onSelect }) {
+export default function Hero({ onSelect, onAdd }) {
 
   const videoRef = useRef(null);
+  const modalVideoRef = useRef(null);
 
   const [isHover, setIsHover] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [previewEnded, setPreviewEnded] = useState(false);
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [modalPreviewEnded, setModalPreviewEnded] = useState(false);
 
-  // ✅ CUSTOM ORDER (YOUR REQUIREMENT)
   const allContent = [...movies, ...series];
 
-const orderedMovies = [
-  ...allContent.filter(m => m.title === "From"),
-  ...allContent.filter(m => m.title === "Dhurandhar"),
-  ...allContent.filter(m => m.title === "Ajab Prem Ki Ghazab Kahani"),
-  ...allContent.filter(m => m.title === "The Notebook"),
-  ...allContent.filter(m => m.title === "Blink"),
-  ...allContent.filter(m => m.title === "Passengers"),
-  ...allContent.filter(m => m.title === "Officer on Duty"),
-  ...allContent.filter(m => m.title === "The Conjuring Last Rites"),
-  ...allContent.filter(m => m.title === "Sambhavam Adhyayam Onnu"),
-  ...allContent.filter(m => m.title === "Youth"),
+  const orderedMovies = [
+    ...allContent.filter(m => m.title === "Interstellar"),
+    ...allContent.filter(m => m.title === "Paatal Lok"),
+    ...allContent.filter(m => m.title === "Hereditary"),
+    ...allContent.filter(m => m.title === "Lucky Baskhar"),
+    ...allContent.filter(m => m.title === "Wake Up Sid"),
+    ...allContent.filter(m => m.title === "Farzi"),
+    ...allContent.filter(m => m.title === "Dhurandhar"),
+    ...allContent.filter(m => m.title === "Por Thozil"),
+    ...allContent.filter(m => m.title === "Ajab Prem Ki Ghazab Kahani"),
+    ...allContent.filter(m => m.title === "The Notebook"),
+    ...allContent.filter(m => m.title === "Passengers"),
+    ...allContent.filter(m => m.title === "The Conjuring Last Rites"),
+    ...allContent.filter(m => m.title === "Sambhavam Adhyayam Onnu"),
+    ...allContent.filter(m => m.title === "Happy Raj"),
 
-  ...allContent.filter(
-    m =>
-      ![
-        "From",
-        "Dhurandhar",
-        "The Notebook",
-        "Ajab Prem Ki Ghazab Kahani",
-        "Blink",
-        "Passengers",
-        "Officer on Duty",
-        "The Conjuring Last Rites",
-        "Sambhavam Adhyayam Onnu",
-        "Youth"
-      ].includes(m.title)
-  )
-];
+    ...allContent.filter(
+      m =>
+        ![
+          "Paatal Lok",
+          "Hereditary",
+          "Por Thozil",
+          "Wake Up Sid",
+          "Interstellar",
+          "Farzi",
+          "Dhurandhar",
+          "The Notebook",
+          "Ajab Prem Ki Ghazab Kahani",
+          "Lucky Baskhar",
+          "Passengers",
+          "The Conjuring Last Rites",
+          "Sambhavam Adhyayam Onnu",
+          "Happy Raj"
+        ].includes(m.title)
+    )
+  ];
 
   const [index, setIndex] = useState(0);
   const [selectedSeason, setSelectedSeason] = useState(null);
@@ -54,19 +64,45 @@ const orderedMovies = [
   };
 
   const current = orderedMovies[index];
-  const activeSeason =
-  selectedSeason ||
-  (current.seasons ? current.seasons[0] : null);
 
-const activeVideo = activeSeason?.video || current.video;
-const activeImage = activeSeason?.image || current.image;
+  const activeSeason =
+    selectedSeason ||
+    (current.seasons ? current.seasons[0] : null);
+
+  const activeVideo = activeSeason?.video || current.video;
+  const activeImage = activeSeason?.image || current.image;
 
   const details = {
-    "From": {
-    full: "FROM",
-    desc: "Mystery • Horror • Survival",
-    preview: 2500
-  },
+    "Paatal Lok": {
+      full: "Paatal Lok",
+      desc: "Action • Crime • Thriller",
+      preview: 4500
+    },
+    "Hereditary": {
+      full: "Hereditary",
+      desc: "Horror • Supernatural • Thriller",
+      preview: 4500
+    },
+    "Wake Up Sid": {
+      full: "Wake Up Sid",
+      desc: "Love • Romance • Drama",
+      preview: 2500
+    },
+    "Por Thozil": {
+      full: "Por Thozil",
+      desc: "Crime • Thriller • Investigation",
+      preview: 3500
+    },
+    "Interstellar": {
+      full: "Interstellar",
+      desc: "Sci-Fic • Adventure • Love",
+      preview: 8500
+    },
+    "Farzi": {
+      full: "Farzi",
+      desc: "Crime • Suspense • Drama",
+      preview: 8500
+    },
     "Sambhavam Adhyayam Onnu": {
       full: "Sambhavam Adhyayam Onnu",
       desc: "Crime • Thriller • Investigation",
@@ -92,31 +128,25 @@ const activeImage = activeSeason?.image || current.image;
       desc: "Horror • Supernatural • Mystery",
       preview: 3500
     },
-    "Blink": {
-      full: "Blink",
-      desc: "Crime • Sci-fi • Thriller",
-      preview: 2800
+    "Lucky Baskhar": {
+      full: "Lucky Baskhar",
+      desc: "Crime • Drama • Thriller",
+      preview: 5810
     },
-     "Passengers": {
+    "Passengers": {
       full: "Passengers",
       desc: "Drama • Sci-fi • Romance",
-      preview: 2803
+      preview: 6000
     },
-    
-    "Youth": {
-      full: "Youth",
-      desc: "Drama • College • Fun",
+    "Happy Raj": {
+      full: "Happy Raj",
+      desc: "Drama • Love • Comedy",
       preview: 3400
     },
     "Dhurandhar": {
       full: "Dhurandhar",
       desc: "Spy • Action • Thriller",
-      preview: 5700
-    },
-    "Officer on Duty": {
-      full: "Officer on Duty",
-      desc: "Crime • Suspense • Thriller",
-      preview: 5000
+      preview: 5096
     }
   };
 
@@ -127,32 +157,31 @@ const activeImage = activeSeason?.image || current.image;
   };
 
   useEffect(() => {
-  setSelectedSeason(null);
-  setIsHover(false);
-  setIsMuted(true);
-  setPreviewEnded(false);
+    setSelectedSeason(null);
+    setIsHover(false);
+    setIsMuted(true);
+    setPreviewEnded(false);
 
-  if (videoRef.current) {
-    videoRef.current.pause();
-    videoRef.current.currentTime = 0;
-  }
-}, [index]);
-
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  }, [index]);
 
   return (
     <div
       onMouseEnter={() => {
-  if (previewEnded) return;
+        if (previewEnded || showInfoModal) return;
 
-  setIsHover(true);
+        setIsHover(true);
 
-  setTimeout(() => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = info.preview || 0;
-      videoRef.current.play().catch(() => {});
-    }
-  }, 100);
-}}
+        setTimeout(() => {
+          if (videoRef.current) {
+            videoRef.current.currentTime = info.preview || 0;
+            videoRef.current.play().catch(() => {});
+          }
+        }, 100);
+      }}
       onMouseLeave={() => {
         setIsHover(false);
 
@@ -163,45 +192,56 @@ const activeImage = activeSeason?.image || current.image;
       }}
       style={{
         width: "100%",
-        aspectRatio: "21/9",
+        height: "92vh",
         position: "relative",
         color: "white",
         overflow: "hidden"
       }}
     >
 
-      {/* 🎬 VIDEO */}
       {isHover && (
-  <video
-    key={activeVideo}
-    ref={videoRef}
-    src={activeVideo}
-    muted={isMuted}
-    preload="auto"
-    onTimeUpdate={() => {
-      if (videoRef.current) {
-        const start = info.preview || 0;
-        const played = videoRef.current.currentTime - start;
+        <video
+          autoPlay
+          key={activeVideo}
+          ref={videoRef}
+          muted={isMuted}
+          playsInline
+          preload="auto"
+          onTimeUpdate={() => {
+            if (videoRef.current) {
+              const start = info.preview || 0;
+              const played = videoRef.current.currentTime - start;
 
-        if (played >= 60) {
-          videoRef.current.pause();
-          videoRef.current.currentTime = 0;
-          setIsHover(false);
-          setPreviewEnded(true);
-        }
-      }
-    }}
-    style={{
-      position: "absolute",
-      inset: 0,
-      width: "100%",
-      height: "100%",
-      objectFit: "cover"
-    }}
-  />
-)}
+              if (played >= 60) {
+                videoRef.current.pause();
+                videoRef.current.currentTime = 0;
+                setIsHover(false);
+                setPreviewEnded(true);
+              }
+            }
+          }}
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            transform: "scale(1.02)"
+          }}
+        >
+          <source
+            src={activeVideo}
+            type={
+              activeVideo?.includes(".mkv")
+                ? "video/x-matroska"
+                : activeVideo?.includes(".m3u8")
+                ? "application/x-mpegURL"
+                : "video/mp4"
+            }
+          />
+        </video>
+      )}
 
-      {/* 🖼 IMAGE */}
       {!isHover && (
         <div
           style={{
@@ -209,96 +249,109 @@ const activeImage = activeSeason?.image || current.image;
             inset: 0,
             backgroundImage: `url(${activeImage})`,
             backgroundSize: "cover",
+            transform: "scale(1.03)",
+            filter: "brightness(0.92)",
             backgroundPosition: "center",
             transition: "0.5s ease"
           }}
         />
       )}
 
-      {/* 🔇 MUTE BUTTON */}
       {isHover && (
         <button
           onClick={() => setIsMuted(!isMuted)}
-          style={{
-            position: "absolute",
-            bottom: "30px",
-            right: "30px",
-            zIndex: 10,
-            background: "rgba(0,0,0,0.6)",
-            border: "none",
-            color: "white",
-            padding: "10px",
-            borderRadius: "50%",
-            cursor: "pointer",
-            fontSize: "18px"
+          style={heroMiniBtn}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(255,255,255,0.15)";
+            e.currentTarget.style.transform = "scale(1.08)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "rgba(42,42,42,0.72)";
+            e.currentTarget.style.transform = "scale(1)";
           }}
         >
           {isMuted ? "🔇" : "🔊"}
         </button>
       )}
 
-      {/* 🔥 LIGHTER GRADIENT */}
+      {previewEnded && (
+        <button
+          onClick={() => {
+            setPreviewEnded(false);
+
+            setTimeout(() => {
+              setIsHover(true);
+
+              setTimeout(() => {
+                if (videoRef.current) {
+                  videoRef.current.currentTime = info.preview || 0;
+                  videoRef.current.play().catch(() => {});
+                }
+              }, 120);
+            }, 50);
+          }}
+          style={heroMiniBtn}
+        >
+          ↻
+        </button>
+      )}
+
       <div
         style={{
           position: "absolute",
           inset: 0,
-          background:
-            "linear-gradient(to right, rgba(0,0,0,0.45) 20%, rgba(0,0,0,0.3) 45%, transparent 75%)"
+          background: `
+            linear-gradient(
+              90deg,
+              rgba(0,0,0,0.72) 0%,
+              rgba(0,0,0,0.52) 20%,
+              rgba(0,0,0,0.28) 42%,
+              rgba(0,0,0,0.10) 68%,
+              transparent 100%
+            )
+          `
         }}
       />
 
-      {/* 🔥 BOTTOM FADE */}
       <div
         style={{
           position: "absolute",
           bottom: 0,
           width: "100%",
-          height: "30%",
+          height: "45%",
           background: "linear-gradient(to top, black, transparent)"
         }}
       />
 
-      {/* ⬅️ */}
       <button onClick={prev} style={arrow("left")}>❮</button>
-
-      {/* ➡️ */}
       <button onClick={next} style={arrow("right")}>❯</button>
 
-      {/* 🎬 CONTENT */}
       <div
         style={{
           position: "absolute",
-          left: "60px",
-          bottom: "80px",
+          left: "70px",
+          bottom: "120px",
           maxWidth: "520px",
           zIndex: 2
         }}
       >
-        {/* ✅ ONLY THIS CHANGED */}
         <h1 style={{
-  fontSize: "68px",
-  fontWeight: "870",
-  letterSpacing: "2px",
-  lineHeight: "1.1",
-  marginBottom: "10px",
-  textTransform: "uppercase",
-
-  /* 🔥 BRIGHT NETFLIX RED */
-  color: "#e50914",
-
-  /* 🔥 CLEAN VISIBILITY SHADOW */
-  textShadow: `
-    0 2px 6px rgba(0,0,0,0.8),
-    0 4px 15px rgba(0,0,0,0.5)
-  `,
-
-  WebkitTextStroke: "1px rgba(0,0,0,0.5)",
-
-  /* 🔥 STRONG FONT */
-  fontFamily: "Impact, Haettenschweiler, 'Arial Black', sans-serif"
-}}>
-  {info.full}
-</h1>
+          fontSize: "58px",
+          fontWeight: "870",
+          letterSpacing: "1px",
+          lineHeight: "1.1",
+          marginBottom: "10px",
+          textTransform: "uppercase",
+          color: "#e50914",
+          textShadow: `
+            0 2px 6px rgba(0,0,0,0.8),
+            0 4px 15px rgba(0,0,0,0.5)
+          `,
+          WebkitTextStroke: "1px rgba(0,0,0,0.5)",
+          fontFamily: "Impact, Haettenschweiler, 'Arial Black', sans-serif"
+        }}>
+          {info.full}
+        </h1>
 
         <p style={{ color: "#ccc", fontSize: "16px", marginBottom: "12px" }}>
           {info.desc}
@@ -308,107 +361,320 @@ const activeImage = activeSeason?.image || current.image;
           Watch this exciting movie now on your CineVerse.
         </p>
 
-        {/* ✅ SERIES SEASON SWITCH */}
-{current.seasons && (
-  <div
-    style={{
-      display: "flex",
-      gap: "10px",
-      marginTop: "15px",
-      marginBottom: "15px",
-      flexWrap: "wrap"
-    }}
-  >
-    {current.seasons.map((season) => (
-      <button
-        key={season.season}
-        onClick={() => {
-  setSelectedSeason(season);
-  setIsHover(false);
-  setPreviewEnded(false);
+        {current.seasons && (
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              marginTop: "15px",
+              marginBottom: "15px",
+              flexWrap: "wrap"
+            }}
+          >
+            {current.seasons.map((season) => (
+              <button
+                key={season.season}
+                onClick={() => {
+                  setSelectedSeason(season);
+                  setIsHover(false);
+                  setPreviewEnded(false);
 
-  if (videoRef.current) {
-    videoRef.current.pause();
-    videoRef.current.currentTime = 0;
-  }
-}}
-        style={{
-          padding: "8px 18px",
-          border: "none",
-          borderRadius: "6px",
-          cursor: "pointer",
-          fontWeight: "bold",
-          background:
-            activeSeason?.season === season.season
-              ? "#e50914"
-              : "rgba(255,255,255,0.2)",
-          color: "white"
-        }}
-      >
-        Season {season.season}
-      </button>
-    ))}
-  </div>
-)}
+                  if (videoRef.current) {
+                    videoRef.current.pause();
+                    videoRef.current.currentTime = 0;
+                  }
+                }}
+                style={{
+                  padding: "8px 18px",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  background:
+                    activeSeason?.season === season.season
+                      ? "#e50914"
+                      : "rgba(255,255,255,0.2)",
+                  color: "white"
+                }}
+              >
+                Season {season.season}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div style={{ marginTop: "20px" }}>
           <button
             onClick={() => {
-
-  if (current.seasons) {
-
-    onSelect({
-      ...current,
-      video: activeVideo,
-      currentSeason: activeSeason?.season,
-      isSeries: true,
-      seasons: current.seasons
-    });
-
-  } else {
-    onSelect(current.video);
-  }
-}}
+              if (current.seasons) {
+                onSelect({
+                  ...current,
+                  video: activeVideo,
+                  currentSeason: activeSeason?.season,
+                  isSeries: true,
+                  seasons: current.seasons
+                });
+              } else {
+                onSelect(current.video);
+              }
+            }}
             style={primaryBtn}
           >
             ▶ Play
           </button>
+
+          <button
+            onClick={() => {
+              if (videoRef.current) {
+                videoRef.current.pause();
+                videoRef.current.currentTime = 0;
+              }
+
+              setIsHover(false);
+              setModalPreviewEnded(false);
+              setShowInfoModal(true);
+            }}
+            style={moreInfoBtn}
+          >
+            ⓘ More Info
+          </button>
         </div>
       </div>
+
+      {showInfoModal && (
+        <div
+          style={modalOverlayStyle}
+          onClick={() => {
+            setShowInfoModal(false);
+            setPreviewEnded(false);
+          }}
+        >
+          <div
+            style={modalContentStyle}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              style={closeButtonStyle}
+              onClick={() => {
+                setShowInfoModal(false);
+                setPreviewEnded(false);
+              }}
+            >
+              ✕
+            </button>
+
+              <div style={{ position: "relative", height: "400px", width: "100%", backgroundColor: "#000" }}>
+              <video
+                ref={modalVideoRef}
+                key={activeVideo}
+                muted={isMuted}
+                autoPlay
+                playsInline
+                preload="auto"
+                poster={activeImage}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  borderRadius: "12px 12px 0 0"
+                }}
+                onLoadedData={(e) => {
+                  const v = e.currentTarget;
+                  v.currentTime = info.preview || 0;
+                  v.play().catch(() => {});
+                }}
+                onTimeUpdate={(e) => {
+                  const v = e.currentTarget;
+                  const start = info.preview || 0;
+
+                  if (v.currentTime >= start + 45) {
+                    v.pause();
+                    setModalPreviewEnded(true);
+                  }
+                }}
+              >
+                <source
+                  src={activeVideo}
+                  type={
+                    activeVideo?.includes(".mkv")
+                      ? "video/x-matroska"
+                      : activeVideo?.includes(".m3u8")
+                      ? "application/x-mpegURL"
+                      : "video/mp4"
+                  }
+                />
+              </video>
+
+              <button
+                onClick={() => setIsMuted(!isMuted)}
+                style={modalMiniBtn}
+              >
+                {isMuted ? "🔇" : "🔊"}
+              </button>
+
+              {modalPreviewEnded && (
+                <button
+                  onClick={() => {
+                    setModalPreviewEnded(false);
+
+                    setTimeout(() => {
+                      const v = modalVideoRef.current;
+                      if (!v) return;
+
+                      v.currentTime = info.preview || 0;
+                      v.play().catch(() => {});
+                    }, 100);
+                  }}
+                  style={{ ...modalMiniBtn, right: "75px" }}
+                >
+                  ↻
+                </button>
+              )}
+            </div>
+
+            <div style={{
+              padding: "35px",
+              backgroundColor: "#181818",
+              borderRadius: "0 0 12px 12px"
+            }}>
+              <div style={{ display: "flex", gap: "12px", marginBottom: "20px" }}>
+                <button
+                  style={smallPlayButtonStyle}
+                  onClick={() => {
+                    if (modalVideoRef.current) {
+                      modalVideoRef.current.pause();
+                    }
+
+                    setShowInfoModal(false);
+
+                    if (current.seasons) {
+                      onSelect({
+                        ...current,
+                        video: activeVideo,
+                        currentSeason: activeSeason?.season,
+                        isSeries: true,
+                        seasons: current.seasons
+                      });
+                    } else {
+                      onSelect(current.video);
+                    }
+                  }}
+                >
+                  ▶
+                </button>
+
+                <button
+                  style={circleButtonStyle}
+                  onClick={() =>
+  onAdd &&
+  onAdd(
+    current.seasons
+      ? {
+          ...current,
+          movieId: current.seasons[0].video,
+          video: current.seasons[0].video,
+          isSeries: true
+        }
+      : current
+  )
+}
+                >
+                  +
+                </button>
+              </div>
+
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
+                <div style={{ flex: "1.5", minWidth: "300px" }}>
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    fontSize: "18px",
+                    marginBottom: "15px"
+                  }}>
+                    <span style={{ color: "#46d369", fontWeight: "bold" }}>{current.title}</span>
+                    <span>{current.duration}</span>
+                    <span style={{
+                      border: "1px solid #808080",
+                      padding: "0 6px",
+                      fontSize: "12px"
+                    }}>
+                      HD
+                    </span>
+                  </div>
+
+                  <p style={{
+                    fontSize: "16px",
+                    color: "#d2d2d2",
+                    lineHeight: "1.5"
+                  }}>
+                    {current.description}
+                  </p>
+                </div>
+
+                <div style={{
+                  flex: "1",
+                  fontSize: "14px",
+                  borderLeft: "1px solid #333",
+                  paddingLeft: "20px"
+                }}>
+                  <p style={{ margin: "0 0 10px 0" }}>
+                    <span style={{ color: "#777" }}>Cast:</span> {current.cast}
+                  </p>
+
+                  <p style={{ margin: "0 0 10px 0" }}>
+                    <span style={{ color: "#777" }}>Genres:</span> {current.genre}
+                  </p>
+
+                  <p style={{ margin: "0" }}>
+                    <span style={{ color: "#777" }}>Audio:</span> Currently available in Hindi — multi-language support coming soon.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
 
-/* 🔥 NEW PREMIUM TITLE */
-const heroTitle = {
-  fontSize: "64px",
-  fontWeight: "800",
-  letterSpacing: "1px",
-  lineHeight: "1.1",
-  marginBottom: "10px",
-
-  background: "linear-gradient(180deg, #ffffff, #d6d6d6)",
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-
-  textShadow: `
-    0 2px 10px rgba(0,0,0,0.8),
-    0 4px 25px rgba(0,0,0,0.6)
-  `
-};
-
-/* 🔥 BUTTON */
 const primaryBtn = {
-  padding: "12px 26px",
-  background: "white",
-  color: "black",
+  width: "110px",
+  height: "46px",
+  background: "#fff",
+  color: "#000",
   border: "none",
   borderRadius: "4px",
-  fontWeight: "bold",
+  fontWeight: "600",
   cursor: "pointer",
-  fontSize: "16px"
+  fontSize: "15px",
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "8px"
 };
 
-/* 🔥 ARROWS */
+const moreInfoBtn = {
+  marginLeft: "12px",
+  width: "160px",
+  height: "46px",
+  background: "rgba(109,109,110,0.55)",
+  color: "#fff",
+  border: "none",
+  borderRadius: "4px",
+  fontWeight: "600",
+  cursor: "pointer",
+  fontSize: "15px",
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "8px",
+  backdropFilter: "blur(2px)"
+};
+
 const arrow = (side) => ({
   position: "absolute",
   top: "50%",
@@ -424,3 +690,98 @@ const arrow = (side) => ({
   borderRadius: "50%",
   opacity: 0.7
 });
+
+const modalOverlayStyle = {
+  position: "fixed",
+  inset: 0,
+  background: "rgba(0,0,0,0.8)",
+  zIndex: 100000,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center"
+};
+
+const modalContentStyle = {
+  width: "900px",
+  maxWidth: "92vw",
+  background: "#181818",
+  borderRadius: "12px",
+  overflow: "hidden",
+  position: "relative"
+};
+
+const closeButtonStyle = {
+  position: "absolute",
+  top: "15px",
+  right: "15px",
+  background: "rgba(0,0,0,0.7)",
+  color: "white",
+  border: "2px solid white",
+  width: "40px",
+  height: "40px",
+  borderRadius: "50%",
+  cursor: "pointer",
+  zIndex: 10
+};
+
+const modalMiniBtn = {
+  position: "absolute",
+  bottom: "20px",
+  right: "20px",
+  zIndex: 20,
+  width: "42px",
+  height: "42px",
+  borderRadius: "50%",
+  border: "1px solid rgba(255,255,255,0.35)",
+  background: "rgba(42,42,42,0.72)",
+  color: "white",
+  cursor: "pointer",
+  fontSize: "18px"
+};
+
+const heroMiniBtn = {
+  position: "absolute",
+  bottom: "90px",
+  right: "40px",
+  zIndex: 10,
+  width: "44px",
+  height: "44px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  background: "rgba(42,42,42,0.72)",
+  backdropFilter: "blur(10px)",
+  border: "1px solid rgba(255,255,255,0.28)",
+  borderRadius: "50%",
+  color: "white",
+  cursor: "pointer",
+  fontSize: "17px",
+  transition: "all 0.25s ease",
+  boxShadow: "0 4px 20px rgba(0,0,0,0.45)"
+};
+
+const smallPlayButtonStyle = {
+  background: "white",
+  border: "none",
+  color: "black",
+  borderRadius: "50%",
+  width: "38px",
+  height: "38px",
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: "18px",
+  paddingLeft: "4px"
+};
+
+const circleButtonStyle = {
+  background: "rgba(42,42,42,1)",
+  border: "2px solid #808080",
+  color: "white",
+  borderRadius: "50%",
+  width: "40px",
+  height: "40px",
+  cursor: "pointer",
+  fontSize: "20px"
+};

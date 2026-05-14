@@ -34,7 +34,9 @@ const [hoveredIndex, setHoveredIndex] = useState(null);
         const percent = (data.currentTime / data.duration) * 100;
 
         // ❌ REMOVE fully watched
-        if (percent > 95) return null;
+        const remainingTime = data.duration - data.currentTime;
+
+if (percent > 98 && remainingTime < 120) return null;
 
         return {
   ...movie,

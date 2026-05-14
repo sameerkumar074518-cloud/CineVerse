@@ -201,9 +201,20 @@ onManageProfiles
                       borderBottom: "1px solid #222"
                     }}
                     onClick={() => {
-                      onSelect(movie.video);
-                      setShowSearch(false);
-                    }}
+  if (movie.seasons) {
+    onSelect({
+      video: movie.seasons[0].video,
+      title: `${movie.title} - Season 1`,
+      seasons: movie.seasons,
+      currentSeason: 1,
+      isSeries: true
+    });
+  } else {
+    onSelect(movie.video);
+  }
+
+  setShowSearch(false);
+}}
                   >
                     {highlightText(movie.title, search)}
                   </div>
@@ -439,7 +450,7 @@ onManageProfiles
             <h1 style={accountTitleStyle}>Account</h1>
 
             <div style={accountInfoStyle}>
-              <p><b>Username:</b> {user}</p>
+              <p><b>Email:</b> {user}</p>
 
 <p><b>Plan:</b> CineVerse Premium</p>
 
