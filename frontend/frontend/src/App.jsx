@@ -31,6 +31,8 @@ const [movies, setMovies] = useState([]);
 const [topMovies, setTopMovies] = useState([]);
 const [myList, setMyList] = useState([]);
 const [recommended, setRecommended] = useState([]);
+const [becauseWatched, setBecauseWatched] = useState([]);
+const [becauseTitle, setBecauseTitle] = useState("");
 const [selectedGenre, setSelectedGenre] = useState("All");
 const [showIntro, setShowIntro] = useState(true);
 const [showEmptyMsg, setShowEmptyMsg] = useState(false);
@@ -44,6 +46,11 @@ const [showForgot, setShowForgot] = useState(false);
 const [resetLogin, setResetLogin] = useState("");
 const [resetCode, setResetCode] = useState("");
 const [newPassword, setNewPassword] = useState("");
+const [voiceEnabled, setVoiceEnabled] = useState(false);
+const [isListening, setIsListening] = useState(false);
+const [lastRecommendedMovie, setLastRecommendedMovie] = useState(null);
+const recognitionRef = useRef(null);
+const hasWelcomedRef = useRef(false);
 
 const API = "https://primeclone-2e4b.onrender.com";
 /* ================== LOAD ================== */
@@ -352,6 +359,16 @@ const verifyOTP = async () => {
 };
 
 const handleLogout = () => {
+
+  // ✅ STOP CINEVOICE
+  if (recognitionRef.current) {
+  recognitionRef.current.stop();
+  recognitionRef.current = null;
+}
+
+  setVoiceEnabled(false);
+  setIsListening(false);
+
   localStorage.removeItem("user");
   localStorage.removeItem("token");
   localStorage.removeItem("profile");
@@ -361,10 +378,456 @@ const handleLogout = () => {
   setMyList([]);
 };
 
+
+
+const speakAndPlay = (movie) => {
+  const speak = new SpeechSynthesisUtterance(`Playing ${movie.title}`);
+  speak.lang = "en-IN";
+  const voices = window.speechSynthesis.getVoices();
+
+const premiumVoice =
+  voices.find(v =>
+    v.name.includes("Google UK English Female")
+  ) ||
+  voices.find(v =>
+    v.name.includes("Microsoft Natasha")
+  ) ||
+  voices.find(v =>
+    v.name.includes("Samantha")
+  ) ||
+  voices[0];
+
+speak.voice = premiumVoice;
+  speak.rate = 0.95;
+  speak.pitch = 1;
+  speak.volume = 1;
+
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(speak);
+
+  const movieGenres =
+  movie.genre ||
+  [...movies, ...allSeries].find(
+    m => m.title === movie.title
+  )?.genre;
+
+localStorage.setItem(
+  `last_watched_${user}_${profile?.id}`,
+  JSON.stringify({
+    ...movie,
+    genre: movieGenres,
+    video:
+      movie.video ||
+      movie.movieId ||
+      movie.seasons?.[0]?.video
+  })
+);
+
+setBecauseTitle(movie.title);
+
+const similarMovies =
+  [...movies, ...allSeries]
+    .filter(m => m.title !== movie.title)
+    .filter(m =>
+      m.genre
+        ?.toLowerCase()
+        .includes(
+          movieGenres
+            ?.split(",")[0]
+            ?.trim()
+            ?.toLowerCase()
+        )
+    )
+    .slice(0, 12);
+
+setBecauseWatched(similarMovies);
+const recKey = `recommend_${user}_${profile.id}`;
+
+const oldHistory =
+  JSON.parse(localStorage.getItem(recKey)) || [];
+
+const updatedHistory = [
+  movie,
+  ...oldHistory.filter(
+    m => m.title !== movie.title
+  )
+].slice(0, 20);
+
+localStorage.setItem(
+  recKey,
+  JSON.stringify(updatedHistory)
+);
+
+  setTimeout(() => {
+    // STOP LISTENING DURING MOVIE
+if (recognitionRef.current) {
+  recognitionRef.current.stop();
+  recognitionRef.current = null;
+}
+
+setIsListening(false);
+    setSelectedVideo({
+      ...movie,
+      video: movie.video || movie.movieId || movie.seasons?.[0]?.video,
+      currentSeason: movie.currentSeason || movie.seasons?.[0]?.season || 1,
+      isSeries: !!movie.seasons
+    });
+
+    setIsSouthPlayer(false);
+  }, 900);
+};
+
+const speakCineVoiceWelcome = () => {
+  const welcomeVoice = new SpeechSynthesisUtterance(
+`Hello, I am your CineVerse AI assistant. Welcome back to CineVerse. Relax, enjoy your entertainment, and simply say any movie you would like to watch.`  );
+
+  welcomeVoice.lang = "en-IN";
+
+  const voices = window.speechSynthesis.getVoices();
+
+  const premiumVoice =
+    voices.find(v => v.name.includes("Google UK English Female")) ||
+    voices.find(v => v.name.includes("Microsoft Natasha")) ||
+    voices.find(v => v.name.includes("Samantha")) ||
+    voices[0];
+
+  welcomeVoice.voice = premiumVoice;
+  welcomeVoice.rate = 0.9;
+welcomeVoice.pitch = 1.08;
+welcomeVoice.volume = 1;
+
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(welcomeVoice);
+};
+
+const startCineVoice = () => {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("CineVoice works best in Chrome or Edge.");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+
+  recognition.continuous = true;
+  recognition.interimResults = false;
+  recognition.lang = "en-IN";
+
+  recognitionRef.current = recognition;
+  setVoiceEnabled(true);
+  setIsListening(true);
+
+  recognition.start();
+
+  recognition.onresult = (event) => {
+    const lastResult = event.results[event.results.length - 1];
+    const command = lastResult[0].transcript.toLowerCase();
+
+    console.log("FREE CINEVOICE HEARD:", command);
+
+    handleVoiceCommand(command);
+  };
+
+  recognition.onend = () => {
+
+  setIsListening(false);
+
+  // SOFT RESTART
+  if (voiceEnabled && !selectedVideo) {
+
+    recognitionRef.current = null;
+
+    setTimeout(() => {
+
+      if (voiceEnabled) {
+        startCineVoice();
+      }
+
+    }, 1200);
+  }
+};
+
+  recognition.onerror = (err) => {
+    console.log("CineVoice error:", err);
+
+    if (err.error === "not-allowed") {
+      alert("Microphone permission blocked.");
+      setVoiceEnabled(false);
+      recognitionRef.current = null;
+    }
+  };
+};
+
+const handleVoiceCommand = (command) => {
+
+  const cleanText = (text) =>
+    text
+      ?.toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/cineverse/g, "")
+      .replace(/alexa/g, "")
+      .replace(/hey/g, "")
+      .replace(/play/g, "")
+      .replace(/movie/g, "")
+      .replace(/film/g, "")
+      .replace(/the/g, "")
+      .replace(/ki/g, "")
+.replace(/ka/g, "")
+.replace(/last/g, "")
+.replace(/rites/g, "")
+.replace(/ghazab/g, "")
+.replace(/kahani/g, "")
+      .replace(/[^a-zA-Z0-9\u0900-\u097F ]/g, "")
+      .trim();
+
+  const cleanedCommand = cleanText(command);
+  const genres = [
+  "action",
+  "love",
+  "romance",
+  "thriller",
+  "horror",
+  "comedy",
+  "drama",
+  "crime",
+  "sci-fi",
+  "adventure",
+  "mystery",
+  "fantasy",
+  "family",
+  "animation"
+];
+
+// 🎬 AI RECOMMENDATIONS
+const askedForRecommendation =
+  cleanedCommand.includes("recommend") ||
+  cleanedCommand.includes("suggest");
+
+if (askedForRecommendation) {
+
+  const detectedGenre = genres.find((genre) =>
+    cleanedCommand.includes(genre)
+  );
+
+  if (detectedGenre) {
+
+    const genreMovies = [
+      ...movies,
+      ...allSeries
+    ].filter((item) =>
+      item.genre
+        ?.toLowerCase()
+        .includes(detectedGenre)
+    );
+
+    if (genreMovies.length > 0) {
+
+      const shuffled = [...genreMovies]
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3);
+
+      const firstMovie = shuffled[0];
+
+      setLastRecommendedMovie(firstMovie);
+
+      const movieNames = shuffled
+        .map((m) => m.title)
+        .join(", ");
+
+      const aiVoice =
+        new SpeechSynthesisUtterance(
+          `I recommend ${movieNames}. Say play ${firstMovie.title} to start watching.`
+        );
+
+      aiVoice.lang = "en-IN";
+      const voices = window.speechSynthesis.getVoices();
+
+const premiumVoice =
+  voices.find(v =>
+    v.name.includes("Google UK English Female")
+  ) ||
+  voices.find(v =>
+    v.name.includes("Microsoft Natasha")
+  ) ||
+  voices.find(v =>
+    v.name.includes("Samantha")
+  ) ||
+  voices[0];
+
+aiVoice.voice = premiumVoice;
+      aiVoice.rate = 1;
+      aiVoice.pitch = 1;
+
+      window.speechSynthesis.cancel();
+
+      aiVoice.onend = () => {
+
+        if (voiceEnabled && !selectedVideo) {
+
+          setTimeout(() => {
+            startCineVoice();
+          }, 300);
+        }
+      };
+
+      window.speechSynthesis.speak(aiVoice);
+
+      return;
+    }
+  }
+
+  const noGenreVoice =
+    new SpeechSynthesisUtterance(
+      "Please mention a genre like action, comedy, horror, romance, or thriller."
+    );
+
+  noGenreVoice.lang = "en-IN";
+
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(noGenreVoice);
+
+  return;
+}
+
+  const allContent = [
+    ...movies,
+    ...allMovies,
+    ...allSeries,
+    ...topMovies,
+    ...popularSouthMovies,
+    ...myList,
+    ...recommended
+  ];
+
+  const uniqueContent = allContent.filter(
+    (item, index, self) =>
+      item?.title &&
+      index ===
+        self.findIndex(
+          (m) => m?.title === item.title
+        )
+  );
+
+  const getSimilarity = (a, b) => {
+    const wordsA = cleanText(a)
+      .split(" ")
+      .filter(Boolean);
+
+    const wordsB = cleanText(b)
+      .split(" ")
+      .filter(Boolean);
+
+    let matched = 0;
+
+    wordsA.forEach((word) => {
+      if (
+        wordsB.some(
+          (w) =>
+            w.includes(word) ||
+            word.includes(w)
+        )
+      ) {
+        matched++;
+      }
+    });
+
+    return (
+      matched /
+      Math.max(
+        wordsA.length,
+        wordsB.length
+      )
+    );
+  };
+
+  if (
+  cleanedCommand.includes("play that") ||
+  cleanedCommand.includes("play this") ||
+  cleanedCommand.includes("play recommended")
+) {
+
+  if (lastRecommendedMovie) {
+    speakAndPlay(lastRecommendedMovie);
+    return;
+  }
+}
+
+  let bestMatch = null;
+  let bestScore = 0;
+
+  uniqueContent.forEach((movie) => {
+    const score = getSimilarity(
+      cleanedCommand,
+      movie.title
+    );
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = movie;
+    }
+  });
+
+  console.log(
+  "BEST CINEVOICE MATCH:",
+  bestMatch,
+  bestScore
+);
+
+  if (bestMatch && bestScore > 0.25) {
+    speakAndPlay(bestMatch);
+
+  } else {
+
+    const notFoundVoice =
+  new SpeechSynthesisUtterance(
+    "Sorry, I could not recognize that movie. Please say it again."
+  );
+
+notFoundVoice.lang = "en-IN";
+const voices = window.speechSynthesis.getVoices();
+
+const premiumVoice =
+  voices.find(v =>
+    v.name.includes("Google UK English Female")
+  ) ||
+  voices.find(v =>
+    v.name.includes("Microsoft Natasha")
+  ) ||
+  voices.find(v =>
+    v.name.includes("Samantha")
+  ) ||
+  voices[0];
+
+notFoundVoice.voice = premiumVoice;
+notFoundVoice.rate = 1.05;
+notFoundVoice.pitch = 1;
+
+window.speechSynthesis.cancel();
+
+notFoundVoice.onend = () => {
+
+  // QUICK RESTART
+  if (voiceEnabled && !selectedVideo) {
+
+    setTimeout(() => {
+      startCineVoice();
+    }, 250);
+  }
+};
+
+window.speechSynthesis.speak(
+  notFoundVoice
+);
+  }
+};
+
 useEffect(() => {
   if (!user || !profile) return;
 
-  const recKey = `recommend_${user}_${profile.id}`;
+  const recKey = `recommend_${user}_${profile?.id}`;
   const history = JSON.parse(localStorage.getItem(recKey)) || [];
 
   const genres = history
@@ -383,6 +846,40 @@ useEffect(() => {
     .filter(item => !history.some(h => h.video === item.video));
 
   setRecommended(recommendedContent.slice(0, 12));
+}, [user, profile, movies, selectedVideo]);
+
+useEffect(() => {
+  if (!user || !profile) return;
+
+  const saved = localStorage.getItem(`last_watched_${user}_${profile.id}`);
+  if (!saved) return;
+
+  const lastMovie = JSON.parse(saved);
+
+  setBecauseTitle(lastMovie.title);
+
+  const lastGenres =
+    lastMovie.genre
+      ?.split(",")
+      .map(g => g.trim().toLowerCase()) || [];
+
+  const similar = [...movies, ...allSeries]
+    .filter(item => item.title !== lastMovie.title)
+    .filter(item => {
+
+      const itemGenres =
+        item.genre
+          ?.split(",")
+          .map(g => g.trim().toLowerCase()) || [];
+
+      return itemGenres.some(g =>
+        lastGenres.includes(g)
+      );
+    })
+    .slice(0, 12);
+
+  setBecauseWatched(similar);
+
 }, [user, profile, movies, selectedVideo]);
 
 /* ================== INTRO ================== */
@@ -638,6 +1135,11 @@ const filteredMovies = [...movies, ...allSeries].filter((m) => {
 return (
 <div style={{ background: "black", minHeight: "100vh" }}>
 
+{voiceEnabled && (
+  <div style={cineVoiceBadgeStyle}>
+    {isListening ? "🎙 CineVoice Listening" : "CineVoice Paused"}
+  </div>
+)}
   <Navbar
   user={user}
   onLogout={handleLogout}
@@ -675,6 +1177,44 @@ return (
   setSearch("");
   setMyList([]);
   setProfile(null);
+}}
+
+voiceEnabled={voiceEnabled}
+isListening={isListening}
+
+onToggleVoice={() => {
+
+  // TURN OFF
+  if (voiceEnabled) {
+
+    setVoiceEnabled(false);
+    setIsListening(false);
+
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+    }
+
+    window.speechSynthesis.cancel();
+
+    return;
+  }
+
+ // TURN ON
+if (!hasWelcomedRef.current) {
+
+  hasWelcomedRef.current = true;
+
+  speakCineVoiceWelcome();
+
+  setTimeout(() => {
+    startCineVoice();
+  }, 4500);
+
+} else {
+
+  startCineVoice();
+}
 }}
 
   onMoviesClick={() => {
@@ -788,29 +1328,6 @@ return (
   ))}
 </div>
 
-        <ContinueWatching
-  movies={[...movies, ...allSeries]}
-  user={user}
-  profile={profile}
-  onSelect={(v) => {
-    setSelectedVideo(v);
-    setIsSouthPlayer(false);
-  }}
-/>
-
-{recommended.length > 0 && (
-  <MovieRow
-    movies={recommended}
-    onSelect={(v) => {
-      setSelectedVideo(v);
-      setIsSouthPlayer(false);
-    }}
-    onAdd={handleAddToMyList}
-    title="Recommended For You"
-    showAdd={true}
-  />
-)}
-
 <div id="movies-section" style={{ scrollMarginTop: "90px" }}>
           <MovieRow
             movies={genreFilteredMovies.filter((m) => {
@@ -847,6 +1364,43 @@ return (
   />
 </div>
 
+
+        <ContinueWatching
+  movies={[...movies, ...allSeries]}
+  user={user}
+  profile={profile}
+  onSelect={(v) => {
+    setSelectedVideo(v);
+    setIsSouthPlayer(false);
+  }}
+/>
+
+{becauseWatched.length > 0 && (
+  <MovieRow
+    movies={becauseWatched}
+    onSelect={(v) => {
+      setSelectedVideo(v);
+      setIsSouthPlayer(false);
+    }}
+    onAdd={handleAddToMyList}
+    title={`Because you watched ${becauseTitle}`}
+    showAdd={true}
+  />
+)}
+
+{recommended.length > 0 && (
+  <MovieRow
+    movies={recommended}
+    onSelect={(v) => {
+      setSelectedVideo(v);
+      setIsSouthPlayer(false);
+    }}
+    onAdd={handleAddToMyList}
+    title="Recommended For You"
+    showAdd={true}
+  />
+)}
+
         {/* ✅ SOUTH MOVIES */}
         <MovieRow
           movies={popularSouthMovies}
@@ -862,7 +1416,15 @@ return (
           <div ref={myListRef} style={{ scrollMarginTop: "80px" }}>
             <MovieRow
   movies={myList}
-  onSelect={(v) => { setSelectedVideo(v); setIsSouthPlayer(false); }}
+  onSelect={(v) => {
+  const fixedVideo = {
+    ...v,
+    video: v.video || v.movieId || v.seasons?.[0]?.video
+  };
+
+  setSelectedVideo(fixedVideo);
+  setIsSouthPlayer(false);
+}}
   title="⭐️ My List"
   showAdd={false}
   isMyList={true}
@@ -991,7 +1553,17 @@ genre={
     }));
   }}
 
-  onClose={() => setSelectedVideo(null)}
+  onClose={() => {
+
+  setSelectedVideo(null);
+
+  // RESUME CINEVOICE
+  if (voiceEnabled && !recognitionRef.current) {
+  setTimeout(() => {
+    startCineVoice();
+  }, 1200);
+}
+}}
 />
     )
   )}
@@ -999,6 +1571,18 @@ genre={
 </div>
 );
 }
+const cineVoiceBadgeStyle = {
+  position: "fixed",
+  bottom: "25px",
+  right: "25px",
+  background: "rgba(0,0,0,0.85)",
+  color: "white",
+  padding: "10px 16px",
+  borderRadius: "30px",
+  zIndex: 99999,
+  border: "1px solid #333",
+  fontSize: "14px"
+};
 
 /* STYLES unchanged */
 const popupStyle = {

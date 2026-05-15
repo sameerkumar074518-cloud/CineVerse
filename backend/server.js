@@ -2,7 +2,13 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const OpenAI = require("openai");
+const multer = require("multer");
+const fs = require("fs");
 const path = require("path");
+if (!fs.existsSync("uploads")) {
+  fs.mkdirSync("uploads");
+}
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const {
@@ -15,8 +21,17 @@ require("dotenv").config();
 const app = express();
 const watchCounts = {};
 
-app.use(cors());
+app.use(cors({
+  origin: "*"
+}));
 app.use(express.json());
+const openai = new OpenAI.OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+const upload = multer({
+  dest: "uploads/"
+});
 
 /* ✅ STATIC FILES */
 app.use(
@@ -378,6 +393,30 @@ app.get("/top10", (req, res) => {
     .slice(0, 10);
 
   res.json(top10);
+});
+
+app.post("/voice-command", upload.single("audio"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        error: "No audio uploaded"
+      });
+    }
+    const transcription = await openai.audio.transcriptions.create({
+      file: fs.createReadStream(req.file.path),
+      model: "gpt-4o-mini-transcribe",
+      language: "en"
+    });
+
+    fs.unlinkSync(req.file.path);
+
+    res.json({
+      text: transcription.text
+    });
+  } catch (err) {
+    console.log("Voice API error:", err);
+    res.status(500).json({ error: "Voice recognition failed" });
+  }
 });
 
 app.listen(5000, () => {

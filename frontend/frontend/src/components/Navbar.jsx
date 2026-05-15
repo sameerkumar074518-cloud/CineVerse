@@ -13,7 +13,10 @@ onMyListClick,
 profile,
 profiles = [],
 onSwitchProfile,
-onManageProfiles
+onManageProfiles,
+voiceEnabled,
+isListening,
+onToggleVoice
 }) {
 
   const [showSearch, setShowSearch] = useState(false);
@@ -148,6 +151,146 @@ onManageProfiles
 
       {/* 🔵 RIGHT */}
       <div style={{ display: "flex", alignItems: "center", gap: "20px", marginRight: "20px" }}>
+
+        <div
+  style={{
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+  }}
+>
+
+  {/* ✅ PREMIUM HOVER POPUP */}
+  <div className="cineVoiceTooltip">
+    <div style={{ color: "#e50914", fontWeight: "800", marginBottom: "6px" }}>
+      CineVoice
+    </div>
+
+    <div style={{ color: "#ddd", fontSize: "12px", lineHeight: "1.5" }}>
+      Enable CineVoice and say:
+<br />
+
+<b style={{ color: "white" }}>
+  “CineVerse, play any movie title”
+</b>
+
+<br />
+
+<span style={{ color: "#aaa" }}>
+  or
+</span>
+
+<br />
+
+<b style={{ color: "white" }}>
+  “Recommend me some action movies”
+</b>
+
+<br /><br />
+
+<span style={{ color: "#aaa", fontSize: "12px" }}>
+  Then say “play that movie” to start instantly.
+</span>
+    </div>
+  </div>
+
+  {/* PULSE EFFECT */}
+  {voiceEnabled && isListening && (
+    <div
+      style={{
+        position: "absolute",
+        width: "42px",
+        height: "42px",
+        borderRadius: "50%",
+        background: "rgba(229,9,20,0.35)",
+        animation: "cinePulse 1.5s infinite"
+      }}
+    />
+  )}
+
+  <button
+    onClick={onToggleVoice}
+    style={{
+      position: "relative",
+      width: "38px",
+      height: "38px",
+      borderRadius: "50%",
+      border: voiceEnabled
+        ? "1px solid rgba(229,9,20,0.9)"
+        : "1px solid rgba(255,255,255,0.15)",
+      background: voiceEnabled
+        ? "linear-gradient(135deg,#e50914,#b20710)"
+        : "rgba(20,20,20,0.9)",
+      color: "white",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: "17px",
+      backdropFilter: "blur(10px)",
+      transition: "all 0.3s ease",
+      boxShadow: voiceEnabled
+        ? "0 0 18px rgba(229,9,20,0.65)"
+        : "0 4px 12px rgba(0,0,0,0.35)"
+    }}
+  >
+    {voiceEnabled && isListening ? "🎙" : "🎤"}
+  </button>
+
+  <style>{`
+    .cineVoiceTooltip {
+      position: absolute;
+      top: 48px;
+      right: -15px;
+      width: 240px;
+      background: rgba(10,10,10,0.96);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 14px;
+      opacity: 0;
+      transform: translateY(-8px) scale(0.96);
+      pointer-events: none;
+      transition: all 0.25s ease;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.85);
+      z-index: 999999;
+    }
+
+    div:hover > .cineVoiceTooltip {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .cineVoiceTooltip::before {
+      content: "";
+      position: absolute;
+      top: -7px;
+      right: 28px;
+      width: 12px;
+      height: 12px;
+      background: rgba(10,10,10,0.96);
+      transform: rotate(45deg);
+      border-left: 1px solid rgba(255,255,255,0.12);
+      border-top: 1px solid rgba(255,255,255,0.12);
+    }
+
+    @keyframes cinePulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.7;
+      }
+
+      70% {
+        transform: scale(1.7);
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 0;
+      }
+    }
+  `}</style>
+</div>
 
         {/* 🔍 SEARCH */}
         <div ref={searchRef} style={{ position: "relative", display: "flex", alignItems: "center" }}>

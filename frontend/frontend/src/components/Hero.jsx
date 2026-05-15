@@ -96,7 +96,7 @@ export default function Hero({ onSelect, onAdd }) {
     "Interstellar": {
       full: "Interstellar",
       desc: "Sci-Fic • Adventure • Love",
-      preview: 8500
+      preview: 4200
     },
     "Farzi": {
       full: "Farzi",

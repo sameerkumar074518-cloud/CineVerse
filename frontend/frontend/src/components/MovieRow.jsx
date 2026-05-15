@@ -97,7 +97,7 @@ export const allMovies = [
     _id: "11",
     title: "Interstellar",
     image: "/images/thumb12.png",
-    video: "https://archive.org/download/interstellar-2014-dual-audio-hindi-english-full-movie/Interstellar%20%282014%29%20Dual%20Audio%20%5BHindi%20%2B%20English%5D%20Full%20Movie%20.mkv",
+    video: "https://archive.org/download/interstellar-2014-dual-audio-hindi-english-full-movie_202605/Interstellar%20%282014%29%20Dual%20Audio%20%5BHindi%20%2B%20English%5D%20Full%20Movie%20.mkv",
     genre: "Sci-Fic, Adventure, Love",
     duration: "2h 50m",
     cast: "	Matthew McConaughey, Anne Hathaway, Jessica Chastain",
@@ -292,11 +292,20 @@ const scrollRight = () => {
       {/* 🔥 THE CENTER MODAL (Fixed: Close on click outside & Lookup full data) */}
       {selectedMovie && (() => {
         const fullMovieData =
-  isMyList
-    ? selectedMovie
-    : allMovies.find(m => m.video === selectedMovie.video) ||
-      allSeries.find(s => s.title === selectedMovie.title) ||
-      selectedMovie;
+  allMovies.find(
+    m =>
+      m.video === selectedMovie.video ||
+      m.video === selectedMovie.movieId ||
+      m._id === selectedMovie.movieId ||
+      m.title === selectedMovie.title
+  ) ||
+  allSeries.find(
+    s =>
+      s.title === selectedMovie.title ||
+      s.video === selectedMovie.video ||
+      s.video === selectedMovie.movieId
+  ) ||
+  selectedMovie;
         return (
           <div 
             style={modalOverlayStyle} 
@@ -350,10 +359,10 @@ const scrollRight = () => {
     preload="auto"
     poster={fullMovieData.image}
     src={
-      fullMovieData.seasons
-        ? selectedSeason?.video
-        : fullMovieData.video
-    }
+  fullMovieData.seasons
+    ? selectedSeason?.video || fullMovieData.seasons?.[0]?.video
+    : fullMovieData.video || fullMovieData.movieId
+}
     onLoadedData={() => {
   const v = videoRef.current;
   if (!v) return;
@@ -369,12 +378,15 @@ const scrollRight = () => {
   v.currentTime = startTime;
 }}
     onClick={() => {
-      const v = videoRef.current;
-      if (!v) return;
+  const v = videoRef.current;
+  if (!v) return;
 
-      v.currentTime = v.duration * 0.35;
-      v.play().catch(() => {});
-    }}
+  if (Number.isFinite(v.duration)) {
+    v.currentTime = v.duration * 0.35;
+  }
+
+  v.play().catch(() => {});
+}}
     onTimeUpdate={() => {
       const v = videoRef.current;
       if (!v) return;
@@ -450,14 +462,27 @@ const scrollRight = () => {
   onSelect(
   fullMovieData.seasons
     ? {
-        video: selectedSeason?.video,
-          title: `${fullMovieData.title} - Season ${selectedSeason.season}`,
-          seasons: fullMovieData.seasons,
-          currentSeason: selectedSeason?.season,
-          isSeries: true
-        }
-      : fullMovieData.video
-  );
+        video:
+          selectedSeason?.video ||
+          fullMovieData.seasons?.[0]?.video,
+
+        title: `${fullMovieData.title} - Season ${
+          selectedSeason?.season ||
+          fullMovieData.seasons?.[0]?.season ||
+          1
+        }`,
+
+        seasons: fullMovieData.seasons,
+
+        currentSeason:
+          selectedSeason?.season ||
+          fullMovieData.seasons?.[0]?.season ||
+          1,
+
+        isSeries: true
+      }
+    : fullMovieData.video
+);
 }}
 >
   ▶
