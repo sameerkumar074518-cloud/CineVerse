@@ -16,6 +16,7 @@ export default function Hero({ onSelect, onAdd }) {
   const allContent = [...movies, ...series];
 
   const orderedMovies = [
+    ...allContent.filter(m => m.title === "Dhurandhar: The Revenge"),
     ...allContent.filter(m => m.title === "Interstellar"),
     ...allContent.filter(m => m.title === "Paatal Lok"),
     ...allContent.filter(m => m.title === "Hereditary"),
@@ -34,6 +35,7 @@ export default function Hero({ onSelect, onAdd }) {
     ...allContent.filter(
       m =>
         ![
+          "Dhurandhar: The Revenge",
           "Paatal Lok",
           "Hereditary",
           "Por Thozil",
@@ -73,6 +75,11 @@ export default function Hero({ onSelect, onAdd }) {
   const activeImage = activeSeason?.image || current.image;
 
   const details = {
+    "Dhurandhar: The Revenge": {
+      full: "Dhurandhar: The Revenge",
+      desc: "Spy • Action • Thriller",
+      preview: 4267
+    },
     "Paatal Lok": {
       full: "Paatal Lok",
       desc: "Action • Crime • Thriller",
@@ -249,10 +256,12 @@ export default function Hero({ onSelect, onAdd }) {
             inset: 0,
             backgroundImage: `url(${activeImage})`,
             backgroundSize: "cover",
-            transform: "scale(1.03)",
-            filter: "brightness(0.92)",
-            backgroundPosition: "center",
-            transition: "0.5s ease"
+            transform: "scale(1.01)",
+            filter: "brightness(0.97) contrast(1.08) saturate(1.08)",
+           backgroundPosition: "center",
+backgroundRepeat: "no-repeat",
+imageRendering: "auto",
+transition: "0.5s ease"
           }}
         />
       )}
@@ -336,7 +345,7 @@ export default function Hero({ onSelect, onAdd }) {
         }}
       >
         <h1 style={{
-          fontSize: "58px",
+          fontSize: "50px",
           fontWeight: "870",
           letterSpacing: "1px",
           lineHeight: "1.1",
@@ -350,7 +359,18 @@ export default function Hero({ onSelect, onAdd }) {
           WebkitTextStroke: "1px rgba(0,0,0,0.5)",
           fontFamily: "Impact, Haettenschweiler, 'Arial Black', sans-serif"
         }}>
-          {info.full}
+          {info.full.includes(":")
+  ? (
+      <>
+        {info.full.split(":")[0]}:
+        <br />
+
+        <span style={{ color: "#e50914" }}>
+          {info.full.split(":")[1]}
+        </span>
+      </>
+    )
+  : info.full}
         </h1>
 
         <p style={{ color: "#ccc", fontSize: "16px", marginBottom: "12px" }}>

@@ -4,6 +4,16 @@ import { allSeries } from "./SeriesRow";
 /* ✅ DATA WITH GENRES AND CAST */
 export const allMovies = [
   {
+    _id: "18",
+    title: "Dhurandhar: The Revenge",
+    image: "/images/thumb18.png",
+    video: "https://archive.org/download/cinefreak.-top-dhurandhar-the-revenge-2026-web-dl-hi/CINEFREAK.TOP%20-%20Dhurandhar%20The%20Revenge%20%282026%29%20WEB-DL%20%5BHi.mkv",
+    genre: "Action, Spy, Crime, Thriller",
+    duration: "3h 55m",
+    cast: "Ranveer Singh, Arjun Rampal, R Madhavan",
+    description: "Jaskirat Singh Rangi descends deeper into his alias as Hamza Ali Mazari, rising through Karachi's criminal hierarchy to claim the feared title 'Sher-e-Baloch' while balancing loyalty, betrayal, and survival in a ruthless underworld."
+  },
+  {
     _id: "1",
     title: "Dhurandhar",
     image: "/images/thumb4.png",
