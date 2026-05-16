@@ -46,7 +46,7 @@ const sendWelcomeEmail = async (email) => {
   <div style="text-align:center;">
     <h1 style="
       color:#e50914;
-      font-size:52px;
+      font-size:43px;
       margin-bottom:5px;
       letter-spacing:4px;
     ">
@@ -105,7 +105,7 @@ const sendWelcomeEmail = async (email) => {
 
   <div style="text-align:center;">
     <a
-      href="https://cineverse-hub-site.netlify.app/"
+      href="https://cineverse-global.vercel.app/"
       style="
         display:inline-block;
         margin-top:35px;
