@@ -4,7 +4,9 @@ import { series } from "./SeriesRow";
 
 export default function Hero({ onSelect, onAdd }) {
   const videoRef = useRef(null);
-  const modalVideoRef = useRef(null);
+const modalVideoRef = useRef(null);
+const heroRef = useRef(null);
+const previewTimerRef = useRef(null);
 
   const [isHover, setIsHover] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -15,10 +17,9 @@ export default function Hero({ onSelect, onAdd }) {
   const allContent = [...movies, ...series];
 
   const orderedMovies = [
-    ...allContent.filter(m => m.title === "Dhurandhar: The Revenge"),
     ...allContent.filter(m => m.title === "Interstellar"),
-    ...allContent.filter(m => m.title === "Paatal Lok"),
     ...allContent.filter(m => m.title === "Hereditary"),
+    ...allContent.filter(m => m.title === "Paatal Lok"),
     ...allContent.filter(m => m.title === "Lucky Baskhar"),
     ...allContent.filter(m => m.title === "Wake Up Sid"),
     ...allContent.filter(m => m.title === "Farzi"),
@@ -74,11 +75,6 @@ export default function Hero({ onSelect, onAdd }) {
   const activeImage = activeSeason?.image || current.image;
 
   const details = {
-    "Dhurandhar: The Revenge": {
-      full: "Dhurandhar: The Revenge",
-      desc: "Spy • Action • Thriller",
-      preview: 4267
-    },
     "Paatal Lok": {
       full: "Paatal Lok",
       desc: "Action • Crime • Thriller",
@@ -174,36 +170,79 @@ export default function Hero({ onSelect, onAdd }) {
     }
   }, [index]);
 
+  useEffect(() => {
+  const stopPreview = () => {
+    clearTimeout(previewTimerRef.current);
+    setIsHover(false);
+
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  };
+
+  const startPreviewAfterDelay = () => {
+    clearTimeout(previewTimerRef.current);
+
+    previewTimerRef.current = setTimeout(() => {
+      if (previewEnded || showInfoModal) return;
+
+      const rect = heroRef.current?.getBoundingClientRect();
+      const isVisible =
+        rect &&
+        rect.bottom > 180 &&
+        rect.top < window.innerHeight * 0.7;
+
+      if (!isVisible) return;
+
+      setIsHover(true);
+
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.currentTime = info.preview || 0;
+          videoRef.current.play().catch(() => {});
+        }
+      }, 150);
+    }, 5500);
+  };
+
+  const handleScroll = () => {
+    const rect = heroRef.current?.getBoundingClientRect();
+
+    const isVisible =
+      rect &&
+      rect.bottom > 180 &&
+      rect.top < window.innerHeight * 0.7;
+
+    if (!isVisible) {
+      stopPreview();
+    } else if (!previewEnded && !showInfoModal) {
+      startPreviewAfterDelay();
+    }
+  };
+
+  startPreviewAfterDelay();
+
+  window.addEventListener("scroll", handleScroll);
+
+  return () => {
+    clearTimeout(previewTimerRef.current);
+    window.removeEventListener("scroll", handleScroll);
+  };
+}, [index, previewEnded, showInfoModal, info.preview]);
+
   return (
     <div
-      onMouseEnter={() => {
-        if (previewEnded || showInfoModal) return;
-
-        setIsHover(true);
-
-        setTimeout(() => {
-          if (videoRef.current) {
-            videoRef.current.currentTime = info.preview || 0;
-            videoRef.current.play().catch(() => {});
-          }
-        }, 100);
-      }}
-      onMouseLeave={() => {
-        setIsHover(false);
-
-        if (videoRef.current) {
-          videoRef.current.pause();
-          videoRef.current.currentTime = 0;
-        }
-      }}
-      style={{
-        width: "100%",
-        height: "92vh",
-        position: "relative",
-        color: "white",
-        overflow: "hidden",
-        background: "black"
-      }}
+  ref={heroRef}
+     style={{
+  width: "100%",
+  height: "100vh",
+  marginBottom: "-95px",
+  position: "relative",
+  color: "white",
+  overflow: "hidden",
+  background: "transparent"
+}}
     >
       {isHover && (
         <video
@@ -212,7 +251,7 @@ export default function Hero({ onSelect, onAdd }) {
           ref={videoRef}
           muted={isMuted}
           playsInline
-          preload="auto"
+          preload="metadata"
           onTimeUpdate={() => {
             if (videoRef.current) {
               const start = info.preview || 0;
@@ -232,7 +271,9 @@ export default function Hero({ onSelect, onAdd }) {
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            transform: "scale(1.01)",
+objectPosition: "center top",
+            transform: isHover ? "scale(1.045)" : "scale(1.02)",
+transition: "transform 8s ease",
             filter: "brightness(0.9) contrast(1.08) saturate(1.08)"
           }}
         >
@@ -256,9 +297,10 @@ export default function Hero({ onSelect, onAdd }) {
             inset: 0,
             backgroundImage: `url(${activeImage})`,
             backgroundSize: "cover",
-            transform: "scale(1.01)",
-            filter: "brightness(0.97) contrast(1.08) saturate(1.08)",
-            backgroundPosition: "center",
+            transform: isHover ? "scale(1.045)" : "scale(1.02)",
+transition: "transform 8s ease",
+            filter: "brightness(0.9) contrast(1.1) saturate(1.1)",
+            backgroundPosition: "center top",
             backgroundRepeat: "no-repeat",
             imageRendering: "auto",
             transition: "0.5s ease"
@@ -309,26 +351,15 @@ export default function Hero({ onSelect, onAdd }) {
         style={{
           position: "absolute",
           inset: 0,
-          background: isHover
-            ? `
-              linear-gradient(
-                90deg,
-                rgba(0,0,0,0.76) 0%,
-                rgba(0,0,0,0.48) 24%,
-                rgba(0,0,0,0.16) 56%,
-                transparent 100%
-              )
-            `
-            : `
-              linear-gradient(
-                90deg,
-                rgba(0,0,0,0.82) 0%,
-                rgba(0,0,0,0.62) 22%,
-                rgba(0,0,0,0.30) 48%,
-                rgba(0,0,0,0.12) 70%,
-                transparent 100%
-              )
-            `
+          background: `
+linear-gradient(
+  90deg,
+  rgba(0,0,0,0.58) 0%,
+  rgba(0,0,0,0.34) 24%,
+  rgba(0,0,0,0.10) 56%,
+  transparent 100%
+)
+`
         }}
       />
 
@@ -337,8 +368,8 @@ export default function Hero({ onSelect, onAdd }) {
           position: "absolute",
           bottom: 0,
           width: "100%",
-          height: "42%",
-          background: "linear-gradient(to top, black, transparent)"
+          height: "52%",
+          background: "linear-gradient(to top, rgba(0,0,0,0.92), transparent)"
         }}
       />
 
@@ -349,8 +380,8 @@ export default function Hero({ onSelect, onAdd }) {
         style={{
           position: "absolute",
           left: "70px",
-          bottom: isHover ? "150px" : "95px",
-          maxWidth: isHover ? "520px" : "760px",
+          bottom: isHover ? "190px" : "140px",
+          maxWidth: isHover ? "500px" : "680px",
           zIndex: 2,
           transition: "all 0.35s ease"
         }}
@@ -517,6 +548,7 @@ export default function Hero({ onSelect, onAdd }) {
                   width: "100%",
                   height: "100%",
                   objectFit: "cover",
+objectPosition: "center top",
                   borderRadius: "12px 12px 0 0"
                 }}
                 onLoadedData={(e) => {
@@ -713,7 +745,8 @@ const topCineStyle = {
 
 const primaryBtn = {
   width: "132px",
-  height: "50px",
+  height: "54px",
+  transition: "all 0.25s ease",
   background: "#fff",
   color: "#000",
   border: "none",
@@ -731,7 +764,8 @@ const primaryBtn = {
 const moreInfoBtn = {
   marginLeft: "14px",
   width: "170px",
-  height: "50px",
+  height: "54px",
+  transition: "all 0.25s ease",
   background: "rgba(109,109,110,0.55)",
   color: "#fff",
   border: "none",
@@ -749,7 +783,7 @@ const moreInfoBtn = {
 
 const arrow = (side) => ({
   position: "absolute",
-  top: "58%",
+  top: "52%",
   [side]: "18px",
   transform: "translateY(-50%)",
   zIndex: 5,

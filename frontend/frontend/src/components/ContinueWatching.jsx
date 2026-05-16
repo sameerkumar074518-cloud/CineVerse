@@ -156,14 +156,24 @@ paddingBottom: "10px",
         {watched.map((movie, index) => (
           <div
   key={index}
-  style={{
-    position: "relative",
-    minWidth: "18vw",
-    width: "18vw",
-    flex: "0 0 18vw",
-    transition: "transform 0.25s ease",
-    cursor: "pointer"
+  onMouseEnter={(e) => {
+    e.currentTarget.style.transform = "scale(1.12)";
+    e.currentTarget.style.zIndex = 50;
   }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.transform = "scale(1)";
+    e.currentTarget.style.zIndex = 1;
+  }}
+  style={{
+  position: "relative",
+  minWidth: "20vw",
+  width: "20vw",
+  flex: "0 0 20vw",
+  transition: "transform 0.25s ease, box-shadow 0.25s ease",
+  cursor: "pointer",
+  zIndex: 1,
+  boxShadow: "0 8px 25px rgba(0,0,0,0.6)"
+}}
 >
 
             <div
@@ -194,10 +204,10 @@ paddingBottom: "10px",
   style={{
     position: "relative",
     width: "100%",
-    height: "10vw",
+    height: "11.3vw",
     cursor: "pointer",
                 overflow: "hidden",
-                borderRadius: "6px"
+                borderRadius: "10px"
               }}
             >
               <img

@@ -250,7 +250,7 @@ const scrollRight = () => {
             <div 
   key={movie.video || index}
   onMouseEnter={(e) => {
-    e.currentTarget.style.transform = "scale(1.08)";
+    e.currentTarget.style.transform = "scale(1.12)";
     e.currentTarget.style.zIndex = 50;
   }}
   onMouseLeave={(e) => {
@@ -259,9 +259,9 @@ const scrollRight = () => {
   }}
   style={{
     position: "relative",
-    minWidth: "18vw",
-    width: "18vw",
-    flex: "0 0 18vw",
+    minWidth: "20vw",
+width: "20vw",
+flex: "0 0 20vw",
     transition: "transform 0.25s ease, box-shadow 0.25s ease",
     cursor: "pointer",
     zIndex: 1
@@ -269,8 +269,8 @@ const scrollRight = () => {
 >
               <div style={{
   width: "100%",
-  height: "10vw",
-  borderRadius: "6px",
+  height: "11.3vw",
+borderRadius: "10px",
   overflow: "hidden",
   background: "#111",
   boxShadow: "0 8px 25px rgba(0,0,0,0.6)"
@@ -325,7 +325,7 @@ const scrollRight = () => {
               
               <button style={closeButtonStyle} onClick={() => setSelectedMovie(null)}>✕</button>
 
-              <div style={{ position: "relative", height: "400px", width: "100%", backgroundColor: "#000" }}>
+              <div style={{ position: "relative", height: "480px",width: "100%", backgroundColor: "#000" }}>
                 {previewEnded ? (
   <img
     src={fullMovieData.image}
@@ -672,26 +672,25 @@ const progressBarFill = {
 
 const modalOverlayStyle = {
   position: "fixed",
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  backgroundColor: "rgba(0, 0, 0, 0.8)",
+  inset: 0,
+  backgroundColor: "rgba(0,0,0,0.88)",
+  backdropFilter: "blur(6px)",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  zIndex: 10000
+  zIndex: 10000,
+  padding: "20px"
 };
-
 const modalContentStyle = {
-  width: "900px",
+  width: "960px",
   maxWidth: "95vw",
-  maxHeight: "95vh",
-  backgroundColor: "#181818",
-  borderRadius: "12px",
+  maxHeight: "92vh",
+  backgroundColor: "#141414",
+  borderRadius: "14px",
   position: "relative",
   overflowY: "auto",
-  boxShadow: "0 0 40px rgba(0,0,0,0.8)"
+  boxShadow: "0 30px 100px rgba(0,0,0,0.95)",
+  animation: "modalPop 0.25s ease"
 };
 
 const closeButtonStyle = {
@@ -734,14 +733,17 @@ const playButtonStyle = {
 };
 
 const circleButtonStyle = {
-  background: "rgba(42,42,42,1)", 
-  border: "2px solid #808080", 
-  color: "white", 
-  borderRadius: "50%", 
-  width: "40px", 
-  height: "40px",
+  background: "rgba(35,35,35,0.95)",
+  border: "2px solid rgba(255,255,255,0.55)",
+  color: "white",
+  borderRadius: "50%",
+  width: "42px",
+  height: "42px",
   cursor: "pointer",
-  fontSize: "20px"
+  fontSize: "22px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center"
 };
 
 const titleStyle = {

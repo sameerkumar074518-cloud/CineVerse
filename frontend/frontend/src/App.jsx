@@ -1246,7 +1246,7 @@ if (!hasWelcomedRef.current) {
   }}
 />
 
-  <div style={{ paddingTop: "70px" }}>
+  <div>
 
     {/* 🔥 CONDITIONAL RENDERING: SEARCH MODE VS HOME MODE */}
     {search.length > 0 ? (

@@ -37,7 +37,7 @@ export const popularSouthMovies = [
     video: "https://www.youtube.com/embed/krCpn6RrNX8"
   },
   {
-    title: "AA 2",
+    title: "A AA 2",
     image: "https://img.youtube.com/vi/JDzXR_mV_fI/hqdefault.jpg",
     video: "https://www.youtube.com/embed/JDzXR_mV_fI"
   },

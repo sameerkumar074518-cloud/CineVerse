@@ -35,6 +35,7 @@ const genres = [
   const [showMenu, setShowMenu] = useState(false);
   const [showAccount, setShowAccount] = useState(false);
   const [modalContent, setModalContent] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
 
   const searchRef = useRef(null);
   const menuRef = useRef(null);
@@ -84,6 +85,17 @@ const genres = [
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+  const handleScroll = () => {
+    setScrolled(window.scrollY > 15);
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+  return () =>
+    window.removeEventListener("scroll", handleScroll);
+}, []);
+
   const scrollToFooter = () => {
     const footer = document.getElementById("about-section");
     if (footer) {
@@ -122,7 +134,7 @@ const genres = [
   };
 
   return (
-    <div style={navbarStyle}>
+   <div style={navbarStyle(scrolled)}>
 
       {/* LEFT MENU + LOGO */}
       <div ref={navMenuRef} style={leftAreaStyle}>
@@ -453,7 +465,7 @@ style={hamburgerBtnStyle}
               <span
                 style={{
                   color: "white",
-                  fontSize: "12px",
+                  fontSize: "10px",
                   transform: showMenu ? "rotate(180deg)" : "rotate(0deg)",
                   transition: "0.2s"
                 }}
@@ -701,21 +713,29 @@ style={hamburgerBtnStyle}
   );
 }
 
-const navbarStyle = {
-  height: "86px",
+const navbarStyle = (scrolled) => ({
+  height: "72px",
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  padding: "0 28px",
-  backgroundColor: "rgba(0,0,0,0.96)",
+  padding: "0 34px",
+  background: scrolled
+  ? "rgba(0,0,0,0.82)"
+  : "transparent",
+
+backdropFilter: scrolled
+  ? "blur(12px)"
+  : "none",
   color: "white",
   position: "fixed",
   top: 0,
   left: 0,
   width: "100%",
   boxSizing: "border-box",
-  zIndex: 9999
-};
+  zIndex: 9999,
+transition:
+  "background 0.35s ease, backdrop-filter 0.35s ease"
+});
 
 const leftAreaStyle = {
   display: "flex",
@@ -755,11 +775,11 @@ const logoBoxStyle = {
 
 const logoTextStyle = {
   color: "#E50914",
-  fontSize: "24px",
+  fontSize: "28px",
   fontWeight: "900",
   fontFamily: "'Arial Black', sans-serif",
-  letterSpacing: "-1px",
-  transform: "scaleY(1.1)",
+  letterSpacing: "-1.5px",
+  textShadow: "0 0 18px rgba(229,9,20,0.45)",
   display: "inline-block",
   lineHeight: 1
 };
@@ -784,20 +804,21 @@ const centerSearchWrapperStyle = {
   position: "absolute",
   left: "50%",
   transform: "translateX(-50%)",
-  width: "min(560px, 42vw)"
+  width: "min(500px, 38vw)"
 };
 
 const searchBarStyle = {
-  height: "48px",
+  height: "42px",
   width: "100%",
-  background: "rgba(255,255,255,0.13)",
-  borderRadius: "28px",
+  background: "rgba(20,20,20,0.72)",
+  borderRadius: "24px",
   display: "flex",
   alignItems: "center",
-  padding: "0 12px",
+  padding: "0 10px",
   boxSizing: "border-box",
-  border: "1px solid rgba(255,255,255,0.04)",
-  boxShadow: "0 10px 30px rgba(0,0,0,0.35)"
+  border: "1px solid rgba(255,255,255,0.12)",
+  boxShadow: "0 10px 35px rgba(0,0,0,0.55)",
+  backdropFilter: "blur(12px)"
 };
 
 const filterBtnStyle = {
@@ -817,10 +838,10 @@ const searchInputStyle = {
   border: "none",
   outline: "none",
   color: "white",
-  fontSize: "15px",
+  fontSize: "14px",
   textAlign: "left",
-paddingLeft: "150px",
-paddingRight: "40px"
+  paddingLeft: "18px",
+  paddingRight: "20px"
 };
 
 const searchIconStyle = {
@@ -857,8 +878,8 @@ const rightAreaStyle = {
 };
 
 const avatarBoxStyle = {
-  width: "42px",
-  height: "42px",
+  width: "36px",
+  height: "36px",
   borderRadius: "6px",
   background: "#d58a58",
   overflow: "hidden",
