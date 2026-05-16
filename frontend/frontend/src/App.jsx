@@ -479,7 +479,7 @@ setIsListening(false);
 
 const speakCineVoiceWelcome = () => {
   const welcomeVoice = new SpeechSynthesisUtterance(
-`Hello, I am your CineVerse AI assistant. Welcome back to CineVerse. Relax, enjoy your entertainment, and simply say any movie you would like to watch.`  );
+`Hello, I am your CineVerse AI assistant. Welcome to CineVerse. Enjoy your entertainment, and simply say any movie you would like to watch.`  );
 
   welcomeVoice.lang = "en-IN";
 
@@ -1285,48 +1285,6 @@ if (!hasWelcomedRef.current) {
   }}
   onAdd={handleAddToMyList}
 />
-
-<div
-  style={{
-    display: "flex",
-    gap: "12px",
-    padding: "18px 4%",
-    overflowX: "auto"
-  }}
->
-  {[
-    "All",
-    "Action",
-    "Romance",
-    "Thriller",
-    "Horror",
-    "Sci-Fi",
-    "Comedy",
-    "Drama"
-  ].map((genre) => (
-    <button
-      key={genre}
-      onClick={() => setSelectedGenre(genre)}
-      style={{
-        padding: "10px 18px",
-        borderRadius: "30px",
-        border: "none",
-        cursor: "pointer",
-        whiteSpace: "nowrap",
-        background:
-          selectedGenre === genre
-            ? "#e50914"
-            : "rgba(255,255,255,0.1)",
-        color: "white",
-        fontWeight: "600",
-        fontSize: "14px",
-        transition: "0.25s ease"
-      }}
-    >
-      {genre}
-    </button>
-  ))}
-</div>
 
 <div id="movies-section" style={{ scrollMarginTop: "90px" }}>
           <MovieRow

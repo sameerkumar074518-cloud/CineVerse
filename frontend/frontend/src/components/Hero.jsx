@@ -3,7 +3,6 @@ import { movies } from "./MovieRow";
 import { series } from "./SeriesRow";
 
 export default function Hero({ onSelect, onAdd }) {
-
   const videoRef = useRef(null);
   const modalVideoRef = useRef(null);
 
@@ -102,7 +101,7 @@ export default function Hero({ onSelect, onAdd }) {
     },
     "Interstellar": {
       full: "Interstellar",
-      desc: "Sci-Fic • Adventure • Love",
+      desc: "Sci-Fi • Adventure • Love",
       preview: 4200
     },
     "Farzi": {
@@ -128,7 +127,7 @@ export default function Hero({ onSelect, onAdd }) {
     "Ajab Prem Ki Ghazab Kahani": {
       full: "Ajab Prem Ki Ghazab Kahani",
       desc: "Love • Drama • Comedy",
-      preview: 2782.70
+      preview: 2782.7
     },
     "The Conjuring Last Rites": {
       full: "The Conjuring Last Rites",
@@ -202,10 +201,10 @@ export default function Hero({ onSelect, onAdd }) {
         height: "92vh",
         position: "relative",
         color: "white",
-        overflow: "hidden"
+        overflow: "hidden",
+        background: "black"
       }}
     >
-
       {isHover && (
         <video
           autoPlay
@@ -233,7 +232,8 @@ export default function Hero({ onSelect, onAdd }) {
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            transform: "scale(1.02)"
+            transform: "scale(1.01)",
+            filter: "brightness(0.9) contrast(1.08) saturate(1.08)"
           }}
         >
           <source
@@ -258,10 +258,10 @@ export default function Hero({ onSelect, onAdd }) {
             backgroundSize: "cover",
             transform: "scale(1.01)",
             filter: "brightness(0.97) contrast(1.08) saturate(1.08)",
-           backgroundPosition: "center",
-backgroundRepeat: "no-repeat",
-imageRendering: "auto",
-transition: "0.5s ease"
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            imageRendering: "auto",
+            transition: "0.5s ease"
           }}
         />
       )}
@@ -309,16 +309,26 @@ transition: "0.5s ease"
         style={{
           position: "absolute",
           inset: 0,
-          background: `
-            linear-gradient(
-              90deg,
-              rgba(0,0,0,0.72) 0%,
-              rgba(0,0,0,0.52) 20%,
-              rgba(0,0,0,0.28) 42%,
-              rgba(0,0,0,0.10) 68%,
-              transparent 100%
-            )
-          `
+          background: isHover
+            ? `
+              linear-gradient(
+                90deg,
+                rgba(0,0,0,0.76) 0%,
+                rgba(0,0,0,0.48) 24%,
+                rgba(0,0,0,0.16) 56%,
+                transparent 100%
+              )
+            `
+            : `
+              linear-gradient(
+                90deg,
+                rgba(0,0,0,0.82) 0%,
+                rgba(0,0,0,0.62) 22%,
+                rgba(0,0,0,0.30) 48%,
+                rgba(0,0,0,0.12) 70%,
+                transparent 100%
+              )
+            `
         }}
       />
 
@@ -327,7 +337,7 @@ transition: "0.5s ease"
           position: "absolute",
           bottom: 0,
           width: "100%",
-          height: "45%",
+          height: "42%",
           background: "linear-gradient(to top, black, transparent)"
         }}
       />
@@ -339,49 +349,60 @@ transition: "0.5s ease"
         style={{
           position: "absolute",
           left: "70px",
-          bottom: "120px",
-          maxWidth: "520px",
-          zIndex: 2
+          bottom: isHover ? "150px" : "95px",
+          maxWidth: isHover ? "520px" : "760px",
+          zIndex: 2,
+          transition: "all 0.35s ease"
         }}
       >
         <h1 style={{
-          fontSize: "50px",
-          fontWeight: "870",
+          fontSize: isHover ? "52px" : "46px",
+          fontWeight: "900",
           letterSpacing: "1px",
-          lineHeight: "1.1",
-          marginBottom: "10px",
+          lineHeight: "1.08",
+          marginBottom: isHover ? "22px" : "14px",
           textTransform: "uppercase",
           color: "#e50914",
           textShadow: `
-            0 2px 6px rgba(0,0,0,0.8),
-            0 4px 15px rgba(0,0,0,0.5)
+            0 2px 6px rgba(0,0,0,0.9),
+            0 6px 18px rgba(0,0,0,0.65)
           `,
-          WebkitTextStroke: "1px rgba(0,0,0,0.5)",
+          WebkitTextStroke: "1px rgba(0,0,0,0.45)",
           fontFamily: "Impact, Haettenschweiler, 'Arial Black', sans-serif"
         }}>
           {info.full.includes(":")
-  ? (
-      <>
-        {info.full.split(":")[0]}:
-        <br />
-
-        <span style={{ color: "#e50914" }}>
-          {info.full.split(":")[1]}
-        </span>
-      </>
-    )
-  : info.full}
+            ? (
+              <>
+                {info.full.split(":")[0]}:
+                <br />
+                <span style={{ color: "#e50914" }}>
+                  {info.full.split(":")[1]}
+                </span>
+              </>
+            )
+            : info.full}
         </h1>
 
-        <p style={{ color: "#ccc", fontSize: "16px", marginBottom: "12px" }}>
-          {info.desc}
-        </p>
+        {!isHover && (
+          <>
 
-        <p style={{ color: "#aaa", fontSize: "14px", lineHeight: "1.5" }}>
-          Watch this exciting movie now on your CineVerse.
-        </p>
+            <p
+              style={{
+                color: "rgba(255,255,255,0.78)",
+                fontSize: "18px",
+                lineHeight: "1.55",
+                maxWidth: "760px",
+                marginBottom: "26px",
+                textShadow: "0 2px 8px rgba(0,0,0,0.75)"
+              }}
+            >
+              {current.description ||
+                "Watch this exciting title now on CineVerse. Enjoy premium entertainment with cinematic visuals, smooth playback, and a powerful streaming experience."}
+            </p>
+          </>
+        )}
 
-        {current.seasons && (
+        {current.seasons && !isHover && (
           <div
             style={{
               display: "flex",
@@ -423,7 +444,7 @@ transition: "0.5s ease"
           </div>
         )}
 
-        <div style={{ marginTop: "20px" }}>
+        <div style={{ marginTop: isHover ? "0px" : "20px" }}>
           <button
             onClick={() => {
               if (current.seasons) {
@@ -483,7 +504,7 @@ transition: "0.5s ease"
               ✕
             </button>
 
-              <div style={{ position: "relative", height: "400px", width: "100%", backgroundColor: "#000" }}>
+            <div style={{ position: "relative", height: "400px", width: "100%", backgroundColor: "#000" }}>
               <video
                 ref={modalVideoRef}
                 key={activeVideo}
@@ -586,18 +607,18 @@ transition: "0.5s ease"
                 <button
                   style={circleButtonStyle}
                   onClick={() =>
-  onAdd &&
-  onAdd(
-    current.seasons
-      ? {
-          ...current,
-          movieId: current.seasons[0].video,
-          video: current.seasons[0].video,
-          isSeries: true
-        }
-      : current
-  )
-}
+                    onAdd &&
+                    onAdd(
+                      current.seasons
+                        ? {
+                          ...current,
+                          movieId: current.seasons[0].video,
+                          video: current.seasons[0].video,
+                          isSeries: true
+                        }
+                        : current
+                    )
+                  }
                 >
                   +
                 </button>
@@ -656,59 +677,91 @@ transition: "0.5s ease"
           </div>
         </div>
       )}
-
     </div>
   );
 }
 
+const badgeStyle = {
+  background: "#008fa3",
+  color: "#001",
+  padding: "3px 8px",
+  borderRadius: "12px",
+  fontSize: "12px",
+  fontWeight: "900"
+};
+
+const ratingBadgeStyle = {
+  border: "1px solid rgba(255,255,255,0.7)",
+  padding: "2px 8px",
+  borderRadius: "4px",
+  fontSize: "12px",
+  color: "white"
+};
+
+const topCineStyle = {
+  position: "absolute",
+  bottom: "30px",
+  left: "50%",
+  transform: "translateX(-50%)",
+  zIndex: 3,
+  color: "rgba(255,255,255,0.78)",
+  fontWeight: "800",
+  fontSize: "18px",
+  letterSpacing: "0.3px",
+  textShadow: "0 2px 10px rgba(0,0,0,0.8)"
+};
+
 const primaryBtn = {
-  width: "110px",
-  height: "46px",
+  width: "132px",
+  height: "50px",
   background: "#fff",
   color: "#000",
   border: "none",
-  borderRadius: "4px",
-  fontWeight: "600",
+  borderRadius: "6px",
+  fontWeight: "800",
   cursor: "pointer",
-  fontSize: "15px",
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "8px"
-};
-
-const moreInfoBtn = {
-  marginLeft: "12px",
-  width: "160px",
-  height: "46px",
-  background: "rgba(109,109,110,0.55)",
-  color: "#fff",
-  border: "none",
-  borderRadius: "4px",
-  fontWeight: "600",
-  cursor: "pointer",
-  fontSize: "15px",
+  fontSize: "16px",
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
   gap: "8px",
-  backdropFilter: "blur(2px)"
+  boxShadow: "0 8px 25px rgba(0,0,0,0.35)"
+};
+
+const moreInfoBtn = {
+  marginLeft: "14px",
+  width: "170px",
+  height: "50px",
+  background: "rgba(109,109,110,0.55)",
+  color: "#fff",
+  border: "none",
+  borderRadius: "6px",
+  fontWeight: "800",
+  cursor: "pointer",
+  fontSize: "16px",
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "8px",
+  backdropFilter: "blur(3px)",
+  boxShadow: "0 8px 25px rgba(0,0,0,0.25)"
 };
 
 const arrow = (side) => ({
   position: "absolute",
-  top: "50%",
-  [side]: "20px",
+  top: "58%",
+  [side]: "18px",
   transform: "translateY(-50%)",
   zIndex: 5,
-  background: "rgba(0,0,0,0.5)",
+  background: "rgba(0,0,0,0.42)",
   border: "none",
   color: "white",
-  fontSize: "28px",
-  padding: "12px",
+  fontSize: "32px",
+  width: "48px",
+  height: "58px",
   cursor: "pointer",
-  borderRadius: "50%",
-  opacity: 0.7
+  borderRadius: "8px",
+  opacity: 0.72
 });
 
 const modalOverlayStyle = {
