@@ -142,6 +142,16 @@ export const allMovies = [
     duration: "2h 7m",
     cast: "Toni Collete, Milly Shapiro, Gabriel Byrne",
     description: "A grieving family is haunted by tragic and disturbing occurrences."
+  },
+   {
+    _id: "45",
+    title: "Madhuvidhu",
+    image: "/images/thumb19.png",
+    video: "https://archive.org/download/madhuvidhu.-2026.1080p.-ds-4-k.-web-dl.-hindi.-5.1-malayalam.-5/Madhuvidhu.2026.1080p.DS4K.WEB-DL.Hindi.5.1-Malayalam.5.mkv",
+    genre: "Comedy, Drama, Family, Romance",
+    duration: "2h 5m",
+    cast: "Sharafudheen, Jagadish, Kalyani Panicker",
+    description: "A newlywed couple's dreams of happiness fade as everyday pressures mount. What began with promise turns into a test of endurance, with each day requiring more effort to bridge the growing gap between them."
   }
 ];
 
@@ -269,7 +279,7 @@ flex: "0 0 20vw",
 >
               <div style={{
   width: "100%",
-  height: "11.3vw",
+  height: "10.5vw",
 borderRadius: "10px",
   overflow: "hidden",
   background: "#111",
@@ -325,7 +335,7 @@ borderRadius: "10px",
               
               <button style={closeButtonStyle} onClick={() => setSelectedMovie(null)}>✕</button>
 
-              <div style={{ position: "relative", height: "480px",width: "100%", backgroundColor: "#000" }}>
+              <div style={{ position: "relative", height: "58%", width: "100%", backgroundColor: "#000" }}>
                 {previewEnded ? (
   <img
     src={fullMovieData.image}
@@ -426,7 +436,13 @@ borderRadius: "10px",
                 </button>
               </div>
 
-              <div style={{ padding: "35px", backgroundColor: "#181818", borderRadius: "0 0 12px 12px" }}>
+              <div style={{
+  padding: "22px",
+  backgroundColor: "#181818",
+  borderRadius: "0 0 12px 12px",
+  flex: 1,
+  overflow: "hidden"
+}}>
                 <div style={{ display: "flex", gap: "12px", marginBottom: "20px" }}>
                   {fullMovieData.seasons && (
   <div
@@ -547,12 +563,17 @@ fullMovieData._id
                       <span>{fullMovieData.duration}</span>
                       <span style={{ border: "1px solid #808080", padding: "0 6px", fontSize: "12px" }}>HD</span>
                     </div>
-                    <p style={{ fontSize: "16px", color: "#d2d2d2", lineHeight: "1.5" }}>
+                    <p style={{ fontSize: "14px", color: "#d2d2d2", lineHeight: "1.4" }}>
                       {fullMovieData.description}
                     </p>
                   </div>
 
-                  <div style={{ flex: "1", fontSize: "14px", borderLeft: "1px solid #333", paddingLeft: "20px" }}>
+                  <div style={{
+  flex: "1",
+  fontSize: "13px",
+  borderLeft: "1px solid #333",
+  paddingLeft: "16px"
+}}>
                     <p style={{ margin: "0 0 10px 0" }}><span style={{ color: "#777" }}>Cast:</span> {fullMovieData.cast}</p>
                     <p style={{ margin: "0 0 10px 0" }}><span style={{ color: "#777" }}>Genres:</span> {fullMovieData.genre}</p>
                     <p style={{ margin: "0" }}>
@@ -682,15 +703,17 @@ const modalOverlayStyle = {
   padding: "20px"
 };
 const modalContentStyle = {
-  width: "960px",
-  maxWidth: "95vw",
-  maxHeight: "92vh",
+  width: "900px",
+  maxWidth: "92vw",
+  height: "88vh",
   backgroundColor: "#141414",
   borderRadius: "14px",
   position: "relative",
-  overflowY: "auto",
+  overflow: "hidden",
   boxShadow: "0 30px 100px rgba(0,0,0,0.95)",
-  animation: "modalPop 0.25s ease"
+  animation: "modalPop 0.25s ease",
+  display: "flex",
+  flexDirection: "column"
 };
 
 const closeButtonStyle = {

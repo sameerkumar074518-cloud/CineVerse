@@ -24,6 +24,7 @@ const previewTimerRef = useRef(null);
     ...allContent.filter(m => m.title === "Wake Up Sid"),
     ...allContent.filter(m => m.title === "Farzi"),
     ...allContent.filter(m => m.title === "Dhurandhar"),
+    ...allContent.filter(m => m.title === "Madhuvidhu"),
     ...allContent.filter(m => m.title === "Por Thozil"),
     ...allContent.filter(m => m.title === "Ajab Prem Ki Ghazab Kahani"),
     ...allContent.filter(m => m.title === "The Notebook"),
@@ -36,6 +37,7 @@ const previewTimerRef = useRef(null);
       m =>
         ![
           "Dhurandhar: The Revenge",
+          "Madhuvidhu",
           "Paatal Lok",
           "Hereditary",
           "Por Thozil",
@@ -78,6 +80,11 @@ const previewTimerRef = useRef(null);
     "Paatal Lok": {
       full: "Paatal Lok",
       desc: "Action • Crime • Thriller",
+      preview: 4500
+    },
+     "Madhuvidhu": {
+      full: "Madhuvidhu",
+      desc: "Comedy • Family • Drama",
       preview: 4500
     },
     "Hereditary": {
