@@ -7,7 +7,7 @@ export const allMovies = [
     _id: "18",
     title: "Dhurandhar: The Revenge",
     image: "/images/thumb18.png",
-    video: "https://archive.org/download/cinefreak.-top-dhurandhar-the-revenge-2026-web-dl-hi/CINEFREAK.TOP%20-%20Dhurandhar%20The%20Revenge%20%282026%29%20WEB-DL%20%5BHi.mkv",
+    video: "https://archive.org/download/dhurandhar-the-revenge-2026-uncensored-1080p-10-bit-ds-4-k-nf-webrip/Dhurandhar_The_Revenge_2026_UNCENSORED_1080p_10Bit_DS4K_NF_WEBRip.mkv",
     genre: "Action, Spy, Crime, Thriller",
     duration: "3h 55m",
     cast: "Ranveer Singh, Arjun Rampal, R Madhavan",

@@ -17,6 +17,7 @@ const previewTimerRef = useRef(null);
   const allContent = [...movies, ...series];
 
   const orderedMovies = [
+    ...allContent.filter(m => m.title === "Dhurandhar: The Revenge"),
     ...allContent.filter(m => m.title === "Interstellar"),
     ...allContent.filter(m => m.title === "Hereditary"),
     ...allContent.filter(m => m.title === "Paatal Lok"),
@@ -77,6 +78,11 @@ const previewTimerRef = useRef(null);
   const activeImage = activeSeason?.image || current.image;
 
   const details = {
+    "Dhurandhar: The Revenge": {
+      full: "Dhurandhar: The Revenge",
+      desc: "Action • Spy • Thriller",
+      preview: 2780
+    },
     "Paatal Lok": {
       full: "Paatal Lok",
       desc: "Action • Crime • Thriller",
