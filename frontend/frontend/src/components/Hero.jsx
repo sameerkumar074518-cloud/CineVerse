@@ -81,7 +81,7 @@ const previewTimerRef = useRef(null);
     "Dhurandhar: The Revenge": {
       full: "Dhurandhar: The Revenge",
       desc: "Action • Spy • Thriller",
-      preview: 4269
+      preview: 4267.5
     },
     "Paatal Lok": {
       full: "Paatal Lok",
