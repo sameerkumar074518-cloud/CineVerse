@@ -19,7 +19,6 @@ const {
 require("dotenv").config();
 
 const app = express();
-const watchCounts = {};
 
 app.use(cors({
   origin: "*"
@@ -88,6 +87,16 @@ const Profile = mongoose.model("Profile", {
   profileId: String,
   name: String,
   avatar: String
+});
+
+const WatchCount = mongoose.model("WatchCount", {
+  movieId: String,
+  title: String,
+  video: String,
+  watchCount: {
+    type: Number,
+    default: 0
+  }
 });
 
 /* 🔐 SECRET */
@@ -412,34 +421,64 @@ app.delete("/mylist/:id", auth, async (req, res) => {
 /* ================= */
 /* START */
 /* ================= */
-app.post("/watch-count", (req, res) => {
-  const { movieId, title, video } = req.body;
-  const id = movieId || video;
+app.post("/watch-count", async (req, res) => {
+  try {
+    const { movieId, title, video } = req.body;
 
-  if (!id) {
-    return res.status(400).json({ error: "movieId required" });
+    const id = movieId || video;
+
+    if (!id) {
+      return res.status(400).json({
+        error: "movieId required"
+      });
+    }
+
+    let movie = await WatchCount.findOne({
+      movieId: id
+    });
+
+    if (!movie) {
+      movie = new WatchCount({
+        movieId: id,
+        title,
+        video,
+        watchCount: 1
+      });
+    } else {
+      movie.watchCount += 1;
+    }
+
+    await movie.save();
+
+    const top10 = await WatchCount.find()
+      .sort({ watchCount: -1 })
+      .limit(10);
+
+    res.json({
+      success: true,
+      top10
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      error: err.message
+    });
   }
-
-  if (!watchCounts[id]) {
-    watchCounts[id] = {
-      movieId: id,
-      title,
-      video,
-      watchCount: 0
-    };
-  }
-
-  watchCounts[id].watchCount += 1;
-
-  res.json(watchCounts[id]);
 });
 
-app.get("/top10", (req, res) => {
-  const top10 = Object.values(watchCounts)
-    .sort((a, b) => b.watchCount - a.watchCount)
-    .slice(0, 10);
+app.get("/top10", async (req, res) => {
+  try {
+    const top10 = await WatchCount.find()
+      .sort({ watchCount: -1 })
+      .limit(10);
 
-  res.json(top10);
+    res.json(top10);
+
+  } catch (err) {
+    res.status(500).json({
+      error: err.message
+    });
+  }
 });
 
 app.post("/voice-command", upload.single("audio"), async (req, res) => {

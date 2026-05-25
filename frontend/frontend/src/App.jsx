@@ -148,6 +148,7 @@ self.findIndex(
 .catch(err => {
   console.log("My List fetch error:", err);
 });
+
 }
 
 const timer = setTimeout(() => setShowIntro(false), 2000);
@@ -1428,16 +1429,44 @@ if (!hasWelcomedRef.current) {
 
   if (movieObj) {
     fetch(`${API}/watch-count`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        movieId: movieObj._id,
-        title: movieObj.title,
-        video: movieObj.video
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    movieId: movieObj._id || movieObj.video,
+    title: movieObj.title,
+    video: movieObj.video
+  })
+})
+.then(res => res.json())
+.then(data => {
+
+  if (data.top10) {
+
+    const merged = data.top10
+      .map(item => {
+        const fullMovie = allMovies.find(
+          m =>
+            m.video === item.video ||
+            m._id === item.movieId
+        );
+
+        return fullMovie
+          ? {
+              ...fullMovie,
+              watchCount: item.watchCount
+            }
+          : null;
       })
-    });
+      .filter(Boolean);
+
+    setTopMovies(merged);
+  }
+})
+.catch(err => {
+  console.log("Watch count update error:", err);
+});
   }
 }}
   onAdd={handleAddToMyList}
