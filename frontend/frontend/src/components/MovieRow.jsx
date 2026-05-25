@@ -14,6 +14,16 @@ export const allMovies = [
     description: "Jaskirat Singh Rangi descends deeper into his alias as Hamza Ali Mazari, rising through Karachi's criminal hierarchy to claim the feared title 'Sher-e-Baloch' while balancing loyalty, betrayal, and survival in a ruthless underworld."
   },
   {
+    _id: "64",
+    title: "Gangs of Wasseypur",
+    image: "/images/thumb20.png",
+    video: "https://archive.org/download/dhurandhar-the-revenge-2026-uncensored-1080p-10-bit-ds-4-k-nf-webrip/Dhurandhar_The_Revenge_2026_UNCENSORED_1080p_10Bit_DS4K_NF_WEBRip.mkv",
+    genre: "Dark Comedy, Action, Drama, Crime",
+    duration: "2h 41m",
+    cast: "Manoj Bajpayee, Pankaj Tripathi, Nawazuddin Siddiqui",
+    description: "A clash between Sultan and Shahid Khan leads to the expulsion of Khan from Wasseypur, and ignites a deadly blood feud spanning three generations."
+  },
+  {
     _id: "1",
     title: "Dhurandhar",
     image: "/images/thumb4.png",

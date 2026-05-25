@@ -18,6 +18,7 @@ const previewTimerRef = useRef(null);
 
   const orderedMovies = [
     ...allContent.filter(m => m.title === "Dhurandhar: The Revenge"),
+    ...allContent.filter(m => m.title === "Gangs of Wasseypur"),
     ...allContent.filter(m => m.title === "Interstellar"),
     ...allContent.filter(m => m.title === "Hereditary"),
     ...allContent.filter(m => m.title === "Paatal Lok"),
@@ -37,6 +38,7 @@ const previewTimerRef = useRef(null);
     ...allContent.filter(
       m =>
         ![
+          "Gangs of Wasseypur",
           "Dhurandhar: The Revenge",
           "Madhuvidhu",
           "Paatal Lok",
@@ -81,6 +83,11 @@ const previewTimerRef = useRef(null);
     "Dhurandhar: The Revenge": {
       full: "Dhurandhar: The Revenge",
       desc: "Action • Spy • Thriller",
+      preview: 4267.5
+    },
+    "Gangs of Wasseypur": {
+      full: "Gangs of Wasseypur",
+      desc: "Comedy • Action • Crime",
       preview: 4267.5
     },
     "Paatal Lok": {
