@@ -231,7 +231,7 @@ borderRadius: "10px",
 
               <div style={{ 
   position: "relative",
-  height: "68%",
+  height: "60%",
   width: "100%",
   backgroundColor: "#000",
   flexShrink: 0
@@ -326,11 +326,14 @@ borderRadius: "10px",
               </div>
 
               <div style={{ 
-  padding: "20px 24px",
+  padding: "18px 24px",
   backgroundColor: "#181818",
   borderRadius: "0 0 12px 12px",
   flex: 1,
-  overflow: "hidden"
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+  overflowY: "auto"
 }}>
                 <div
   style={{
