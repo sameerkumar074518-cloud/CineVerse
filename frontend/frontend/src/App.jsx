@@ -193,6 +193,76 @@ const handleAddToMyList = async (movie) => {
   }
 };
 
+const saveWatchHistory = async (movieObj) => {
+  const token = localStorage.getItem("token");
+
+  if (!token || !profile || !movieObj) return;
+
+  await fetch(`${API}/watch-history`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token
+    },
+    body: JSON.stringify({
+      profileId: profile.id,
+      movieId: movieObj._id || movieObj.video || movieObj.movieId,
+      title: movieObj.title,
+      genre: movieObj.genre,
+      cast: movieObj.cast,
+      image: movieObj.image,
+      video: movieObj.video || movieObj.movieId
+    })
+  });
+};
+
+const loadSmartRecommendations = async () => {
+  const token = localStorage.getItem("token");
+
+  if (!token || !profile) return;
+
+  try {
+    const res = await fetch(`${API}/recommendations/${profile.id}`, {
+      headers: {
+        Authorization: token
+      }
+    });
+
+    const data = await res.json();
+
+    if (!data.error) {
+      const merged = data
+        .map(item => {
+          const fullMovie = [...allMovies, ...allSeries].find(
+            m =>
+              m.video === item.video ||
+              m._id === item.movieId ||
+              m.title === item.title
+          );
+
+          return fullMovie
+            ? {
+                ...fullMovie,
+                smartScore: item.score,
+                watchCount: item.watchCount
+              }
+            : null;
+        })
+        .filter(Boolean);
+
+      setRecommended(merged);
+    }
+  } catch (err) {
+    console.log("Smart recommendation error:", err);
+  }
+};
+
+useEffect(() => {
+  if (!user || !profile) return;
+
+  loadSmartRecommendations();
+}, [user, profile?.id]);
+
 const handleRemoveFromMyList = async (id) => {
   console.log("Removing:", id);
 
@@ -854,30 +924,6 @@ window.speechSynthesis.speak(
 useEffect(() => {
   if (!user || !profile) return;
 
-  const recKey = `recommend_${user}_${profile?.id}`;
-  const history = JSON.parse(localStorage.getItem(recKey)) || [];
-
-  const genres = history
-    .flatMap(item => item.genre?.split(",") || [])
-    .map(g => g.trim().toLowerCase())
-    .filter(Boolean);
-
-  const recommendedContent = [...movies, ...allSeries]
-    .filter(item => {
-      const itemGenres = item.genre
-        ?.split(",")
-        .map(g => g.trim().toLowerCase()) || [];
-
-      return itemGenres.some(g => genres.includes(g));
-    })
-    .filter(item => !history.some(h => h.video === item.video));
-
-  setRecommended(recommendedContent.slice(0, 12));
-}, [user, profile, movies, selectedVideo]);
-
-useEffect(() => {
-  if (!user || !profile) return;
-
   const saved = localStorage.getItem(`last_watched_${user}_${profile.id}`);
   if (!saved) return;
 
@@ -1324,7 +1370,23 @@ if (!hasWelcomedRef.current) {
 
   return matchesTitle || matchesGenre;
 })}
-            onSelect={(v) => { setSelectedVideo(v); setIsSouthPlayer(false); }}
+            onSelect={(v) => {
+  const movieObj =
+    typeof v === "object"
+      ? v
+      : [...movies, ...allSeries].find(m => m.video === v);
+
+  if (movieObj) {
+    saveWatchHistory(movieObj);
+  }
+
+  setSelectedVideo(v);
+  setIsSouthPlayer(false);
+
+  setTimeout(() => {
+    loadSmartRecommendations();
+  }, 500);
+}}
             onAdd={handleAddToMyList}
             title="Movies"
             showAdd={true}
@@ -1337,11 +1399,26 @@ if (!hasWelcomedRef.current) {
   style={{ scrollMarginTop: "90px" }}
 >
   <SeriesRow
-    series={genreFilteredSeries}
-    onSelect={(videoData) => {
-      setSelectedVideo(videoData);
-      setIsSouthPlayer(false);
-    }}
+  series={genreFilteredSeries}
+  onSelect={(videoData) => {
+    const seriesObj = allSeries.find(s =>
+      s.title === videoData.title?.split(" - Season")[0]
+    );
+
+    if (seriesObj) {
+      saveWatchHistory({
+        ...seriesObj,
+        video: videoData.video
+      });
+    }
+
+    setSelectedVideo(videoData);
+    setIsSouthPlayer(false);
+
+    setTimeout(() => {
+      loadSmartRecommendations();
+    }, 500);
+  }}
     onAdd={handleAddToMyList}
     title="Series"
   />
@@ -1419,6 +1496,7 @@ if (!hasWelcomedRef.current) {
         <Top10Row
   movies={topMovies.length > 0 ? topMovies : movies}
   onSelect={(v) => {
+
   setSelectedVideo(v);
   setIsSouthPlayer(false);
 
@@ -1428,45 +1506,55 @@ if (!hasWelcomedRef.current) {
       : movies.find(m => m.video === v);
 
   if (movieObj) {
+
+    saveWatchHistory(movieObj);
+
     fetch(`${API}/watch-count`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    movieId: movieObj._id || movieObj.video,
-    title: movieObj.title,
-    video: movieObj.video
-  })
-})
-.then(res => res.json())
-.then(data => {
-
-  if (data.top10) {
-
-    const merged = data.top10
-      .map(item => {
-        const fullMovie = allMovies.find(
-          m =>
-            m.video === item.video ||
-            m._id === item.movieId
-        );
-
-        return fullMovie
-          ? {
-              ...fullMovie,
-              watchCount: item.watchCount
-            }
-          : null;
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        movieId: movieObj._id || movieObj.video,
+        title: movieObj.title,
+        video: movieObj.video
       })
-      .filter(Boolean);
+    })
+    .then(res => res.json())
+    .then(data => {
 
-    setTopMovies(merged);
-  }
-})
-.catch(err => {
-  console.log("Watch count update error:", err);
-});
+      if (data.top10) {
+
+        const merged = data.top10
+          .map(item => {
+
+            const fullMovie = allMovies.find(
+              m =>
+                m.video === item.video ||
+                m._id === item.movieId
+            );
+
+            return fullMovie
+              ? {
+                  ...fullMovie,
+                  watchCount: item.watchCount
+                }
+              : null;
+
+          })
+          .filter(Boolean);
+
+        setTopMovies(merged);
+      }
+
+    })
+    .catch(err => {
+      console.log("Watch count update error:", err);
+    });
+
+    setTimeout(() => {
+      loadSmartRecommendations();
+    }, 500);
   }
 }}
   onAdd={handleAddToMyList}

@@ -98,6 +98,20 @@ const WatchCount = mongoose.model("WatchCount", {
     default: 0
   }
 });
+const WatchHistory = mongoose.model("WatchHistory", {
+  username: String,
+  profileId: String,
+  movieId: String,
+  title: String,
+  genre: String,
+  cast: String,
+  image: String,
+  video: String,
+  watchedAt: {
+    type: Date,
+    default: Date.now
+  }
+});
 
 /* 🔐 SECRET */
 const JWT_SECRET = "mysecretkey";
@@ -412,6 +426,95 @@ app.delete("/mylist/:id", auth, async (req, res) => {
     }
 
     res.json({ message: "Removed" });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/watch-history", auth, async (req, res) => {
+  try {
+    const {
+      profileId,
+      movieId,
+      title,
+      genre,
+      cast,
+      image,
+      video
+    } = req.body;
+
+    if (!profileId || !movieId) {
+      return res.status(400).json({
+        error: "Profile ID and Movie ID required"
+      });
+    }
+
+    await WatchHistory.create({
+      username: req.user.username,
+      profileId,
+      movieId,
+      title,
+      genre,
+      cast,
+      image,
+      video
+    });
+
+    res.json({ message: "Watch history saved" });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/recommendations/:profileId", auth, async (req, res) => {
+  try {
+    const profileId = req.params.profileId;
+
+    const history = await WatchHistory.find({
+      username: req.user.username,
+      profileId
+    }).sort({ watchedAt: -1 });
+
+    if (history.length === 0) {
+      return res.json([]);
+    }
+
+    const genreScore = {};
+    const watchedIds = new Set();
+
+    history.forEach(item => {
+      watchedIds.add(item.movieId);
+
+      item.genre
+        ?.split(",")
+        .map(g => g.trim().toLowerCase())
+        .forEach(g => {
+          genreScore[g] = (genreScore[g] || 0) + 1;
+        });
+    });
+
+    const allMovies = await WatchCount.find().sort({ watchCount: -1 });
+
+    const recommendations = allMovies
+      .filter(movie => !watchedIds.has(movie.movieId))
+      .map(movie => {
+        let score = movie.watchCount || 0;
+
+        Object.keys(genreScore).forEach(g => {
+  score += genreScore[g] * 2;
+});
+
+        return {
+          ...movie.toObject(),
+          score
+        };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 12);
+
+    res.json(recommendations);
 
   } catch (err) {
     res.status(500).json({ error: err.message });
