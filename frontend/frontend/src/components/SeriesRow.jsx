@@ -348,7 +348,6 @@ borderRadius: "10px",
   style={{
     display: "flex",
     gap: "10px",
-    marginBottom: "20px",
     flexWrap: "wrap",
     position: "relative",
     zIndex: 1
