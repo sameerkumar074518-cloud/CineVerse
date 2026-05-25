@@ -229,7 +229,13 @@ borderRadius: "10px",
               
               <button style={closeButtonStyle} onClick={() => setSelectedMovie(null)}>✕</button>
 
-              <div style={{ position: "relative", height: "480px",width: "100%", backgroundColor: "#000" }}>
+              <div style={{ 
+  position: "relative",
+  height: "68%",
+  width: "100%",
+  backgroundColor: "#000",
+  flexShrink: 0
+}}>
                 {previewEnded ? (
   <img
     src={selectedSeason?.image || fullMovieData.image}
@@ -319,7 +325,13 @@ borderRadius: "10px",
                 </button>
               </div>
 
-              <div style={{ padding: "35px", backgroundColor: "#181818", borderRadius: "0 0 12px 12px" }}>
+              <div style={{ 
+  padding: "20px 24px",
+  backgroundColor: "#181818",
+  borderRadius: "0 0 12px 12px",
+  flex: 1,
+  overflow: "hidden"
+}}>
                 <div
   style={{
     display: "flex",
@@ -581,13 +593,15 @@ const modalOverlayStyle = {
 const modalContentStyle = {
   width: "960px",
   maxWidth: "95vw",
-  maxHeight: "92vh",
+  height: "92vh",
   backgroundColor: "#141414",
   borderRadius: "14px",
   position: "relative",
-  overflowY: "auto",
+  overflow: "hidden",
   boxShadow: "0 30px 100px rgba(0,0,0,0.95)",
-  animation: "modalPop 0.25s ease"
+  animation: "modalPop 0.25s ease",
+  display: "flex",
+  flexDirection: "column"
 };
 
 const closeButtonStyle = {
