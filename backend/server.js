@@ -83,6 +83,13 @@ const MyList = mongoose.model("MyList", {
   isSeries: Boolean
 });
 
+const Profile = mongoose.model("Profile", {
+  username: String,
+  profileId: String,
+  name: String,
+  avatar: String
+});
+
 /* 🔐 SECRET */
 const JWT_SECRET = "mysecretkey";
 
@@ -251,6 +258,46 @@ app.get("/movies", auth, async (req, res) => {
   try {
     const movies = await Movie.find();
     res.json(movies);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/profiles", auth, async (req, res) => {
+  try {
+    const { id, name, avatar } = req.body;
+
+    const profile = new Profile({
+      username: req.user.username,
+      profileId: id,
+      name,
+      avatar
+    });
+
+    await profile.save();
+    res.json(profile);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/profiles", auth, async (req, res) => {
+  try {
+    const profiles = await Profile.find({ username: req.user.username });
+    res.json(profiles);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete("/profiles/:id", auth, async (req, res) => {
+  try {
+    await Profile.findOneAndDelete({
+      username: req.user.username,
+      profileId: req.params.id
+    });
+
+    res.json({ message: "Profile deleted" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

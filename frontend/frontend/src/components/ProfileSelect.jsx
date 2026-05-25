@@ -1,21 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function ProfileSelect({ user, onSelectProfile, onLogout }) {
-  const storageKey = `profiles_${user}`;
-
-  const savedProfiles =
-    JSON.parse(localStorage.getItem(storageKey)) || [];
-
-  const [profiles, setProfiles] = useState(savedProfiles);
+  const API = "https://primeclone-2e4b.onrender.com";
+const [profiles, setProfiles] = useState([]);
   const [newName, setNewName] = useState("");
   const [manageMode, setManageMode] = useState(false);
   const [showAddPopup, setShowAddPopup] = useState(false);
+  useEffect(() => {
+  const loadProfiles = async () => {
+    const token = localStorage.getItem("token");
 
-  const saveProfiles = (updatedProfiles) => {
-    setProfiles(updatedProfiles);
-    localStorage.setItem(storageKey, JSON.stringify(updatedProfiles));
+    const res = await fetch(`${API}/profiles`, {
+      headers: { Authorization: token }
+    });
+
+    const data = await res.json();
+    setProfiles(data);
   };
-  const addProfile = () => {
+
+  loadProfiles();
+}, []);
+
+  const addProfile = async () => {
     if (!newName.trim()) {
       alert("Enter profile name");
       return;
@@ -41,15 +47,34 @@ if (alreadyExists) {
       avatar: `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${newName}-${Date.now()}`
     };
 
-    saveProfiles([...profiles, newProfile]);
+    const token = localStorage.getItem("token");
+
+await fetch(`${API}/profiles`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: token
+  },
+  body: JSON.stringify(newProfile)
+});
+
+setProfiles(prev => [...prev, newProfile]);
 setNewName("");
 setShowAddPopup(false);
   };
 
-  const deleteProfile = (id) => {
-    const updatedProfiles = profiles.filter((profile) => profile.id !== id);
-    saveProfiles(updatedProfiles);
-  };
+  const deleteProfile = async (id) => {
+  const token = localStorage.getItem("token");
+
+  await fetch(`${API}/profiles/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: token }
+  });
+
+  setProfiles(prev =>
+    prev.filter(profile => profile.id !== id)
+  );
+};
 
   return (
     <div style={pageStyle}>
