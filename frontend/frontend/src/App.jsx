@@ -24,6 +24,7 @@ const [isSouthPlayer, setIsSouthPlayer] = useState(false); // ✅ ADDED
 
 const [user, setUser] = useState("");
 const [profile, setProfile] = useState(null);
+const [profiles, setProfiles] = useState([]);
 const [search, setSearch] = useState("");
 const myListRef = useRef(null);
 const seriesRef = useRef(null);
@@ -53,6 +54,30 @@ const recognitionRef = useRef(null);
 const hasWelcomedRef = useRef(false);
 
 const API = "https://primeclone-2e4b.onrender.com";
+
+useEffect(() => {
+  const loadProfiles = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!user || !token) return;
+
+    try {
+      const res = await fetch(`${API}/profiles`, {
+        headers: { Authorization: token }
+      });
+
+      const data = await res.json();
+
+      if (!data.error) {
+        setProfiles(data);
+      }
+    } catch (err) {
+      console.log("Profiles load error:", err);
+    }
+  };
+
+  loadProfiles();
+}, [user]);
 /* ================== LOAD ================== */
 useEffect(() => {
 const savedUser = localStorage.getItem("user");
@@ -376,6 +401,7 @@ const handleLogout = () => {
   setUser("");
   setProfile(null);
   setMyList([]);
+  setProfiles([]);
 };
 
 
@@ -1081,7 +1107,9 @@ if (!user) {
 if (user && !profile) {
   return (
     <ProfileSelect
-      user={user}
+  user={user}
+  profiles={profiles}
+  setProfiles={setProfiles}
       onSelectProfile={(selectedProfile) => {
   setMyList([]);
 
@@ -1154,11 +1182,7 @@ return (
 
   profile={profile}
 
-  profiles={
-    JSON.parse(
-      localStorage.getItem(`profiles_${user}`)
-    ) || []
-  }
+  profiles={profiles}
 
   onSwitchProfile={(selectedProfile) => {
     setMyList([]);
