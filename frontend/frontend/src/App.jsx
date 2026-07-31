@@ -54,7 +54,6 @@ const recognitionRef = useRef(null);
 const hasWelcomedRef = useRef(false);
 
 const API = "https://primeclone-2e4b.onrender.com";
-
 useEffect(() => {
   const loadProfiles = async () => {
     const token = localStorage.getItem("token");
@@ -127,9 +126,9 @@ fetch(`${API}/top10`)
 setMyList([]);
 
 if (token && profile) {
-  fetch(`${API}/mylist?profileId=${profile?.id}`, {
-    headers: { Authorization: token }
-  })
+  fetch(`${API}/mylist?profileId=${profile?.profileId}`, {
+    headers: { Authorization: token }
+  })
     .then(res => res.json())
     .then(data => {
   if (!data.error) {
@@ -153,7 +152,7 @@ self.findIndex(
 
 const timer = setTimeout(() => setShowIntro(false), 2000);
 return () => clearTimeout(timer);
-}, [profile?.id]);
+}, [profile?.profileId]);
 
 /* ================== MY LIST ================== */
 const handleAddToMyList = async (movie) => {
@@ -164,25 +163,40 @@ const handleAddToMyList = async (movie) => {
     return;
   }
 
+  console.log(profile);
+  console.log("profile.id =", profile.id);
+  console.log("profile.profileId =", profile.profileId);
+
   const listItem = {
-    ...movie,
-    profileId: profile.id,
-    movieId: movie.movieId || movie.video || movie.seasons?.[0]?.video,
-    video: movie.video || movie.seasons?.[0]?.video
+    profileId: profile.profileId,
+    movieId:
+      movie.movieId ||
+      movie._id ||
+      movie.video ||
+      (movie.seasons?.length ? movie.seasons[0].video : null),
+    title: movie.title,
+    image: movie.image,
+    video: movie.video || movie.seasons?.[0]?.video,
+    seasons: movie.seasons || [],
+    genre: movie.genre,
+    cast: movie.cast,
+    description: movie.description,
+    isSeries: !!movie.seasons
   };
 
-  if (
-    myList.find(
-      m =>
-        m.movieId === listItem.movieId &&
-        m.profileId === profile.id
-    )
-  ) return;
+  console.log("Movie Object:", movie);      // ✅ ADD
+  console.log("Sending:", listItem);        // ✅ ADD
 
-  setMyList(prev => [listItem, ...prev]);
+  const exists = myList.find(
+    m =>
+      m.movieId === listItem.movieId &&
+      m.profileId === profile.profileId
+  );
 
-  if (token) {
-    await fetch(`${API}/mylist`, {
+  if (exists) return;
+
+  try {
+    const res = await fetch(`${API}/mylist`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -190,6 +204,17 @@ const handleAddToMyList = async (movie) => {
       },
       body: JSON.stringify(listItem)
     });
+
+    const data = await res.json();
+    console.log(data);
+
+    if (res.ok) {
+      setMyList(prev => [...prev, data.movie]);
+    } else {
+      alert(data.error);
+    }
+  } catch (err) {
+    console.log(err);
   }
 };
 
@@ -205,7 +230,7 @@ const saveWatchHistory = async (movieObj) => {
       Authorization: token
     },
     body: JSON.stringify({
-      profileId: profile.id,
+      profileId: profile.profileId,
       movieId: movieObj._id || movieObj.video || movieObj.movieId,
       title: movieObj.title,
       genre: movieObj.genre,
@@ -222,7 +247,7 @@ const loadSmartRecommendations = async () => {
   if (!token || !profile) return;
 
   try {
-    const res = await fetch(`${API}/recommendations/${profile.id}`, {
+    const res = await fetch(`${API}/recommendations/${profile.profileId}`, {
       headers: {
         Authorization: token
       }
@@ -264,8 +289,6 @@ useEffect(() => {
 }, [user, profile?.id]);
 
 const handleRemoveFromMyList = async (id) => {
-  console.log("Removing:", id);
-
   const token = localStorage.getItem("token");
 
   const itemToRemove = myList.find(
@@ -275,21 +298,26 @@ const handleRemoveFromMyList = async (id) => {
       m._id === id
   );
 
-  if (!itemToRemove) {
-    console.log("Item not found in state");
-    return;
-  }
+  console.log("Item:", itemToRemove);
+
+  if (!itemToRemove) return;
+
+  const deleteId = itemToRemove._id;
+
+  console.log("Deleting Mongo ID:", deleteId);
 
   setMyList(prev =>
-    prev.filter(m => m._id !== itemToRemove._id)
+    prev.filter(m => m._id !== deleteId)
   );
 
-  if (token) {
-    await fetch(`${API}/mylist/${itemToRemove._id}`, {
-      method: "DELETE",
-      headers: { Authorization: token }
-    });
-  }
+  const res = await fetch(`${API}/mylist/${deleteId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: token
+    }
+  });
+
+  console.log(await res.text());
 };
 
 /* ================== AUTH ================== */
@@ -538,7 +566,7 @@ const similarMovies =
     .slice(0, 12);
 
 setBecauseWatched(similarMovies);
-const recKey = `recommend_${user}_${profile.id}`;
+const recKey = `recommend_${user}_${profile.profileId}`;
 
 const oldHistory =
   JSON.parse(localStorage.getItem(recKey)) || [];
@@ -924,7 +952,7 @@ window.speechSynthesis.speak(
 useEffect(() => {
   if (!user || !profile) return;
 
-  const saved = localStorage.getItem(`last_watched_${user}_${profile.id}`);
+  const saved = localStorage.getItem(`last_watched_${user}_${profile.profileId}`);
   if (!saved) return;
 
   const lastMovie = JSON.parse(saved);

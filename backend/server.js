@@ -336,6 +336,7 @@ app.delete("/profiles/:id", auth, async (req, res) => {
 
 /* ➕ ADD */
 app.post("/mylist", auth, async (req, res) => {
+  console.log("BODY RECEIVED:", req.body);
   try {
     const {
   profileId,
@@ -380,9 +381,12 @@ console.log("MOVIE:", title);
   isSeries
 });
 
-    await item.save();
+const savedItem = await item.save();
 
-    res.json({ message: "Added to My List", movie: item });
+res.json({
+  message: "Added",
+  movie: savedItem
+});
 
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -418,21 +422,32 @@ app.get("/mylist", auth, async (req, res) => {
 /* ❌ REMOVE */
 app.delete("/mylist/:id", auth, async (req, res) => {
   try {
-    const id = req.params.id;
 
-    const result = await MyList.findOneAndDelete({
-      _id: id,
+    console.log("Deleting:", req.params.id);
+
+    const deleted = await MyList.findOneAndDelete({
+      _id: req.params.id,
       username: req.user.username
     });
 
-    if (!result) {
-      return res.status(404).json({ error: "Item not found" });
+    if (!deleted) {
+      return res.status(404).json({
+        error: "Item not found"
+      });
     }
 
-    res.json({ message: "Removed" });
+    res.json({
+      success: true
+    });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+
+    console.log(err);
+
+    res.status(500).json({
+      error: err.message
+    });
+
   }
 });
 
