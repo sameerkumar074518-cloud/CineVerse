@@ -7,7 +7,7 @@ export const allMovies = [
     _id: "18",
     title: "Dhurandhar: The Revenge",
     image: "/images/thumb18.png",
-    video: "https://archive.org/download/dhurandhar-the-revenge-2026-uncensored-1080p-10-bit-ds-4-k-nf-webrip/Dhurandhar_The_Revenge_2026_UNCENSORED_1080p_10Bit_DS4K_NF_WEBRip.mkv",
+    video: "https://archive.org/download/d19ca33c-1a55-4e06-966f-0ae5ff95e6ea/d19ca33c-1a55-4e06-966f-0ae5ff95e6ea.mp4",
     genre: "Action, Spy, Crime, Thriller",
     duration: "3h 55m",
     cast: "Ranveer Singh, Arjun Rampal, R Madhavan",
@@ -15,13 +15,13 @@ export const allMovies = [
   },
   {
     _id: "64",
-    title: "Gangs of Wasseypur",
+    title: "Ramayana",
     image: "/images/thumb20.png",
-    video: "https://archive.org/download/dhurandhar-the-revenge-2026-uncensored-1080p-10-bit-ds-4-k-nf-webrip/Dhurandhar_The_Revenge_2026_UNCENSORED_1080p_10Bit_DS4K_NF_WEBRip.mkv",
-    genre: "Dark Comedy, Action, Drama, Crime",
+    video: "https://archive.org/download/2ef-3fceb-7bf-6-48ea-9451-8d-925ea-7bcf-6/2ef3fceb-7bf6-48ea-9451-8d925ea7bcf6.mp4",
+    genre: "Adventure, Action, Love, Spirituality",
     duration: "2h 41m",
-    cast: "Manoj Bajpayee, Pankaj Tripathi, Nawazuddin Siddiqui",
-    description: "A clash between Sultan and Shahid Khan leads to the expulsion of Khan from Wasseypur, and ignites a deadly blood feud spanning three generations."
+    cast: "Ranbir Kapoor, Yash, Sai Pallavi",
+    description: "An ancient epic follows a young prince and princess whose marriage and subsequent exile mark the beginning of a legendary journey. Their story of love, duty and destiny sets the stage for greater challenges ahead."
   },
   {
     _id: "1",
@@ -117,7 +117,7 @@ export const allMovies = [
     _id: "11",
     title: "Interstellar",
     image: "/images/thumb12.png",
-    video: "https://archive.org/download/interstellar-2014-dual-audio-hindi-english-full-movie_202605/Interstellar%20%282014%29%20Dual%20Audio%20%5BHindi%20%2B%20English%5D%20Full%20Movie%20.mkv",
+    video: "https://archive.org/download/db-8i-1ky-xk-wc-top/DB8i1kyXkWc_top.mp4",
     genre: "Sci-Fic, Adventure, Love",
     duration: "2h 50m",
     cast: "	Matthew McConaughey, Anne Hathaway, Jessica Chastain",

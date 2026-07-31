@@ -17,8 +17,8 @@ const previewTimerRef = useRef(null);
   const allContent = [...movies, ...series];
 
   const orderedMovies = [
+    ...allContent.filter(m => m.title === "Ramayana"),
     ...allContent.filter(m => m.title === "Dhurandhar: The Revenge"),
-    ...allContent.filter(m => m.title === "Gangs of Wasseypur"),
     ...allContent.filter(m => m.title === "Interstellar"),
     ...allContent.filter(m => m.title === "Hereditary"),
     ...allContent.filter(m => m.title === "Paatal Lok"),
@@ -38,7 +38,7 @@ const previewTimerRef = useRef(null);
     ...allContent.filter(
       m =>
         ![
-          "Gangs of Wasseypur",
+          "Ramayana",
           "Dhurandhar: The Revenge",
           "Madhuvidhu",
           "Paatal Lok",
@@ -83,12 +83,12 @@ const previewTimerRef = useRef(null);
     "Dhurandhar: The Revenge": {
       full: "Dhurandhar: The Revenge",
       desc: "Action • Spy • Thriller",
-      preview: 4267.5
+      preview: 27.50
     },
-    "Gangs of Wasseypur": {
-      full: "Gangs of Wasseypur",
-      desc: "Comedy • Action • Crime",
-      preview: 4267.5
+    "Ramayana": {
+      full: "Ramayana",
+      desc: "Adventure • Action • Love • Spiritual",
+      preview: 7.80
     },
     "Paatal Lok": {
       full: "Paatal Lok",
@@ -118,7 +118,7 @@ const previewTimerRef = useRef(null);
     "Interstellar": {
       full: "Interstellar",
       desc: "Sci-Fi • Adventure • Love",
-      preview: 4200
+      preview: 100
     },
     "Farzi": {
       full: "Farzi",
