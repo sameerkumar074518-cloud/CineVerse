@@ -18,45 +18,9 @@ const previewTimerRef = useRef(null);
 
   const orderedMovies = [
     ...allContent.filter(m => m.title === "Ramayana"),
-    ...allContent.filter(m => m.title === "Dhurandhar: The Revenge"),
     ...allContent.filter(m => m.title === "Interstellar"),
-    ...allContent.filter(m => m.title === "Hereditary"),
-    ...allContent.filter(m => m.title === "Paatal Lok"),
-    ...allContent.filter(m => m.title === "Lucky Baskhar"),
-    ...allContent.filter(m => m.title === "Wake Up Sid"),
     ...allContent.filter(m => m.title === "Farzi"),
     ...allContent.filter(m => m.title === "Dhurandhar"),
-    ...allContent.filter(m => m.title === "Madhuvidhu"),
-    ...allContent.filter(m => m.title === "Por Thozil"),
-    ...allContent.filter(m => m.title === "Ajab Prem Ki Ghazab Kahani"),
-    ...allContent.filter(m => m.title === "The Notebook"),
-    ...allContent.filter(m => m.title === "Passengers"),
-    ...allContent.filter(m => m.title === "The Conjuring Last Rites"),
-    ...allContent.filter(m => m.title === "Sambhavam Adhyayam Onnu"),
-    ...allContent.filter(m => m.title === "Happy Raj"),
-
-    ...allContent.filter(
-      m =>
-        ![
-          "Ramayana",
-          "Dhurandhar: The Revenge",
-          "Madhuvidhu",
-          "Paatal Lok",
-          "Hereditary",
-          "Por Thozil",
-          "Wake Up Sid",
-          "Interstellar",
-          "Farzi",
-          "Dhurandhar",
-          "The Notebook",
-          "Ajab Prem Ki Ghazab Kahani",
-          "Lucky Baskhar",
-          "Passengers",
-          "The Conjuring Last Rites",
-          "Sambhavam Adhyayam Onnu",
-          "Happy Raj"
-        ].includes(m.title)
-    )
   ];
 
   const [index, setIndex] = useState(0);
@@ -83,57 +47,57 @@ const previewTimerRef = useRef(null);
     "Dhurandhar: The Revenge": {
       full: "Dhurandhar: The Revenge",
       desc: "Action • Spy • Thriller",
-      preview: 27.50
+      preview: 0
     },
     "Ramayana": {
       full: "Ramayana",
       desc: "Adventure • Action • Love • Spiritual",
-      preview: 7.80
+      preview: 40
     },
     "Paatal Lok": {
       full: "Paatal Lok",
       desc: "Action • Crime • Thriller",
-      preview: 4500
+      preview: 0
     },
      "Madhuvidhu": {
       full: "Madhuvidhu",
       desc: "Comedy • Family • Drama",
-      preview: 4500
+      preview: 0
     },
     "Hereditary": {
       full: "Hereditary",
       desc: "Horror • Supernatural • Thriller",
-      preview: 4500
+      preview: 0
     },
     "Wake Up Sid": {
       full: "Wake Up Sid",
       desc: "Love • Romance • Drama",
-      preview: 2500
+      preview: 0
     },
     "Por Thozil": {
       full: "Por Thozil",
       desc: "Crime • Thriller • Investigation",
-      preview: 3500
+      preview: 0
     },
     "Interstellar": {
       full: "Interstellar",
       desc: "Sci-Fi • Adventure • Love",
-      preview: 100
+      preview: 0
     },
     "Farzi": {
       full: "Farzi",
       desc: "Crime • Suspense • Drama",
-      preview: 8500
+      preview: 0
     },
     "Sambhavam Adhyayam Onnu": {
       full: "Sambhavam Adhyayam Onnu",
       desc: "Crime • Thriller • Investigation",
-      preview: 2800
+      preview: 0
     },
     "Silsila": {
       full: "Silsila",
       desc: "Love • Drama • Romance",
-      preview: 2190
+      preview: 0
     },
     "The Notebook": {
       full: "The Notebook",
@@ -143,32 +107,32 @@ const previewTimerRef = useRef(null);
     "Ajab Prem Ki Ghazab Kahani": {
       full: "Ajab Prem Ki Ghazab Kahani",
       desc: "Love • Drama • Comedy",
-      preview: 2782.7
+      preview: 0
     },
     "The Conjuring Last Rites": {
       full: "The Conjuring Last Rites",
       desc: "Horror • Supernatural • Mystery",
-      preview: 3500
+      preview: 0
     },
     "Lucky Baskhar": {
       full: "Lucky Baskhar",
       desc: "Crime • Drama • Thriller",
-      preview: 5810
+      preview: 0
     },
     "Passengers": {
       full: "Passengers",
       desc: "Drama • Sci-fi • Romance",
-      preview: 6000
+      preview: 0
     },
     "Happy Raj": {
       full: "Happy Raj",
       desc: "Drama • Love • Comedy",
-      preview: 3400
+      preview: 0
     },
     "Dhurandhar": {
       full: "Dhurandhar",
       desc: "Spy • Action • Thriller",
-      preview: 5096
+      preview: 100
     }
   };
 

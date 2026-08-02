@@ -21,7 +21,7 @@ export const allSeries = [
     {
       season: 1,
       video:
-        "https://archive.org/download/farzi-2023-s-01-complete-720p-amzn-web-dl-multi-aac-2/Farzi_2023_S01_Complete_720p_AMZN_WEB_DL_Multi_AAC2.mkv",
+        "https://archive.org/download/874a-2a-13-85c-3-4e-7a-bf-64-5687144046e-2/874a2a13-85c3-4e7a-bf64-5687144046e2.mp4",
         image: "/images/thumb14.png",
         
     },
@@ -47,14 +47,14 @@ export const allSeries = [
     {
       season: 1,
       video:
-        "https://archive.org/download/paatal-lok-2020-s-01-720p-10bit-ds-4-k-amzn-web-rip-x-265-h/Paatal%20Lok%20%282020%29%20S01%20720p%2010bit%20DS4K%20AMZN%20WebRip%20x265%20H.mkv",
+        "https://archive.org/download/2b-1a-7401-4f-69-46eb-aef-2-e-8740ad-8d-80e/2b1a7401-4f69-46eb-aef2-e8740ad8d80e.mp4",
         image: "/images/thumb17.png",
         
     },
     {
       season: 2,
       video:
-        "https://archive.org/download/paatal-lok-2020-s-01-720p-10bit-ds-4-k-amzn-web-rip-x-265-h/Paatal_Lok_S02_COMBiNED_WebRip_720p_Hindi_AAC_5_1_x264_MSubs_mkvCinemas.mkv",
+        "https://archive.org/download/dece4d0e-8d35-4c4b-89c2-1c5a45f42a73/dece4d0e-8d35-4c4b-89c2-1c5a45f42a73.mp4",
         image: "/images/thumb17.png",
         
     }

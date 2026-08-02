@@ -1350,9 +1350,15 @@ if (!hasWelcomedRef.current) {
     {/* 🔥 CONDITIONAL RENDERING: SEARCH MODE VS HOME MODE */}
     {search.length > 0 ? (
   <div className="search-mode-grid">
-    <h2 style={{ color: "white", padding: "20px 4%" }}>
-      Search results for "{search}"
-    </h2>
+    <h2
+  style={{
+    color: "white",
+    padding: "20px 4%",
+    marginTop: "60px"
+  }}
+>
+  Search results for "{search}"
+</h2>
 
     <MovieRow
       movies={filteredMovies}
