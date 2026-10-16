@@ -1863,18 +1863,6 @@ const orStyle = {
   margin: "18px 0"
 };
 
-const phoneBtnStyle = {
-  width: "100%",
-  padding: "10px",
-  background: "#333",
-  color: "white",
-  border: "1px solid #555",
-  borderRadius: "4px",
-  fontSize: "15px",
-  fontWeight: "bold",
-  cursor: "pointer",
-  boxSizing: "border-box"
-};
 const phoneNoticeStyle = {
   position: "absolute",
   top: "90px",
