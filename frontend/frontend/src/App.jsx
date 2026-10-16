@@ -1757,12 +1757,12 @@ const brandName = {
 };
 
 const brandQuote = {
-  color: 'rgba(255, 255, 255, 0.7)',
-  fontSize: '20px',
-  marginTop: '20px',
-  fontStyle: 'italic',
-  fontWeight: '300',
-  letterSpacing: '1px'
+  color: 'rgba(255, 255, 255, 0.7)',
+  fontSize: '20px',
+  marginTop: '20px',
+  fontStyle: 'italic',
+  fontWeight: '300',
+  letterSpacing: '1px'
 };
 
 const loginWrapperStyle = {
