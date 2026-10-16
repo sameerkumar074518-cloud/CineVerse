@@ -3,7 +3,7 @@ const router = express.Router();
 const Movie = require("../models/Movie");
 
 // GET all movies
-router.get("/", async (req, res) => {
+router.get("/", async (_req, res) => {
   try {
     const movies = await Movie.find();
     res.json(movies);
