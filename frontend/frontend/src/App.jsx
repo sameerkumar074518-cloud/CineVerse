@@ -53,6 +53,12 @@ const [lastRecommendedMovie, setLastRecommendedMovie] = useState(null);
 const recognitionRef = useRef(null);
 const hasWelcomedRef = useRef(false);
 
+// 🔧 FIX: refs always hold the CURRENT value, so voice callbacks
+// (which are created once and go stale) can read the latest state.
+const voiceEnabledRef = useRef(false);
+const selectedVideoRef = useRef(null);
+selectedVideoRef.current = selectedVideo;
+
 const API = "https://primeclone-2e4b.onrender.com";
 useEffect(() => {
   const loadProfiles = async () => {
@@ -129,8 +135,8 @@ if (token && profile) {
   fetch(`${API}/mylist?profileId=${profile?.profileId}`, {
     headers: { Authorization: token }
   })
-    .then(res => res.json())
-    .then(data => {
+    .then(res => res.json())
+    .then(data => {
   if (!data.error) {
     const unique = data.filter(
       (item, index, self) =>
@@ -275,7 +281,12 @@ const loadSmartRecommendations = async () => {
         })
         .filter(Boolean);
 
-      setRecommended(merged);
+      // 🔧 FIX: remove duplicate titles so the same movie isn't rendered twice
+      const uniqueRecs = merged.filter(
+        (m, i, self) => i === self.findIndex(x => x.title === m.title)
+      );
+
+      setRecommended(uniqueRecs);
     }
   } catch (err) {
     console.log("Smart recommendation error:", err);
@@ -286,7 +297,7 @@ useEffect(() => {
   if (!user || !profile) return;
 
   loadSmartRecommendations();
-}, [user, profile?.id]);
+}, [user, profile?.profileId]);
 
 const handleRemoveFromMyList = async (id) => {
   const token = localStorage.getItem("token");
@@ -328,11 +339,11 @@ if (!username.includes("@") || !password) {
 }
 
 const res = await fetch(`${API}/register`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
   email: username,
   password
 })
@@ -342,26 +353,26 @@ const data = await res.json();
 console.log("LOGIN RESPONSE:", data);
 
 if (res.ok) {
-  alert("Registered successfully!");
+  alert("Registered successfully!");
 } else {
-  alert(data.error || "Error");
+  alert(data.error || "Error");
 }
 };
 
 const handleLogin = async () => {
 const res = await fetch(`${API}/login`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({ username, password })
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ username, password })
 });
 
 const data = await res.json();
 
 if (!res.ok) {
-  alert(data.error);
-  return;
+  alert(data.error);
+  return;
 }
 
 localStorage.setItem("token", data.token);
@@ -466,10 +477,15 @@ const verifyOTP = async () => {
       return;
     }
 
-    await confirmationResult.confirm(otp);
+    const credential = await confirmationResult.confirm(otp);
+
+    // 🔧 FIX: store the real Firebase ID token instead of the fake
+    // "phone-login" string. The backend must verify this token
+    // (firebase-admin verifyIdToken) before phone login will work end to end.
+    const idToken = await credential.user.getIdToken();
 
     localStorage.setItem("user", phone);
-    localStorage.setItem("token", "phone-login");
+    localStorage.setItem("token", idToken);
 
     setUser(phone);
     setProfile(null);
@@ -485,6 +501,8 @@ const verifyOTP = async () => {
 const handleLogout = () => {
 
   // ✅ STOP CINEVOICE
+  voiceEnabledRef.current = false;
+
   if (recognitionRef.current) {
   recognitionRef.current.stop();
   recognitionRef.current = null;
@@ -536,8 +554,9 @@ speak.voice = premiumVoice;
     m => m.title === movie.title
   )?.genre;
 
+// 🔧 FIX: key now uses profileId (same key the reader effect uses)
 localStorage.setItem(
-  `last_watched_${user}_${profile?.id}`,
+  `last_watched_${user}_${profile?.profileId}`,
   JSON.stringify({
     ...movie,
     genre: movieGenres,
@@ -634,6 +653,9 @@ const startCineVoice = () => {
     return;
   }
 
+  // 🔧 FIX: never run two recognizers at once
+  if (recognitionRef.current) return;
+
   const recognition = new SpeechRecognition();
 
   recognition.continuous = true;
@@ -641,6 +663,7 @@ const startCineVoice = () => {
   recognition.lang = "en-IN";
 
   recognitionRef.current = recognition;
+  voiceEnabledRef.current = true;
   setVoiceEnabled(true);
   setIsListening(true);
 
@@ -659,14 +682,14 @@ const startCineVoice = () => {
 
   setIsListening(false);
 
-  // SOFT RESTART
-  if (voiceEnabled && !selectedVideo) {
+  // SOFT RESTART (🔧 FIX: reads refs, not stale state)
+  if (voiceEnabledRef.current && !selectedVideoRef.current) {
 
     recognitionRef.current = null;
 
     setTimeout(() => {
 
-      if (voiceEnabled) {
+      if (voiceEnabledRef.current && !selectedVideoRef.current) {
         startCineVoice();
       }
 
@@ -679,6 +702,7 @@ const startCineVoice = () => {
 
     if (err.error === "not-allowed") {
       alert("Microphone permission blocked.");
+      voiceEnabledRef.current = false;
       setVoiceEnabled(false);
       recognitionRef.current = null;
     }
@@ -790,7 +814,7 @@ aiVoice.voice = premiumVoice;
 
       aiVoice.onend = () => {
 
-        if (voiceEnabled && !selectedVideo) {
+        if (voiceEnabledRef.current && !selectedVideoRef.current) {
 
           setTimeout(() => {
             startCineVoice();
@@ -935,7 +959,7 @@ window.speechSynthesis.cancel();
 notFoundVoice.onend = () => {
 
   // QUICK RESTART
-  if (voiceEnabled && !selectedVideo) {
+  if (voiceEnabledRef.current && !selectedVideoRef.current) {
 
     setTimeout(() => {
       startCineVoice();
@@ -986,31 +1010,31 @@ useEffect(() => {
 /* ================== INTRO ================== */
 /* ================== INTRO ================== */
 if (showIntro) {
-  return (
-    <div style={introStyle}>
-      <div style={introContainer}>
-        <h1 className="netflix-text-anim" style={brandName}>Welcome to CineVerse</h1>
-      </div>
-      <style>{`
-        @keyframes netflix-intro {
-          0% { transform: scale(0.9); opacity: 0; letter-spacing: 10px; }
-          100% { transform: scale(1); opacity: 1; letter-spacing: 2px; }
-        }
-        @keyframes fade-up {
-          0% { opacity: 0; transform: translateY(20px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-        .netflix-text-anim {
-          animation: netflix-intro 1.2s ease-out forwards;
-          text-shadow: 0 0 20px rgba(229, 9, 20, 0.8);
-        }
-        .fade-in-text {
-          animation: fade-up 1s ease-out 0.6s forwards;
-          opacity: 0;
-        }
-      `}</style>
-    </div>
-  );
+  return (
+    <div style={introStyle}>
+      <div style={introContainer}>
+        <h1 className="netflix-text-anim" style={brandName}>Welcome to CineVerse</h1>
+      </div>
+      <style>{`
+        @keyframes netflix-intro {
+          0% { transform: scale(0.9); opacity: 0; letter-spacing: 10px; }
+          100% { transform: scale(1); opacity: 1; letter-spacing: 2px; }
+        }
+        @keyframes fade-up {
+          0% { opacity: 0; transform: translateY(20px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        .netflix-text-anim {
+          animation: netflix-intro 1.2s ease-out forwards;
+          text-shadow: none;
+        }
+        .fade-in-text {
+          animation: fade-up 1s ease-out 0.6s forwards;
+          opacity: 0;
+        }
+      `}</style>
+    </div>
+  );
 }
 
 /* ================== LOGIN ================== */
@@ -1236,7 +1260,7 @@ const filteredMovies = [...movies, ...allSeries].filter((m) => {
 /* ================== MAIN ================== */
 /* ================== MAIN ================== */
 return (
-<div style={{ background: "black", minHeight: "100vh" }}>
+<div style={{ background: "#161616", minHeight: "100vh" }}>
 
 {voiceEnabled && (
   <div style={cineVoiceBadgeStyle}>
@@ -1286,6 +1310,7 @@ onToggleVoice={() => {
   // TURN OFF
   if (voiceEnabled) {
 
+    voiceEnabledRef.current = false;
     setVoiceEnabled(false);
     setIsListening(false);
 
@@ -1691,7 +1716,7 @@ genre={
   setSelectedVideo(null);
 
   // RESUME CINEVOICE
-  if (voiceEnabled && !recognitionRef.current) {
+  if (voiceEnabledRef.current && !recognitionRef.current) {
   setTimeout(() => {
     startCineVoice();
   }, 1200);
@@ -1711,9 +1736,9 @@ const cineVoiceBadgeStyle = {
   background: "rgba(0,0,0,0.85)",
   color: "white",
   padding: "10px 16px",
-  borderRadius: "30px",
+  borderRadius: "0.5rem",
   zIndex: 99999,
-  border: "1px solid #333",
+  border: "1px solid #414141",
   fontSize: "14px"
 };
 
@@ -1722,47 +1747,47 @@ const popupStyle = {
 position: "fixed",
 top: "80px",
 right: "20px",
-background: "#111",
+background: "#232323",
 color: "white",
 padding: "12px 20px",
-borderRadius: "6px",
-boxShadow: "0 5px 20px rgba(0,0,0,0.7)",
+borderRadius: "0.125rem",
+boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)",
 zIndex: 9999
 };
 
 const introStyle = {
-  height: "100vh",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  background: "black",
-  color: "white",
-  overflow: "hidden"
+  height: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  background: "#161616",
+  color: "white",
+  overflow: "hidden"
 };
 
 const introContainer = {
-  textAlign: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center'
+  textAlign: 'center',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center'
 };
 
 const brandName = {
-  color: '#E50914', // Netflix Red
-  fontSize: '80px',
-  fontWeight: '900',
-  margin: '0',
-  textTransform: 'uppercase',
-  fontFamily: 'Helvetica, Arial, sans-serif'
+  color: '#E50914', // Netflix Red
+  fontSize: '80px',
+  fontWeight: '900',
+  margin: '0',
+  textTransform: 'uppercase',
+  fontFamily: 'Helvetica, Arial, sans-serif'
 };
 
 const brandQuote = {
-  color: 'rgba(255, 255, 255, 0.7)',
-  fontSize: '20px',
-  marginTop: '20px',
-  fontStyle: 'italic',
-  fontWeight: '300',
-  letterSpacing: '1px'
+  color: 'rgba(255, 255, 255, 0.7)',
+  fontSize: '20px',
+  marginTop: '20px',
+  fontStyle: 'italic',
+  fontWeight: '300',
+  letterSpacing: '1px'
 };
 
 const loginWrapperStyle = {
@@ -1808,7 +1833,7 @@ const loginCardStyle = {
   zIndex: 10,
   background: "rgba(0, 0, 0, 0.75)",
   padding: "30px 40px", // Lowered top/bottom padding
-  borderRadius: "4px",
+  borderRadius: "0.125rem",
   width: "100%",
   maxWidth: "360px", // Narrowed the card further
   display: "flex",
@@ -1819,9 +1844,9 @@ const loginCardStyle = {
 const newInputStyle = {
   width: "100%",
   height: "42px", // Slimmer inputs
-  background: "#333",
-  border: "none",
-  borderRadius: "4px",
+  background: "#161616",
+  border: "1px solid #414141",
+  borderRadius: "0.125rem",
   color: "white",
   padding: "0 15px",
   marginBottom: "12px",
@@ -1836,7 +1861,7 @@ const loginBtnStyle = {
   background: "#E50914",
   color: "white",
   border: "none",
-  borderRadius: "4px",
+  borderRadius: "0.125rem",
   fontSize: "15px",
   fontWeight: "bold",
   cursor: "pointer",
@@ -1869,7 +1894,7 @@ const phoneBtnStyle = {
   background: "#333",
   color: "white",
   border: "1px solid #555",
-  borderRadius: "4px",
+  borderRadius: "0.125rem",
   fontSize: "15px",
   fontWeight: "bold",
   cursor: "pointer",
@@ -1882,11 +1907,11 @@ const phoneNoticeStyle = {
   zIndex: 20,
   width: "330px",
   background: "rgba(0,0,0,0.88)",
-  border: "1px solid #333",
-  borderRadius: "8px",
+  border: "1px solid #414141",
+  borderRadius: "0.5rem",
   padding: "22px",
   color: "white",
-  boxShadow: "0 10px 35px rgba(0,0,0,0.8)"
+  boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)"
 };
 
 const phoneNoticeCloseStyle = {
@@ -1913,11 +1938,11 @@ const forgotBoxStyle = {
   width: "420px",
   maxWidth: "90vw",
   background: "rgba(0,0,0,0.92)",
-  border: "1px solid #333",
-  borderRadius: "8px",
+  border: "1px solid #414141",
+  borderRadius: "0.5rem",
   padding: "28px",
   position: "relative",
-  boxShadow: "0 15px 50px rgba(0,0,0,0.9)"
+  boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)"
 };
 
 const forgotCloseStyle = {

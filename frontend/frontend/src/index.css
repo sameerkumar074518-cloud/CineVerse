@@ -1,7 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
+
+/* Design tokens (from the netflix.com design system) */
+:root {
+  --color-canvas: #161616;
+  --color-surface: #232323;
+  --color-hairline: #414141;
+  --color-ink: #ffffff;
+  --color-text-muted: #a9a9a9;
+  --color-accent: #e50914;
+  --color-accent-2: #eb3942;
+  --color-accent-3: #2bb871;
+  --radius-sm: 0.125rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --shadow-sm: 0 0.25rem 0.5rem 0 rgba(0,0,0,0.8);
+}
+
 body {
   margin: 0;
-  background-color: black;
-  font-family: Arial, sans-serif;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  /* Netflix Sans is proprietary, so Inter is the free stand-in */
+  font-family: 'Netflix Sans', 'Inter', Helvetica, Arial, sans-serif;
 }
 
 /* 🔥 HIDE SCROLLBAR */

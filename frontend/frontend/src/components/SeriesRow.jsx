@@ -189,10 +189,10 @@ flex: "0 0 20vw",
               <div style={{
   width: "100%",
   height: "11.3vw",
-borderRadius: "10px",
+borderRadius: "0.5rem",
   overflow: "hidden",
-  background: "#111",
-  boxShadow: "0 8px 25px rgba(0,0,0,0.6)"
+  background: "#232323",
+  boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)"
 }}>
                 <img
   src={movie.image || "/images/thumb1.png"}
@@ -262,7 +262,7 @@ borderRadius: "10px",
       width: "100%",
       height: "100%",
       objectFit: "cover",
-      borderRadius: "12px 12px 0 0",
+      borderRadius: "0.5rem 0.5rem 0 0",
       cursor: "pointer"
     }}
   />
@@ -312,7 +312,7 @@ borderRadius: "10px",
       width: "100%",
       height: "100%",
       objectFit: "cover",
-      borderRadius: "12px 12px 0 0",
+      borderRadius: "0.5rem 0.5rem 0 0",
       cursor: "pointer"
     }}
   />
@@ -327,8 +327,8 @@ borderRadius: "10px",
 
               <div style={{ 
   padding: "18px 24px",
-  backgroundColor: "#181818",
-  borderRadius: "0 0 12px 12px",
+  backgroundColor: "#232323",
+  borderRadius: "0 0 0.5rem 0.5rem",
   flex: 1,
   display: "flex",
   flexDirection: "column",
@@ -368,7 +368,7 @@ borderRadius: "10px",
             ? "black"
             : "white",
         border: "none",
-        borderRadius: "6px",
+        borderRadius: "0.125rem",
         cursor: "pointer",
         fontWeight: "bold"
       }}
@@ -455,7 +455,7 @@ borderRadius: "10px",
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
                   <div style={{ flex: "1.5", minWidth: "300px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "15px", fontSize: "18px", marginBottom: "15px" }}>
-                      <span style={{ color: "#46d369", fontWeight: "bold" }}>{fullMovieData.title}</span>
+                      <span style={{ color: "#2bb871", fontWeight: "bold" }}>{fullMovieData.title}</span>
                       <span>{fullMovieData.duration}</span>
                       <span style={{ border: "1px solid #808080", padding: "0 6px", fontSize: "12px" }}>HD</span>
                     </div>
@@ -464,7 +464,7 @@ borderRadius: "10px",
                     </p>
                   </div>
 
-                  <div style={{ flex: "1", fontSize: "14px", borderLeft: "1px solid #333", paddingLeft: "20px" }}>
+                  <div style={{ flex: "1", fontSize: "14px", borderLeft: "1px solid #414141", paddingLeft: "20px" }}>
                     <p style={{ margin: "0 0 10px 0" }}><span style={{ color: "#777" }}>Cast:</span> {fullMovieData.cast}</p>
                     <p style={{ margin: "0 0 10px 0" }}><span style={{ color: "#777" }}>Genres:</span> {fullMovieData.genre}</p>
                     <p style={{ margin: "0" }}><span style={{ color: "#777" }}>Audio:</span> Currently available in Hindi — multi-language support coming soon.</p>
@@ -515,9 +515,9 @@ const smallPreviewCardStyle = {
   left: "0",
   width: "300px", // tighter Netflix-like width
   zIndex: 500,
-  boxShadow: "0 10px 30px rgba(0,0,0,0.9)",
-  borderRadius: "8px",
-  backgroundColor: "#181818",
+  boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)",
+  borderRadius: "0.5rem",
+  backgroundColor: "#232323",
   transition: "transform 0.25s ease",
 };
 
@@ -569,7 +569,7 @@ const progressBarContainer = {
   flex: 1,
   height: "4px",
   backgroundColor: "#444",
-  borderRadius: "2px",
+  borderRadius: "0.125rem",
   position: "relative"
 };
 
@@ -577,7 +577,7 @@ const progressBarFill = {
   width: "70%",
   height: "100%",
   backgroundColor: "#e50914",
-  borderRadius: "2px"
+  borderRadius: "0.125rem"
 };
 
 const modalOverlayStyle = {
@@ -596,11 +596,11 @@ const modalContentStyle = {
   width: "960px",
   maxWidth: "95vw",
   height: "92vh",
-  backgroundColor: "#141414",
-  borderRadius: "14px",
+  backgroundColor: "#232323",
+  borderRadius: "0.5rem",
   position: "relative",
   overflow: "hidden",
-  boxShadow: "0 30px 100px rgba(0,0,0,0.95)",
+  boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)",
   animation: "modalPop 0.25s ease",
   display: "flex",
   flexDirection: "column"
@@ -638,7 +638,7 @@ const playButtonStyle = {
   background: "white", 
   color: "black", 
   border: "none", 
-  borderRadius: "4px", 
+  borderRadius: "0.125rem", 
   padding: "10px 30px", 
   fontWeight: "bold",
   fontSize: "16px",

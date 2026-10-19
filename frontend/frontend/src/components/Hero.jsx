@@ -34,7 +34,13 @@ const previewTimerRef = useRef(null);
     setIndex((i) => (i === orderedMovies.length - 1 ? 0 : i + 1));
   };
 
-  const current = orderedMovies[index];
+  // 🔧 FIX: fall back safely if a hardcoded title is missing from the data,
+  // so Hero never crashes on `current.seasons` / `current.title`
+  const current =
+    orderedMovies[index] ||
+    orderedMovies[0] ||
+    allContent[0] ||
+    { title: "CineVerse" };
 
   const activeSeason =
     selectedSeason ||
@@ -353,7 +359,7 @@ linear-gradient(
           bottom: 0,
           width: "100%",
           height: "52%",
-          background: "linear-gradient(to top, rgba(0,0,0,0.92), transparent)"
+          background: "linear-gradient(to top, rgba(22,22,22,0.92), transparent)"
         }}
       />
 
@@ -443,7 +449,7 @@ linear-gradient(
                 style={{
                   padding: "8px 18px",
                   border: "none",
-                  borderRadius: "6px",
+                  borderRadius: "0.125rem",
                   cursor: "pointer",
                   fontWeight: "bold",
                   background:
@@ -533,7 +539,7 @@ linear-gradient(
                   height: "100%",
                   objectFit: "cover",
 objectPosition: "center top",
-                  borderRadius: "12px 12px 0 0"
+                  borderRadius: "0.5rem 0.5rem 0 0"
                 }}
                 onLoadedData={(e) => {
                   const v = e.currentTarget;
@@ -591,8 +597,8 @@ objectPosition: "center top",
 
             <div style={{
               padding: "35px",
-              backgroundColor: "#181818",
-              borderRadius: "0 0 12px 12px"
+              backgroundColor: "#232323",
+              borderRadius: "0 0 0.5rem 0.5rem"
             }}>
               <div style={{ display: "flex", gap: "12px", marginBottom: "20px" }}>
                 <button
@@ -649,7 +655,7 @@ objectPosition: "center top",
                     fontSize: "18px",
                     marginBottom: "15px"
                   }}>
-                    <span style={{ color: "#46d369", fontWeight: "bold" }}>{current.title}</span>
+                    <span style={{ color: "#2bb871", fontWeight: "bold" }}>{current.title}</span>
                     <span>{current.duration}</span>
                     <span style={{
                       border: "1px solid #808080",
@@ -672,7 +678,7 @@ objectPosition: "center top",
                 <div style={{
                   flex: "1",
                   fontSize: "14px",
-                  borderLeft: "1px solid #333",
+                  borderLeft: "1px solid #414141",
                   paddingLeft: "20px"
                 }}>
                   <p style={{ margin: "0 0 10px 0" }}>
@@ -701,7 +707,7 @@ const badgeStyle = {
   background: "#008fa3",
   color: "#001",
   padding: "3px 8px",
-  borderRadius: "12px",
+  borderRadius: "0.5rem",
   fontSize: "12px",
   fontWeight: "900"
 };
@@ -709,7 +715,7 @@ const badgeStyle = {
 const ratingBadgeStyle = {
   border: "1px solid rgba(255,255,255,0.7)",
   padding: "2px 8px",
-  borderRadius: "4px",
+  borderRadius: "0.125rem",
   fontSize: "12px",
   color: "white"
 };
@@ -734,7 +740,7 @@ const primaryBtn = {
   background: "#fff",
   color: "#000",
   border: "none",
-  borderRadius: "6px",
+  borderRadius: "0.125rem",
   fontWeight: "800",
   cursor: "pointer",
   fontSize: "16px",
@@ -742,7 +748,7 @@ const primaryBtn = {
   alignItems: "center",
   justifyContent: "center",
   gap: "8px",
-  boxShadow: "0 8px 25px rgba(0,0,0,0.35)"
+  boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)"
 };
 
 const moreInfoBtn = {
@@ -753,7 +759,7 @@ const moreInfoBtn = {
   background: "rgba(109,109,110,0.55)",
   color: "#fff",
   border: "none",
-  borderRadius: "6px",
+  borderRadius: "0.125rem",
   fontWeight: "800",
   cursor: "pointer",
   fontSize: "16px",
@@ -762,7 +768,7 @@ const moreInfoBtn = {
   justifyContent: "center",
   gap: "8px",
   backdropFilter: "blur(3px)",
-  boxShadow: "0 8px 25px rgba(0,0,0,0.25)"
+  boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)"
 };
 
 const arrow = (side) => ({
@@ -778,7 +784,7 @@ const arrow = (side) => ({
   width: "48px",
   height: "58px",
   cursor: "pointer",
-  borderRadius: "8px",
+  borderRadius: "0.5rem",
   opacity: 0.72
 });
 
@@ -795,8 +801,8 @@ const modalOverlayStyle = {
 const modalContentStyle = {
   width: "900px",
   maxWidth: "92vw",
-  background: "#181818",
-  borderRadius: "12px",
+  background: "#232323",
+  borderRadius: "0.5rem",
   overflow: "hidden",
   position: "relative"
 };
@@ -848,7 +854,7 @@ const heroMiniBtn = {
   cursor: "pointer",
   fontSize: "17px",
   transition: "all 0.25s ease",
-  boxShadow: "0 4px 20px rgba(0,0,0,0.45)"
+  boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)"
 };
 
 const smallPlayButtonStyle = {

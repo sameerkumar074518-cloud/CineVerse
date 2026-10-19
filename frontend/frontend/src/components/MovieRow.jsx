@@ -48,7 +48,7 @@ export const allMovies = [
     title: "The Notebook",
     image: "/images/thumb10.png",
     video: "https://archive.org/download/the-notebook-2004-1080p-blu-ray-dual-audio-hindi-or-english-x-265/_The_Notebook_2004_1080p_BluRay_Dual_Audio_Hindi_or_English_%C3%97265.mkv",
-    genre: "Romance, Sci-Fi, Love",
+    genre: "Romance, Drama, Love",
     duration: "2h 4m",
     cast: "Ryan Gosling, Rachel McAdams, James Garner",
     description: "An epic love story told through the pages of a notebook found in a nursing home."
@@ -118,9 +118,9 @@ export const allMovies = [
     title: "Interstellar",
     image: "/images/thumb12.png",
     video: "https://archive.org/download/db-8i-1ky-xk-wc-top/DB8i1kyXkWc_top.mp4",
-    genre: "Sci-Fic, Adventure, Love",
+    genre: "Sci-Fi, Adventure, Love",
     duration: "2h 50m",
-    cast: "	Matthew McConaughey, Anne Hathaway, Jessica Chastain",
+    cast: "Matthew McConaughey, Anne Hathaway, Jessica Chastain",
     description: "In the near future, humanity faces extinction due to dust storms and widespread crop blights. Cooper, a widowed former NASA test pilot, works as a farmer and raises his children, Murph and Tom, alongside his father-in-law Donald."
   },
   {
@@ -138,7 +138,7 @@ export const allMovies = [
     title: "Por Thozil",
     image: "/images/thumb15.png",
     video: "https://archive.org/download/por-thozhil-2023-uncut-1080p-hdrip-x-264-esubs-dual-audio-hindi-org/Por_Thozhil_2023_UNCUT_1080p_HDRip_x264_ESubs_Dual_Audio_Hindi_ORG.mkv",
-    genre: "Crime, Pyscho, Thriller",
+    genre: "Crime, Psycho, Thriller",
     duration: "2h 27m",
     cast: "R Sarathkumar, Lisha Chinnu, Ashok Selvan",
     description: "A bright but faint-hearted rookie cop has to overcome his fears in order to succeed in his first case which sees him partnered with a reclusive senior officer to catch a serial killer on the loose."
@@ -268,7 +268,7 @@ const scrollRight = () => {
         ) : (
           movies.map((movie, index) => (
             <div 
-  key={movie.video || index}
+  key={`${movie.video || movie._id || "item"}-${index}`}
   onMouseEnter={(e) => {
     e.currentTarget.style.transform = "scale(1.12)";
     e.currentTarget.style.zIndex = 50;
@@ -290,10 +290,10 @@ flex: "0 0 20vw",
               <div style={{
   width: "100%",
   height: "10.5vw",
-borderRadius: "10px",
+borderRadius: "0.5rem",
   overflow: "hidden",
-  background: "#111",
-  boxShadow: "0 8px 25px rgba(0,0,0,0.6)"
+  background: "#232323",
+  boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)"
 }}>
                 <img
   src={movie.image || "/images/thumb1.png"}
@@ -377,7 +377,7 @@ borderRadius: "10px",
       width: "100%",
       height: "100%",
       objectFit: "cover",
-      borderRadius: "12px 12px 0 0",
+      borderRadius: "0.5rem 0.5rem 0 0",
       cursor: "pointer"
     }}
   />
@@ -438,7 +438,7 @@ borderRadius: "10px",
       width: "100%",
       height: "100%",
       objectFit: "cover",
-      borderRadius: "12px 12px 0 0",
+      borderRadius: "0.5rem 0.5rem 0 0",
       cursor: "pointer"
     }}
   />
@@ -453,8 +453,8 @@ borderRadius: "10px",
 
               <div style={{
   padding: "18px 22px",
-  backgroundColor: "#181818",
-  borderRadius: "0 0 12px 12px",
+  backgroundColor: "#232323",
+  borderRadius: "0 0 0.5rem 0.5rem",
   flex: 1,
   overflow: "hidden"
 }}>
@@ -474,7 +474,7 @@ borderRadius: "10px",
         style={{
           padding: "8px 16px",
           border: "none",
-          borderRadius: "6px",
+          borderRadius: "0.125rem",
           cursor: "pointer",
           background:
             selectedSeason?.season === seasonObj.season
@@ -531,15 +531,22 @@ borderRadius: "10px",
                   {isMyList ? (
                     <button
   style={circleButtonStyle}
-  onClick={() =>
+  onClick={() => {
+    // 🔧 FIX: use the My List item itself (selectedMovie), not fullMovieData.
+    // fullMovieData is the static copy from allMovies/allSeries and has lost the
+    // saved item's own _id / movieId, so the lookup in App.jsx found nothing.
     onRemove &&
     onRemove(
-      fullMovieData.movieId ||
-fullMovieData.video ||
-fullMovieData.seasons?.[0]?.video ||
-fullMovieData._id
-    )
-  }
+      selectedMovie._id ||
+      selectedMovie.movieId ||
+      selectedMovie.video ||
+      fullMovieData.seasons?.[0]?.video ||
+      fullMovieData.video
+    );
+
+    // 🔧 FIX: close the modal so ✕ can't be clicked again on a removed item
+    setSelectedMovie(null);
+  }}
   title="Remove from My List"
 >
   ✕
@@ -554,9 +561,9 @@ fullMovieData._id
   fullMovieData.seasons
     ? {
         ...fullMovieData,
-        movieId:
-  fullMovieData._id ||
-  fullMovieData.title,
+        // 🔧 FIX: same ID SeriesRow uses (first season's video),
+        // so the same series can't be added to My List twice
+        movieId: fullMovieData.seasons[0].video,
         video: fullMovieData.seasons[0].video,
         isSeries: true
       }
@@ -574,7 +581,7 @@ fullMovieData._id
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
                   <div style={{ flex: "1.5", minWidth: "300px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "18px", marginBottom: "15px" }}>
-                      <span style={{ color: "#46d369", fontWeight: "bold" }}>{fullMovieData.title}</span>
+                      <span style={{ color: "#2bb871", fontWeight: "bold" }}>{fullMovieData.title}</span>
                       <span>{fullMovieData.duration}</span>
                       <span style={{ border: "1px solid #808080", padding: "0 6px", fontSize: "12px" }}>HD</span>
                     </div>
@@ -586,7 +593,7 @@ fullMovieData._id
                   <div style={{
   flex: "1",
   fontSize: "13px",
-  borderLeft: "1px solid #333",
+  borderLeft: "1px solid #414141",
   paddingLeft: "16px"
 }}>
                     <p style={{ margin: "0 0 10px 0" }}><span style={{ color: "#777" }}>Cast:</span> {fullMovieData.cast}</p>
@@ -641,9 +648,9 @@ const smallPreviewCardStyle = {
   left: "0",
   width: "300px", // tighter Netflix-like width
   zIndex: 500,
-  boxShadow: "0 10px 30px rgba(0,0,0,0.9)",
-  borderRadius: "8px",
-  backgroundColor: "#181818",
+  boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)",
+  borderRadius: "0.5rem",
+  backgroundColor: "#232323",
   transition: "transform 0.25s ease",
 };
 
@@ -695,7 +702,7 @@ const progressBarContainer = {
   flex: 1,
   height: "4px",
   backgroundColor: "#444",
-  borderRadius: "2px",
+  borderRadius: "0.125rem",
   position: "relative"
 };
 
@@ -703,7 +710,7 @@ const progressBarFill = {
   width: "70%",
   height: "100%",
   backgroundColor: "#e50914",
-  borderRadius: "2px"
+  borderRadius: "0.125rem"
 };
 
 const modalOverlayStyle = {
@@ -721,11 +728,11 @@ const modalContentStyle = {
   width: "900px",
   maxWidth: "92vw",
   height: "92vh",
-  backgroundColor: "#141414",
-  borderRadius: "14px",
+  backgroundColor: "#232323",
+  borderRadius: "0.5rem",
   position: "relative",
   overflow: "hidden",
-  boxShadow: "0 30px 100px rgba(0,0,0,0.95)",
+  boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)",
   animation: "modalPop 0.25s ease",
   display: "flex",
   flexDirection: "column"
@@ -763,7 +770,7 @@ const playButtonStyle = {
   background: "white", 
   color: "black", 
   border: "none", 
-  borderRadius: "4px", 
+  borderRadius: "0.125rem", 
   padding: "10px 30px", 
   fontWeight: "bold",
   fontSize: "16px",

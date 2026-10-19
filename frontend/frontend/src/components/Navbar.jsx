@@ -53,7 +53,9 @@ const genres = [
   const highlightText = (text, query) => {
     if (!query) return text;
 
-    const parts = text.split(new RegExp(`(${query})`, "gi"));
+    // 🔧 FIX: escape regex special characters so typing ( [ * etc. doesn't crash
+    const safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const parts = text.split(new RegExp(`(${safeQuery})`, "gi"));
 
     return parts.map((part, i) =>
       part.toLowerCase() === query.toLowerCase() ? (
@@ -113,7 +115,7 @@ const genres = [
           <p><b>Downloads:</b> Use the download icon on the player to save movies for offline viewing.</p>
           <p><b>My List:</b> Click the '+' icon to save titles to your personalized collection.</p>
 
-          <hr style={{ border: "0.5px solid #333", margin: "15px 0" }} />
+          <hr style={{ border: "0.5px solid #414141", margin: "15px 0" }} />
 
           <p style={{ color: "#fff" }}><b>Need Technical Support?</b></p>
           <p>
@@ -254,11 +256,11 @@ style={hamburgerBtnStyle}
       top: "56px",
       left: 0,
       width: "220px",
-      background: "rgba(10,10,10,0.96)",
-      borderRadius: "14px",
+      background: "#232323",
+      borderRadius: "0.5rem",
       overflow: "hidden",
-      boxShadow: "0 18px 45px rgba(0,0,0,0.85)",
-      border: "1px solid rgba(255,255,255,0.08)",
+      boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)",
+      border: "1px solid #414141",
       zIndex: 999999
     }}
   >
@@ -274,7 +276,7 @@ style={hamburgerBtnStyle}
     cursor: "pointer",
     color: "#E50914",
     fontWeight: "bold",
-    borderBottom: "1px solid rgba(255,255,255,0.08)"
+    borderBottom: "1px solid #414141"
   }}
 >
   Reset Filter
@@ -293,7 +295,7 @@ style={hamburgerBtnStyle}
           color: "white",
           borderBottom:
             i !== genres.length - 1
-              ? "1px solid rgba(255,255,255,0.06)"
+              ? "1px solid #414141"
               : "none",
           transition: "0.2s"
         }}
@@ -415,7 +417,7 @@ style={hamburgerBtnStyle}
   ? "1px solid rgba(229,9,20,0.9)"
                 : "1px solid rgba(255,255,255,0.15)",
               background: voiceEnabled
-  ? "linear-gradient(135deg,#E50914,#7a0000)"
+  ? "#E50914"
                 : "rgba(20,20,20,0.9)",
               color: "white",
               cursor: "pointer",
@@ -493,7 +495,7 @@ style={hamburgerBtnStyle}
                       style={{
                         width: "34px",
                         height: "34px",
-                        borderRadius: "4px",
+                        borderRadius: "0.125rem",
                         objectFit: "cover"
                       }}
                     />
@@ -644,9 +646,7 @@ style={hamburgerBtnStyle}
       <style>{`
       .cineHamburger:hover span {
   background: #E50914 !important;
-  box-shadow:
-    0 0 8px rgba(229,9,20,0.8),
-    0 0 18px rgba(229,9,20,0.6);
+  box-shadow: none;
 }
         body[data-cine-menu-open="true"] .cineSideMenu {
           opacity: 1 !important;
@@ -663,15 +663,15 @@ style={hamburgerBtnStyle}
           top: 52px;
           right: -15px;
           width: 240px;
-          background: rgba(10,10,10,0.96);
-          border: 1px solid rgba(255,255,255,0.12);
+          background: #232323;
+          border: 1px solid #414141;
           border-radius: 12px;
           padding: 14px;
           opacity: 0;
           transform: translateY(-8px) scale(0.96);
           pointer-events: none;
           transition: all 0.25s ease;
-          box-shadow: 0 18px 45px rgba(0,0,0,0.85);
+          box-shadow: 0 0.25rem 0.5rem 0 rgba(0,0,0,0.8);
           z-index: 999999;
         }
 
@@ -687,10 +687,10 @@ style={hamburgerBtnStyle}
           right: 28px;
           width: 12px;
           height: 12px;
-          background: rgba(10,10,10,0.96);
+          background: #232323;
           transform: rotate(45deg);
-          border-left: 1px solid rgba(255,255,255,0.12);
-          border-top: 1px solid rgba(255,255,255,0.12);
+          border-left: 1px solid #414141;
+          border-top: 1px solid #414141;
         }
 
         @keyframes cinePulse {
@@ -720,12 +720,13 @@ const navbarStyle = (scrolled) => ({
   alignItems: "center",
   padding: "0 34px",
   background: scrolled
-  ? "rgba(0,0,0,0.82)"
+  ? "rgba(22,22,22,0.92)"
   : "transparent",
 
 backdropFilter: scrolled
   ? "blur(12px)"
   : "none",
+  borderBottom: scrolled ? "1px solid #414141" : "1px solid transparent",
   color: "white",
   position: "fixed",
   top: 0,
@@ -761,7 +762,7 @@ const hamburgerLineStyle = {
   height: "2.5px",
   width: "22px",
   background: "white",
-  borderRadius: "4px",
+  borderRadius: "0.125rem",
   display: "block",
   transition: "0.3s ease"
 };
@@ -769,7 +770,7 @@ const hamburgerLineStyle = {
 const logoBoxStyle = {
   background: "transparent",
   padding: "0",
-  boxShadow: "none",
+  boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)",
   border: "none"
 };
 
@@ -779,7 +780,7 @@ const logoTextStyle = {
   fontWeight: "900",
   fontFamily: "'Arial Black', sans-serif",
   letterSpacing: "-1.5px",
-  textShadow: "0 0 18px rgba(229,9,20,0.45)",
+  textShadow: "none",
   display: "inline-block",
   lineHeight: 1
 };
@@ -789,14 +790,15 @@ const sideMenuStyle = {
   top: "58px",
   left: "0",
   width: "165px",
-  background: "linear-gradient(180deg, rgba(229,9,20,0.96), rgba(120,0,0,0.96))",
-  borderRadius: "6px",
+  background: "#232323",
+  border: "1px solid #414141",
+  borderRadius: "0.125rem",
   padding: "6px 0",
   opacity: 0,
   transform: "translateY(-10px)",
   pointerEvents: "none",
   transition: "0.25s ease",
-  boxShadow: "0 18px 45px rgba(0,0,0,0.8)",
+  boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)",
   overflow: "hidden"
 };
 
@@ -810,21 +812,21 @@ const centerSearchWrapperStyle = {
 const searchBarStyle = {
   height: "42px",
   width: "100%",
-  background: "rgba(20,20,20,0.72)",
-  borderRadius: "24px",
+  background: "#161616",
+  borderRadius: "0.5rem",
   display: "flex",
   alignItems: "center",
   padding: "0 10px",
   boxSizing: "border-box",
-  border: "1px solid rgba(255,255,255,0.12)",
-  boxShadow: "0 10px 35px rgba(0,0,0,0.55)",
+  border: "1px solid #414141",
+  boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)",
   backdropFilter: "blur(12px)"
 };
 
 const filterBtnStyle = {
   height: "30px",
   padding: "0 16px",
-  borderRadius: "18px",
+  borderRadius: "0.5rem",
   border: "none",
   background: "rgba(0,0,0,0.55)",
   color: "#bbb",
@@ -855,18 +857,18 @@ const searchDropdownStyle = {
   top: "56px",
   left: 0,
   right: 0,
-  background: "rgba(10,10,10,0.96)",
-  borderRadius: "12px",
+  background: "#232323",
+  borderRadius: "0.5rem",
   overflow: "hidden",
-  boxShadow: "0 18px 45px rgba(0,0,0,0.85)",
+  boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)",
   zIndex: 99999,
-  border: "1px solid rgba(255,255,255,0.08)"
+  border: "1px solid #414141"
 };
 
 const searchResultStyle = {
   padding: "12px 16px",
   cursor: "pointer",
-  borderBottom: "1px solid rgba(255,255,255,0.08)",
+  borderBottom: "1px solid #414141",
   color: "white"
 };
 
@@ -880,7 +882,7 @@ const rightAreaStyle = {
 const avatarBoxStyle = {
   width: "36px",
   height: "36px",
-  borderRadius: "6px",
+  borderRadius: "0.125rem",
   background: "#d58a58",
   overflow: "hidden",
   display: "flex",
@@ -894,11 +896,11 @@ const profileDropdownStyle = {
   right: 0,
   top: "58px",
   width: "260px",
-  background: "rgba(0,0,0,0.92)",
-  border: "1px solid rgba(255,255,255,0.2)",
+  background: "#232323",
+  border: "1px solid #414141",
   color: "white",
   zIndex: 99999,
-  boxShadow: "0 8px 25px rgba(0,0,0,0.8)"
+  boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)"
 };
 
 const profileArrowStyle = {
@@ -909,7 +911,7 @@ const profileArrowStyle = {
   height: 0,
   borderLeft: "8px solid transparent",
   borderRight: "8px solid transparent",
-  borderBottom: "10px solid rgba(0,0,0,0.92)"
+  borderBottom: "10px solid #232323"
 };
 
 const profileRowStyle = {
@@ -939,12 +941,12 @@ const accountOverlayStyle = {
 const accountBoxStyle = {
   width: "480px",
   maxWidth: "92vw",
-  background: "#181818",
+  background: "#232323",
   color: "white",
-  borderRadius: "10px",
+  borderRadius: "0.5rem",
   padding: "22px",
   position: "relative",
-  boxShadow: "0 20px 60px rgba(0,0,0,0.9)"
+  boxShadow: "0 0.25rem 0.5rem 0 rgba(0,0,0,0.8)"
 };
 
 const accountCloseStyle = {
@@ -967,9 +969,9 @@ const accountTitleStyle = {
 };
 
 const accountInfoStyle = {
-  background: "#222",
+  background: "#161616",
   padding: "14px",
-  borderRadius: "8px",
+  borderRadius: "0.5rem",
   lineHeight: "1.7",
   marginBottom: "25px"
 };
@@ -989,15 +991,15 @@ const accountProfileCardStyle = {
   display: "flex",
   alignItems: "center",
   gap: "15px",
-  background: "#242424",
+  background: "#161616",
   padding: "10px",
-  borderRadius: "8px"
+  borderRadius: "0.5rem"
 };
 
 const accountAvatarStyle = {
   width: "44px",
   height: "44px",
-  borderRadius: "6px",
+  borderRadius: "0.125rem",
   objectFit: "cover"
 };
 
@@ -1016,13 +1018,13 @@ const modalOverlay = {
 };
 
 const modalBox = {
-  background: "#111",
+  background: "#232323",
   padding: "40px",
-  borderRadius: "4px",
+  borderRadius: "0.125rem",
   maxWidth: "500px",
   width: "90%",
   textAlign: "left",
-  border: "1px solid #222",
+  border: "1px solid #414141",
   maxHeight: "80vh",
   overflowY: "auto"
 };
@@ -1033,7 +1035,7 @@ const modalCloseBtn = {
   color: "#fff",
   border: "none",
   padding: "12px 25px",
-  borderRadius: "4px",
+  borderRadius: "0.125rem",
   cursor: "pointer",
   fontWeight: "bold",
   width: "100%"
