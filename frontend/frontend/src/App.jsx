@@ -1888,6 +1888,7 @@ const orStyle = {
   margin: "18px 0"
 };
 
+<<<<<<< HEAD
 const phoneBtnStyle = {
   width: "100%",
   padding: "10px",
@@ -1900,6 +1901,8 @@ const phoneBtnStyle = {
   cursor: "pointer",
   boxSizing: "border-box"
 };
+=======
+>>>>>>> 8605da92a71f8512bf5a2b29e9fa99e2948e70a5
 const phoneNoticeStyle = {
   position: "absolute",
   top: "90px",

@@ -1,3 +1,4 @@
+const process = require("node:process");
 const dns = require("node:dns");
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 dns.setDefaultResultOrder("ipv4first");
@@ -155,10 +156,10 @@ app.post("/register", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
-  username: email,
-  email,
-  password: hashedPassword
-});
+      username: email,
+      email,
+      password: hashedPassword
+    });
 
     await user.save();
 
@@ -200,9 +201,9 @@ app.post("/forgot-password", async (req, res) => {
     });
 
   } catch (err) {
-  console.log("FORGOT PASSWORD ERROR:", err.message);
-  res.status(500).json({ error: err.message });
-}
+    console.log("FORGOT PASSWORD ERROR:", err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.post("/reset-password", async (req, res) => {
@@ -235,11 +236,11 @@ app.post("/reset-password", async (req, res) => {
 
     await user.save();
 
-await sendPasswordChangedEmail(user.email);
+    await sendPasswordChangedEmail(user.email);
 
-res.json({
-  message: "Password reset successfully"
-});
+    res.json({
+      message: "Password reset successfully"
+    });
 
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -281,7 +282,7 @@ app.post("/login", async (req, res) => {
 /* MOVIES */
 /* ================= */
 
-app.get("/movies", auth, async (req, res) => {
+app.get("/movies", auth, async (_req, res) => {
   try {
     const movies = await Movie.find();
     res.json(movies);
@@ -339,54 +340,54 @@ app.post("/mylist", auth, async (req, res) => {
   console.log("BODY RECEIVED:", req.body);
   try {
     const {
-  profileId,
-  movieId,
-  title,
-  image,
-  video,
-  seasons,
-  genre,
-  cast,
-  description,
-  isSeries
-} = req.body;
-console.log("PROFILE ID:", profileId);
-console.log("MOVIE:", title);
+      profileId,
+      movieId,
+      title,
+      image,
+      video,
+      seasons,
+      genre,
+      cast,
+      description,
+      isSeries
+    } = req.body;
+    console.log("PROFILE ID:", profileId);
+    console.log("MOVIE:", title);
 
     if (!profileId || !movieId) {
-  return res.status(400).json({ error: "Profile ID and Movie ID required" });
-}
+      return res.status(400).json({ error: "Profile ID and Movie ID required" });
+    }
 
     const exists = await MyList.findOne({
-  username: req.user.username,
-  profileId,
-  movieId
-});
+      username: req.user.username,
+      profileId,
+      movieId
+    });
 
     if (exists) {
       return res.json({ message: "Already added" });
     }
 
     const item = new MyList({
-  username: req.user.username,
-  profileId,
-  movieId,
-  title,
-  image,
-  video,
-  seasons,
-  genre,
-  cast,
-  description,
-  isSeries
-});
+      username: req.user.username,
+      profileId,
+      movieId,
+      title,
+      image,
+      video,
+      seasons,
+      genre,
+      cast,
+      description,
+      isSeries
+    });
 
-const savedItem = await item.save();
+    const savedItem = await item.save();
 
-res.json({
-  message: "Added",
-  movie: savedItem
-});
+    res.json({
+      message: "Added",
+      movie: savedItem
+    });
 
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -418,7 +419,6 @@ app.get("/mylist", auth, async (req, res) => {
   }
 });
 
-/* ❌ REMOVE */
 /* ❌ REMOVE */
 app.delete("/mylist/:id", auth, async (req, res) => {
   try {
@@ -522,8 +522,8 @@ app.get("/recommendations/:profileId", auth, async (req, res) => {
         let score = movie.watchCount || 0;
 
         Object.keys(genreScore).forEach(g => {
-  score += genreScore[g] * 2;
-});
+          score += genreScore[g] * 2;
+        });
 
         return {
           ...movie.toObject(),
@@ -588,7 +588,7 @@ app.post("/watch-count", async (req, res) => {
   }
 });
 
-app.get("/top10", async (req, res) => {
+app.get("/top10", async (_req, res) => {
   try {
     const top10 = await WatchCount.find()
       .sort({ watchCount: -1 })

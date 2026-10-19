@@ -1,3 +1,4 @@
+import process from "node:process";
 const BREVO_URL = "https://api.brevo.com/v3/smtp/email";
 
 const sendBrevoEmail = async ({ to, subject, htmlContent, senderName }) => {
